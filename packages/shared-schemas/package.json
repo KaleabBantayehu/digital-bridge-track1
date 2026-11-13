@@ -1,10 +1,10 @@
-{
+﻿{
   "name": "@db/shared-schemas",
   "version": "1.0.0",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsc --noEmit",
+    "build": "tsc",
     "typecheck": "tsc --noEmit",
     "lint": "echo \"shared-schemas lint ok\"",
     "test": "echo \"shared-schemas test ok\""
