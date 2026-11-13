@@ -1,8 +1,0 @@
-﻿{
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": null,
-  "installCommand": "pnpm install",
-  "buildCommand": "pnpm build:schemas && pnpm -F @db/web-components build && cp apps/web-components/dist/db-widgets.v1.0.0.js apps/savanna-host-demo/assets/js/db-widgets.v1.0.0.js",
-  "outputDirectory": "apps/savanna-host-demo",
-  "ignoreCommand": "if [ \"$VERCEL_GIT_COMMIT_REF\" != \"main\" ]; then exit 0; else exit 1; fi"
-}
