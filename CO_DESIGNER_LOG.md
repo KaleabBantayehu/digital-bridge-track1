@@ -1,4 +1,4 @@
-﻿# Co-Designer Session Log
+# Co-Designer Session Log
 Date/time: Saturday 14 Nov 2026 | Location/device: ____ | Co-designer (initials only, consent given: Y/N): ____
 AT used: NVDA / TalkBack / Keyboard-Only / 400% Zoom / Sound Off
 
