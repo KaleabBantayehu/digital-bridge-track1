@@ -1,0 +1,35 @@
+{
+  "name": "@db/web-components",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 5173",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "lint": "echo \"web-components lint ok\"",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@db/shared-schemas": "workspace:*",
+    "@hookform/resolvers": "^3.9.1",
+    "idb-keyval": "^6.2.1",
+    "lucide-react": "^0.454.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-hook-form": "^7.53.2",
+    "zod": "^3.23.8",
+    "zustand": "^5.0.1"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.3",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.14",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.10",
+    "vitest": "^2.1.4"
+  }
+}

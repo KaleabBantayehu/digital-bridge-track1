@@ -1,0 +1,23 @@
+{
+  "name": "digital-bridge-track1",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "pnpm@9.12.0",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "build:schemas": "pnpm -F @db/shared-schemas build",
+    "dev": "pnpm build:schemas && pnpm --parallel -r run dev",
+    "build": "pnpm build:schemas && pnpm -r run build",
+    "lint": "pnpm -r run lint",
+    "typecheck": "pnpm -r run typecheck",
+    "test": "pnpm -r run test",
+    "gate": "pnpm lint && pnpm typecheck && pnpm test"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.0",
+    "@playwright/test": "^1.48.0",
+    "typescript": "^5.6.3"
+  }
+}

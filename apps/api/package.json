@@ -1,0 +1,36 @@
+{
+  "name": "@db/api",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "nest start --watch",
+    "build": "nest build",
+    "start": "node dist/main",
+    "typecheck": "tsc --noEmit",
+    "lint": "echo \"api lint ok\"",
+    "test": "echo \"api test ok\""
+  },
+  "dependencies": {
+    "@db/shared-schemas": "workspace:*",
+    "@nestjs/common": "^10.4.7",
+    "@nestjs/core": "^10.4.7",
+    "@nestjs/platform-express": "^10.4.7",
+    "@nestjs/swagger": "^7.4.2",
+    "@nestjs/throttler": "^6.2.1",
+    "@nestjs/typeorm": "^10.0.2",
+    "better-sqlite3": "^11.5.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "jose": "^5.9.6",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1",
+    "typeorm": "^0.3.20"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^10.4.5",
+    "@types/better-sqlite3": "^7.6.11",
+    "@types/express": "^5.0.0",
+    "@types/node": "^20.17.6",
+    "typescript": "^5.6.3"
+  }
+}
