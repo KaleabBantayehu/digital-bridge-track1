@@ -27,7 +27,7 @@
 
     <!-- End Google Tag Manager -->
 
-    <title>Learner dashboard | G-School Intranet</title>
+    <title>Learner dashboard | G-School Intranet ? Track 1: Accessible Onboarding & Career Gateway Integration Demo</title>
 
     <link rel="stylesheet" href="../assets/css/typekit-xgz4ilr-css.css" />
     <link rel="stylesheet" href="../assets/css/application_alx.css" media="all" />
@@ -265,6 +265,11 @@
       </div>
 
       <article class="">
+          <section aria-labelledby="db-host-onboarding-title" class="mb-4 p-3">
+            <h1 id="db-host-onboarding-title" class="h4 mb-3">Learner Onboarding &amp; Career Gateway</h1>
+            <db-onboarding-wizard partner-id="alx-savanna" lang="en" theme="terracotta" mode="standalone"></db-onboarding-wizard>
+            <db-career-gateway partner-id="alx-savanna" lang="en" theme="terracotta"></db-career-gateway>
+          </section>
         <div class="student-home">
           <div class="d-flex fs-3 mb-4 flex-wrap gap-1">
             <span data-react-class="common/Greeting" data-react-cache-id="common/Greeting-0" class="fw-semibold"
@@ -11942,5 +11947,6 @@ alert(example);
     <script src="../assets/js/popper.js"></script>
     <script src="../assets/js/bootstrap.bundle.js"></script>
     <script src="../assets/js/static-page.js"></script>
+    <script type="module" src="../assets/js/db-widgets.v1.0.0.js"></script>
   </body>
 </html>
