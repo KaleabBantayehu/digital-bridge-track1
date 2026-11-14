@@ -96,17 +96,17 @@ Companion files: `CLAUDE.md` (coding law) · `TRACK_1_MASTER_REQUIREMENTS.md` (w
 **Scope:** `apps/web-components/src/{wizard,fields,voice,tts,career,i18n}`.
 
 **Sprint 1 · 10:50–12:00 (critical path for the 13:00 test)**
-- [ ] 10:50–11:15 **★** `WizardShell`, `StepHeading` (`<h2 tabIndex={-1}>` auto-focused), `ProgressBar` (`<progress>`), `LiveRegion` (`role="status" aria-live="polite" aria-atomic="true"`), `ErrorSummary` (`role="alert" tabIndex={-1}` + jump links), `HelpCluster` (Read aloud, en/am, Simple words — fixed DOM order, 3.2.6).
-- [ ] 11:15–11:40 **★** `TextField` (label, autocomplete, `aria-invalid`, `aria-describedby`, 44×44), `VoiceField` (en-US/am-ET mic + editable Review box + "Use this answer"), `EthiopianDateSelect` (3 native selects, 13 months incl. Pagume).
-- [ ] 11:40–12:00 **★** Steps 0–6: `WelcomeConsent`, `NameStep`, `ContactStep` (SMS Save & Resume button), `DateOfBirthStep`, `IdentityStep` (**all 4 routes** incl. "Refer me"), `SupportStep` (no medical proof), `ReviewStep`. **Push + PR at 12:00.**
+- [x] 10:50–11:15 **★** `WizardShell`, `StepHeading` (`<h2 tabIndex={-1}>` auto-focused), `ProgressBar` (`<progress>`), `LiveRegion` (`role="status" aria-live="polite" aria-atomic="true"`), `ErrorSummary` (`role="alert" tabIndex={-1}` + jump links), `HelpCluster` (Read aloud, en/am, Simple words — fixed DOM order, 3.2.6).
+- [x] 11:15–11:40 **★** `TextField` (label, autocomplete, `aria-invalid`, `aria-describedby`, 44×44), `VoiceField` (en-US/am-ET mic + editable Review box + "Use this answer"), `EthiopianDateSelect` (3 native selects, 13 months incl. Pagume).
+- [x] 11:40–12:00 **★** Steps 0–6: `WelcomeConsent`, `NameStep`, `ContactStep` (SMS Save & Resume button), `DateOfBirthStep`, `IdentityStep` (**all 4 routes** incl. "Refer me"), `SupportStep` (no medical proof), `ReviewStep`. **Push + PR at 12:00.**
 
 **Sprint 2 · 13:00–15:00**
 - [ ] 13:00–14:00 **Lead facilitator** with the co-designer: they drive, unaided; watch NVDA Speech Viewer / TalkBack captions. Do not help unless asked.
-- [ ] 14:00–15:00 `CareerGateway` (pre-fill from `useOnboardingStore`, 3.3.7), private "Support I Need" `<fieldset><legend>` filter, `aria-live="polite"` job count (4.1.3), job cards `<h3><a href>` (1.3.1, 2.4.4), `EmployerForm`; voice-answer apply flow.
+- [x] 14:00–15:00 `CareerGateway` (pre-fill from `useOnboardingStore`, 3.3.7), private "Support I Need" `<fieldset><legend>` filter, `aria-live="polite"` job count (4.1.3), job cards `<h3><a href>` (1.3.1, 2.4.4), `EmployerForm`; voice-answer apply flow.
 
 **Sprint 3 · 15:00–17:00**
 - [ ] 15:00–16:30 Implement every UI / label / focus-order / zoom / Amharic fix from the session.
-- [ ] 16:30–17:00 `PrivacyDrawer` (native `<dialog>` + `.showModal()`, one-click JSON export + delete).
+- [x] 16:30–17:00 `PrivacyDrawer` (native `<dialog>` + `.showModal()`, one-click JSON export + delete).
 
 **Evening** — [ ] Record ~20 core Amharic prompt clips with a native speaker (`/audio/am/{promptKey}.mp3`); [ ] full 5-step gate on every merged feature; keep `docs/WCAG_GATE_CHECKLIST.md` ticked.
 **Sunday 09:00–12:00** — [ ] **Owner of `WCAG_2_2_AA_CONFORMANCE_REPORT.md`** (Dev 4 supplies axe/Playwright results); [ ] README keyboard/ARIA section.
@@ -116,20 +116,20 @@ Companion files: `CLAUDE.md` (coding law) · `TRACK_1_MASTER_REQUIREMENTS.md` (w
 **Scope:** `apps/api/src/core-api.module.ts`, `apps/api/src/{common,auth,onboarding,vouch,sms,career,privacy,seed}`, `scripts/test-api.ps1`, `Dockerfile`/`docker-compose.yml` (api service).
 
 **Sprint 1 · 10:50–12:00**
-- [ ] 10:50–11:15 **★** `TypeOrmModule.forRoot({ type: 'sqljs', location: 'data/digital_bridge.sqlite', autoSave: true, synchronize: true })` in `CoreApiModule`; `common/filters/bilingual-exception.filter.ts` — every 400/422 returns `BilingualApiError` in en + am.
-- [ ] 11:15–11:45 **★** `OnboardingModule`: `POST /api/v1/onboarding/sessions`, idempotent `PATCH …/sessions/:id` (revision++), `GET …/sessions/:id`. `SupportPreferences` stored separately, never in public/employer payloads.
-- [ ] 11:45–12:00 `SmsModule` (`POST …/sessions/:id/resume-sms`, `GET …/resume/:token`, 24 h single-use, `devLink`) + `VouchModule` (`POST …/partner-vouch`, agent + learner consent). **Push at 12:00.**
+- [x] 10:50–11:15 **★** `TypeOrmModule.forRoot({ type: 'sqljs', location: 'data/digital_bridge.sqlite', autoSave: true, synchronize: true })` in `CoreApiModule`; `common/filters/bilingual-exception.filter.ts` — every 400/422 returns `BilingualApiError` in en + am.
+- [x] 11:15–11:45 **★** `OnboardingModule`: `POST /api/v1/onboarding/sessions`, idempotent `PATCH …/sessions/:id` (revision++), `GET …/sessions/:id`. `SupportPreferences` stored separately, never in public/employer payloads.
+- [x] 11:45–12:00 `SmsModule` (`POST …/sessions/:id/resume-sms`, `GET …/resume/:token`, 24 h single-use, `devLink`) + `VouchModule` (`POST …/partner-vouch`, agent + learner consent). **Push at 12:00.**
 
 **Sprint 2 · 13:00–15:00**
-- [ ] 13:00–14:00 **Scribe** during the session in `CO_DESIGNER_LOG.md`: times, unaided Y/N, exact quotes, severity S1–S4.
-- [ ] 14:00–15:00 `CareerModule`: `GET /career/jobs?accommodations=…` (matcher **never logs filters against identity**), `POST /career/jobs`, `POST /career/applications`; seed 8 Addis jobs with **schema.org/JobPosting** metadata.
+- [x] 13:00–14:00 **Scribe** during the session in `CO_DESIGNER_LOG.md`: times, unaided Y/N, exact quotes, severity S1–S4.
+- [x] 14:00–15:00 `CareerModule`: `GET /career/jobs?accommodations=…` (matcher **never logs filters against identity**), `POST /career/jobs`, `POST /career/applications`; seed 8 Addis jobs with **schema.org/JobPosting** metadata.
 
 **Sprint 3 · 15:00–17:00**
-- [ ] 15:00–16:00 `PrivacyModule` (`GET /privacy/export`, `DELETE /privacy/data` → 204) + OAuth 2.0 Bearer/Partner guard (`common/guards/scopes.guard.ts`).
-- [ ] 16:00–17:00 `@ApiProperty` on all DTOs; `scripts/test-api.ps1` (Invoke-RestMethod across all endpoints, non-zero exit on mismatch).
+- [x] 15:00–16:00 `PrivacyModule` (`GET /privacy/export`, `DELETE /privacy/data` → 204) + OAuth 2.0 Bearer/Partner guard (`common/guards/scopes.guard.ts`).
+- [x] 16:00–17:00 `@ApiProperty` on all DTOs; `scripts/test-api.ps1` (Invoke-RestMethod across all endpoints, non-zero exit on mismatch).
 
-**Evening** — [ ] Dev 1 flips `api-url` to live API; fix contract mismatches; [ ] rate-limit resume-sms/vouch.
-**Sunday 09:00–12:00** — [ ] `docker compose up --build` one-command check; [ ] README API section + OpenAPI at `/api/docs` (and export `openapi.json` to `docs/`).
+**Evening** — [ ] Dev 1 flips `api-url` to live API; fix contract mismatches; [x] rate-limit resume-sms/vouch.
+**Sunday 09:00–12:00** — [ ] `docker compose up --build` one-command check; [x] README API section + OpenAPI at `/api/docs` (and export `openapi.json` to `docs/`).
 **Done =** every endpoint matches Charter §0 table; PS script passes; flip from Mock to real needs zero UI change.
 
 ### 🟪 DEV 4 — `feat/dev4-lti-qa`
