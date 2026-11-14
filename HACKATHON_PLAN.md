@@ -96,17 +96,17 @@ Companion files: `CLAUDE.md` (coding law) · `TRACK_1_MASTER_REQUIREMENTS.md` (w
 **Scope:** `apps/web-components/src/{wizard,fields,voice,tts,career,i18n}`.
 
 **Sprint 1 · 10:50–12:00 (critical path for the 13:00 test)**
-- [ ] 10:50–11:15 **★** `WizardShell`, `StepHeading` (`<h2 tabIndex={-1}>` auto-focused), `ProgressBar` (`<progress>`), `LiveRegion` (`role="status" aria-live="polite" aria-atomic="true"`), `ErrorSummary` (`role="alert" tabIndex={-1}` + jump links), `HelpCluster` (Read aloud, en/am, Simple words — fixed DOM order, 3.2.6).
-- [ ] 11:15–11:40 **★** `TextField` (label, autocomplete, `aria-invalid`, `aria-describedby`, 44×44), `VoiceField` (en-US/am-ET mic + editable Review box + "Use this answer"), `EthiopianDateSelect` (3 native selects, 13 months incl. Pagume).
-- [ ] 11:40–12:00 **★** Steps 0–6: `WelcomeConsent`, `NameStep`, `ContactStep` (SMS Save & Resume button), `DateOfBirthStep`, `IdentityStep` (**all 4 routes** incl. "Refer me"), `SupportStep` (no medical proof), `ReviewStep`. **Push + PR at 12:00.**
+- [x] 10:50–11:15 **★** `WizardShell`, `StepHeading` (`<h2 tabIndex={-1}>` auto-focused), `ProgressBar` (`<progress>`), `LiveRegion` (`role="status" aria-live="polite" aria-atomic="true"`), `ErrorSummary` (`role="alert" tabIndex={-1}` + jump links), `HelpCluster` (Read aloud, en/am, Simple words — fixed DOM order, 3.2.6).
+- [x] 11:15–11:40 **★** `TextField` (label, autocomplete, `aria-invalid`, `aria-describedby`, 44×44), `VoiceField` (en-US/am-ET mic + editable Review box + "Use this answer"), `EthiopianDateSelect` (3 native selects, 13 months incl. Pagume).
+- [x] 11:40–12:00 **★** Steps 0–6: `WelcomeConsent`, `NameStep`, `ContactStep` (SMS Save & Resume button), `DateOfBirthStep`, `IdentityStep` (**all 4 routes** incl. "Refer me"), `SupportStep` (no medical proof), `ReviewStep`. **Push + PR at 12:00.**
 
 **Sprint 2 · 13:00–15:00**
 - [ ] 13:00–14:00 **Lead facilitator** with the co-designer: they drive, unaided; watch NVDA Speech Viewer / TalkBack captions. Do not help unless asked.
-- [ ] 14:00–15:00 `CareerGateway` (pre-fill from `useOnboardingStore`, 3.3.7), private "Support I Need" `<fieldset><legend>` filter, `aria-live="polite"` job count (4.1.3), job cards `<h3><a href>` (1.3.1, 2.4.4), `EmployerForm`; voice-answer apply flow.
+- [x] 14:00–15:00 `CareerGateway` (pre-fill from `useOnboardingStore`, 3.3.7), private "Support I Need" `<fieldset><legend>` filter, `aria-live="polite"` job count (4.1.3), job cards `<h3><a href>` (1.3.1, 2.4.4), `EmployerForm`; voice-answer apply flow.
 
 **Sprint 3 · 15:00–17:00**
 - [ ] 15:00–16:30 Implement every UI / label / focus-order / zoom / Amharic fix from the session.
-- [ ] 16:30–17:00 `PrivacyDrawer` (native `<dialog>` + `.showModal()`, one-click JSON export + delete).
+- [x] 16:30–17:00 `PrivacyDrawer` (native `<dialog>` + `.showModal()`, one-click JSON export + delete).
 
 **Evening** — [ ] Record ~20 core Amharic prompt clips with a native speaker (`/audio/am/{promptKey}.mp3`); [ ] full 5-step gate on every merged feature; keep `docs/WCAG_GATE_CHECKLIST.md` ticked.
 **Sunday 09:00–12:00** — [ ] **Owner of `WCAG_2_2_AA_CONFORMANCE_REPORT.md`** (Dev 4 supplies axe/Playwright results); [ ] README keyboard/ARIA section.

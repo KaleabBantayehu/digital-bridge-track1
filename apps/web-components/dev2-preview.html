@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dev 2 preview — Wizard and Career Gateway</title>
+    <link rel="icon" href="data:," />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Noto+Sans+Ethiopic:wght@400;600;700&display=swap" rel="stylesheet" />
+    <style>
+      body { margin: 0; padding: 1rem; background: #EDE6DB; font-family: system-ui, sans-serif; }
+      main { display: grid; gap: 2rem; }
+      .host-note { max-width: 48rem; margin: 0 auto; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1 class="host-note">Dev 2 local harness (not shipped)</h1>
+      <p class="host-note">Mounts WizardShell and CareerGateway inside open shadow roots, the same way Dev 1's custom elements will. Run <code>pnpm -F @db/web-components dev</code>, then open <code>/dev2-preview.html</code>. Add <code>?lang=am</code> for Amharic.</p>
+      <div id="wizard-host"></div>
+      <div id="career-host"></div>
+    </main>
+    <script type="module">
+      import React from 'react';
+      import { createRoot } from 'react-dom/client';
+      import css from '/src/styles/index.css?inline';
+      import { WizardShell } from '/src/wizard/WizardShell.tsx';
+      import { CareerGateway } from '/src/career/CareerGateway.tsx';
+
+      const lang = new URLSearchParams(location.search).get('lang') === 'am' ? 'am' : 'en';
+      const log = (name, detail) => console.info('[host received]', name, detail);
+
+      function mount(hostId, Component, props) {
+        const host = document.getElementById(hostId);
+        const shadow = host.attachShadow({ mode: 'open' });
+        const style = document.createElement('style');
+        style.textContent = css;
+        const container = document.createElement('div');
+        shadow.append(style, container);
+        createRoot(container).render(React.createElement(Component, props));
+        // Host-page listener: proves events cross the shadow boundary (composed: true).
+        host.addEventListener('db:onboarding-completed', (e) => log(e.type, e.detail));
+      }
+
+      mount('wizard-host', WizardShell, { lang });
+      mount('career-host', CareerGateway, {});
+    </script>
+  </body>
+</html>
