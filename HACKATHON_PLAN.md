@@ -71,22 +71,22 @@ Companion files: `CLAUDE.md` (coding law) · `TRACK_1_MASTER_REQUIREMENTS.md` (w
 **Scope:** `apps/web-components/src/{index.ts,base,elements,state,api,styles}`, `apps/savanna-host-demo/{pages,assets,standalone.html}`, Vercel config.
 
 **Sprint 1 · 10:50–12:00**
-- [ ] 10:50–11:15 **★** `src/base/ReactShadowElement.ts`; register `<db-onboarding-wizard>`, `<db-career-gateway>`, `<db-employer-accommodations>` in `src/index.ts`. Add **one-line auto-mount**: `<script src=".../db-widgets.v1.0.0.js" data-auto-mount="true">` (Level 1 adoption).
-- [ ] 11:15–11:40 **★** `src/state/store.ts` with `idb-keyval` (IndexedDB) + `localStorage` fallback, 300 ms debounce, key `db:{partnerId}:{sessionId}`.
-- [ ] 11:40–12:00 **★** `src/api/MockApiService.ts` (8 seeded Addis Ababa jobs with accommodations, fake SMS resume link, fake partner voucher) and `src/api/ApiClient.ts` (4 s timeout → automatic Mock fallback). **Push + PR at 12:00.**
+- [x] 10:50–11:15 **★** `src/base/ReactShadowElement.ts`; register `<db-onboarding-wizard>`, `<db-career-gateway>`, `<db-employer-accommodations>` in `src/index.ts`. Add **one-line auto-mount**: `<script src=".../db-widgets.v1.0.0.js" data-auto-mount="true">` (Level 1 adoption).
+- [x] 11:15–11:40 **★** `src/state/store.ts` with `idb-keyval` (IndexedDB) + `localStorage` fallback, 300 ms debounce, key `db:{partnerId}:{sessionId}`.
+- [x] 11:40–12:00 **★** `src/api/MockApiService.ts` (8 seeded Addis Ababa jobs with accommodations, fake SMS resume link, fake partner voucher) and `src/api/ApiClient.ts` (4 s timeout → automatic Mock fallback). **Push + PR at 12:00.**
 
 **Sprint 2 · 13:00–15:00 (during co-designer test)**
-- [ ] 13:00–14:15 Patch the **5 Savanna defects** in `apps/savanna-host-demo/pages/homepage-v1-self-paced.html` and `homepage-v1-paced.html` (exact fixes: `TRACK_1_MASTER_REQUIREMENTS.md` §5):
+- [x] 13:00–14:15 Patch the **5 Savanna defects** in `apps/savanna-host-demo/pages/homepage-v1-self-paced.html` and `homepage-v1-paced.html` (exact fixes: `TRACK_1_MASTER_REQUIREMENTS.md` §5):
   1. `<div class="hamburger">` → `<button type="button" … aria-label="Toggle sidebar" aria-expanded="true" aria-controls="sidebar">`
   2. `aria-label="ALX Savanna Home"` on `a.logo-container`
   3. Add `<h1>`; fix h1 → h2 → h3 order
   4. `scroll-margin-top: 6rem` in `assets/css/static-page.css` (2.4.11)
   5. Remove duplicate `#markdown-guide-modal` ids in `homepage-v1-paced.html`
-- [ ] 14:15–15:00 `src/state/syncQueue.ts`: queue offline patches, replay on `online` event.
+- [x] 14:15–15:00 `src/state/syncQueue.ts`: queue offline patches, replay on `online` event.
 
 **Sprint 3 · 15:00–17:00**
-- [ ] 15:00–16:30 Run axe on both Savanna pages + `standalone.html`; fix host CSS/layout issues the co-designer reports.
-- [ ] 16:30–17:00 Before/after axe counts → `docs/SAVANNA_FIXES.md`.
+- [x] 15:00–16:30 Run axe on both Savanna pages + `standalone.html`; fix host CSS/layout issues the co-designer reports.
+- [x] 16:30–17:00 Before/after axe counts → `docs/SAVANNA_FIXES.md`.
 
 **Evening (19:00–23:00)** — [ ] Wire bundled Amharic `.mp3` fallback clips (recorded by Dev 2) as static assets; [ ] Slow-3G/offline reload test; [ ] bundle size < 250 KB gz for onboarding element.
 **Sunday 09:00–12:00** — [ ] `Dockerfile` + `docker-compose.yml` (web side) verified; [ ] README "Install in 1 hour" (script-tag door).

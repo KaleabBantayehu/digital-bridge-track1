@@ -6,9 +6,118 @@
    way it does in the live app instead of leaving the labels behind. */
 
 body.sidebar-collapsed #sidebar a > div:not(.icon) {
-  display: none !important;
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 body:not(.sidebar-collapsed) #sidebar a > div:not(.icon) {
   display: block !important;
+}
+
+body {
+  --bs-primary: #7a2b18;
+  --bs-primary-rgb: 122, 43, 24;
+  --bs-link-color: #7a2b18;
+  --bs-link-hover-color: #5b1d13;
+}
+
+body a,
+.text-primary,
+.btn-outline-primary {
+  color: #7a2b18 !important;
+}
+
+body a {
+  text-decoration: underline !important;
+  text-underline-offset: 0.15em;
+}
+
+.skip-link {
+  position: absolute;
+  z-index: 1100;
+  top: 0;
+  left: 0;
+  padding: 0.75rem 1rem;
+  color: #fff !important;
+  background: #5b1d13;
+  transform: translateY(-150%);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.btn {
+  text-decoration: none !important;
+}
+
+.btn-outline-primary {
+  border-color: #7a2b18 !important;
+}
+
+.btn-primary {
+  background-color: #7a2b18 !important;
+  border-color: #7a2b18 !important;
+}
+
+.text-warning {
+  color: #7a4e00 !important;
+}
+
+.homepage-nav .nav-link {
+  color: #7a2b18 !important;
+}
+
+.program-progress-badge {
+  color: #7a2b18;
+}
+
+a[aria-current='true'] {
+  color: #fff !important;
+  background-color: #5b1d13 !important;
+  border-color: #5b1d13 !important;
+}
+
+a,
+button,
+input,
+select,
+textarea,
+summary,
+[tabindex],
+db-onboarding-wizard,
+db-career-gateway {
+  scroll-margin-top: 6rem;
+  scroll-margin-bottom: 6rem;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible,
+db-onboarding-wizard:focus-visible,
+db-career-gateway:focus-visible {
+  outline: 3px solid #7a2b18;
+  outline-offset: 2px;
+}
+
+.hamburger {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #student-current-curriculum {
+    transition: none !important;
+  }
 }

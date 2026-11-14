@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>EthioWork — Partner integration demo</title>
+    <style>
+      :root { color-scheme: light; font-family: system-ui, sans-serif; color: #202b38; background: #f3f6fa; }
+      body { margin: 0; }
+      header, main { width: min(100% - 2rem, 60rem); margin-inline: auto; }
+      header { padding-block: 1.5rem; }
+      main { padding-bottom: 3rem; }
+      .partner-card, .event-panel { margin-block: 1rem; padding: 1rem; border: 1px solid #53677d; border-radius: .5rem; background: #fff; }
+      .event-panel { overflow-wrap: anywhere; }
+      #partner-event-log { max-height: 18rem; overflow: auto; padding-left: 1.5rem; }
+      #partner-event-log li { margin-block: .5rem; }
+      :focus-visible { outline: 3px solid #7a2b18; outline-offset: 3px; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a href="index.html">Back to Digital Bridge demos</a>
+      <p>EthioWork · Ethiopian jobs and TVET opportunities</p>
+    </header>
+    <main>
+      <h1>Find your next opportunity</h1>
+      <p>This independent partner page demonstrates installation through one script tag.</p>
+      <section class="partner-card" aria-labelledby="partner-jobs-title">
+        <h2 id="partner-jobs-title">Featured opportunities</h2>
+        <p>Explore jobs and learner support tools without leaving EthioWork.</p>
+      </section>
+      <section class="partner-card" aria-labelledby="partner-widgets-title">
+        <h2 id="partner-widgets-title">Digital Bridge learner tools</h2>
+        <p>Onboarding and career widgets are added automatically by the integration script below.</p>
+      </section>
+      <section class="event-panel" aria-labelledby="partner-event-title">
+        <h2 id="partner-event-title">Widget event log</h2>
+        <p>Events received across the Shadow DOM boundary appear here. Support preferences are redacted.</p>
+        <ol id="partner-event-log" aria-live="polite" aria-relevant="additions"></ol>
+        <button id="clear-event-log" type="button">Clear event log</button>
+      </section>
+    </main>
+    <script>
+      (() => {
+        const log = document.getElementById('partner-event-log');
+        const privateKeys = /^(support|supportPreferences|accommodations|adjustmentRequest|filters|needs)$/i;
+        const hasSharingConsent = (value) => {
+          if (!value || typeof value !== 'object') return false;
+          if (
+            value.shareConsent === true ||
+            value.shareWithEmployers === true ||
+            value.shareSupportWithEmployer === true
+          ) return true;
+          return Object.values(value).some(hasSharingConsent);
+        };
+        const redact = (value, consented) => {
+          if (consented || !value || typeof value !== 'object') return value;
+          if (Array.isArray(value)) return value.map((item) => redact(item, false));
+          return Object.fromEntries(
+            Object.entries(value).map(([key, nested]) => [
+              key,
+              privateKeys.test(key) ? '[redacted]' : redact(nested, false),
+            ]),
+          );
+        };
+        const watchedEvents = [
+          'db:onboarding-completed',
+          'db:step-changed',
+          'db:onboarding-step-saved',
+          'db:job-applied',
+        ];
+        for (const eventName of watchedEvents) {
+          document.addEventListener(eventName, (event) => {
+            const entry = document.createElement('li');
+            const title = document.createElement('strong');
+            title.textContent = eventName;
+            const payload = document.createElement('pre');
+            const consented = hasSharingConsent(event.detail);
+            payload.textContent = JSON.stringify(redact(event.detail ?? {}, consented), null, 2);
+            entry.append(title, payload);
+            log.prepend(entry);
+          });
+        }
+        document.getElementById('clear-event-log').addEventListener('click', () => log.replaceChildren());
+      })();
+    </script>
+    <script
+      type="module"
+      src="./assets/js/db-widgets.v1.0.0.js"
+      data-auto-mount="both"
+      data-partner-id="ethiowork-demo"
+      data-lang="en"
+      data-theme="terracotta"
+    ></script>
+  </body>
+</html>
