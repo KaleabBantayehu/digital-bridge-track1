@@ -109,6 +109,7 @@ export const IdentityStep: React.FC<StepProps> = ({
       {(identity?.route === 'national_id_or_passport' || identity?.route === 'refugee_id') && (
         <TextField
           id={fieldId(idBase, 'referenceNumber')}
+          spokenKind="code"
           lang={lang}
           label={t('field.referenceNumber')}
           hint={t('field.referenceNumber.hint')}
@@ -137,6 +138,7 @@ export const IdentityStep: React.FC<StepProps> = ({
           />
           <TextField
             id={fieldId(idBase, 'docReference')}
+            spokenKind="code"
             lang={lang}
             label={t('field.docReference')}
             hint={t('field.docReference.hint')}
@@ -165,6 +167,7 @@ export const IdentityStep: React.FC<StepProps> = ({
           />
           <TextField
             id={fieldId(idBase, 'agentId')}
+            spokenKind="code"
             lang={lang}
             label={t('field.agentId')}
             hint={t('field.agentId.hint')}

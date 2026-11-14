@@ -1,5 +1,16 @@
 {
   "lang": "am",
   "fallback": "text-only",
-  "clips": {}
+  "kind": "tone-cue",
+  "note": "Tone cues (chime + one pip per step number), not recorded speech. The widget shows the words in a caption box while a cue plays. Replace with native-speaker recordings when available.",
+  "clips": {
+    "step0": "step0.wav",
+    "step1": "step1.wav",
+    "step2": "step2.wav",
+    "step3": "step3.wav",
+    "step4": "step4.wav",
+    "step5": "step5.wav",
+    "step6": "step6.wav",
+    "finished": "finished.wav"
+  }
 }

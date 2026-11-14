@@ -6,7 +6,7 @@ import type { Lang } from '@db/shared-schemas';
  * so it overrides Tailwind utilities such as `uppercase tracking-wide` / `leading-snug` on child elements.
  */
 export const ETHIOPIC_CLASS = 'db-ethiopic';
-export const ETHIOPIC_CSS = `.${ETHIOPIC_CLASS}, .${ETHIOPIC_CLASS} * { line-height: 1.7 !important; letter-spacing: normal !important; text-transform: none !important; }`;
+export const ETHIOPIC_CSS = `.${ETHIOPIC_CLASS}, .${ETHIOPIC_CLASS} * { line-height: 1.7 !important; letter-spacing: normal !important; text-transform: none !important; } .${ETHIOPIC_CLASS} { font-family: 'Noto Sans Ethiopic', 'Nyala', var(--db-font), sans-serif; }`;
 
 /** Root class for the active language ('' for English). */
 export const scriptClass = (lang: Lang) => (lang === 'am' ? ETHIOPIC_CLASS : '');

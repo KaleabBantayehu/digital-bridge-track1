@@ -75,6 +75,7 @@ export const ContactStep: React.FC<StepProps> = ({ lang, t, idBase, profile, upd
         required={!profile.contact.viaPartner}
         optional={!!profile.contact.viaPartner}
         announce={announce}
+        voiceNote={false}
       />
       <CheckboxField
         id={fieldId(idBase, 'viaPartner')}
@@ -85,6 +86,7 @@ export const ContactStep: React.FC<StepProps> = ({ lang, t, idBase, profile, upd
       <div className="mt-4">
         <TextField
           id={fieldId(idBase, 'email')}
+          voiceNote={false}
           lang={lang}
           label={t('field.email')}
           hint={t('field.email.hint')}

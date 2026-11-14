@@ -8,6 +8,7 @@ import { LiveRegion, useAnnouncer } from '../wizard/LiveRegion';
 import { emitEvent } from '../wizard/emit';
 import { localServices, type Dev2Services } from '../wizard/services';
 import { cleanId, cx, ui } from '../wizard/ui';
+import { VoiceControl } from '../wizard/VoiceControl';
 import { ApplyDialog } from './ApplyDialog';
 import { EmployerForm } from './EmployerForm';
 import { JobCard } from './JobCard';
@@ -117,13 +118,14 @@ export const CareerGateway: React.FC<CareerGatewayProps> = ({
       aria-labelledby={headingId}
       data-theme={theme}
       className={cx(
-        'w-full max-w-[56rem] mx-auto p-4 sm:p-6 rounded-lg border-2 font-sans text-base leading-relaxed break-words',
+        'w-full max-w-[56rem] mx-auto p-4 sm:p-8 rounded-2xl font-sans text-base leading-relaxed break-words',
         scriptClass(lang),
-        highContrast ? 'bg-white text-black border-black' : 'bg-parchment text-ink border-terracotta',
+        highContrast ? 'bg-white text-black border-2 border-black' : 'bg-parchment text-ink border border-sand shadow-card',
       )}
     >
       <style>{ETHIOPIC_CSS}</style>
       <LiveRegion announcement={announcement} />
+      <VoiceControl lang={lang} rootRef={rootRef} announce={announce} />
 
       <h2 id={headingId} tabIndex={-1} className="flex items-center gap-2 text-2xl font-bold mb-1">
         <Briefcase aria-hidden="true" focusable="false" className="h-7 w-7 shrink-0 text-terracotta" />

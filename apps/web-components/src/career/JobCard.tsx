@@ -52,7 +52,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, lang, applied, onApply, a
           <p className="font-semibold text-sm mb-1">{t(lang, 'job.offers')}</p>
           <ul className="flex flex-wrap gap-2 mb-4">
             {offers.map((o) => (
-              <li key={o} className="rounded-full border-2 border-terracotta bg-parchment px-3 py-1 text-sm font-semibold text-terracotta-dark">
+              <li key={o} className={ui.badge}>
                 {supportLabel(lang, o)}
               </li>
             ))}

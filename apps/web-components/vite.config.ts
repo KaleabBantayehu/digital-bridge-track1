@@ -1,4 +1,6 @@
 // apps/web-components/vite.config.ts
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
@@ -13,6 +15,15 @@ function copySignupAliases() {
 
       for (const fileName of ['db-signup.js', 'module/db-signup.js', 'assets/js/db-signup.js']) {
         this.emitFile({ type: 'asset', fileName, source: widgetBundle.code });
+      }
+
+      // Read-aloud cues + manifests: served at dist/audio/{lang}/ as well as dist/assets/audio/{lang}/
+      // (the latter arrives with the copied savanna-host-demo folder), so either audio-base-url works.
+      const audioRoot = join(__dirname, '../savanna-host-demo/assets/audio');
+      for (const lang of ['am', 'en']) {
+        for (const name of readdirSync(join(audioRoot, lang))) {
+          this.emitFile({ type: 'asset', fileName: `audio/${lang}/${name}`, source: readFileSync(join(audioRoot, lang, name)) });
+        }
       }
     },
   };

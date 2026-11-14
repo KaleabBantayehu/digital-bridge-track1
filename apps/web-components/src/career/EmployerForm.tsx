@@ -9,7 +9,8 @@ import { ErrorSummary } from '../wizard/ErrorSummary';
 import { LiveRegion, useAnnouncer } from '../wizard/LiveRegion';
 import { localServices, type Dev2Services } from '../wizard/services';
 import { EMAIL_RE } from '../wizard/validation';
-import { cleanId, ui } from '../wizard/ui';
+import { cleanId, ui, cx } from '../wizard/ui';
+import { ETHIOPIC_CSS, scriptClass } from '../i18n/script';
 import { CAREER_FILTERS } from './jobText';
 import { LOCATION_KEYS } from './seedJobs';
 
@@ -87,7 +88,17 @@ export const EmployerForm: React.FC<EmployerFormProps> = ({ lang = 'en', service
   }));
 
   return (
-    <section aria-labelledby={headingId} lang={lang} className="font-sans text-ink">
+    <section
+      aria-labelledby={headingId}
+      lang={lang}
+      className={cx(
+        'font-sans text-ink break-words',
+        scriptClass(lang),
+        // Mounted on its own (<db-employer-accommodations>): same card as the other widgets.
+        !announce && 'w-full max-w-[56rem] mx-auto p-4 sm:p-8 rounded-2xl bg-parchment border border-sand shadow-card leading-relaxed',
+      )}
+    >
+      {!announce && <style>{ETHIOPIC_CSS}</style>}
       {!announce && <LiveRegion announcement={own.announcement} />}
       <Heading id={headingId} tabIndex={-1} className="flex items-center gap-2 text-2xl font-bold mb-2">
         <Building2 aria-hidden="true" focusable="false" className="h-7 w-7 shrink-0 text-terracotta" />
@@ -98,20 +109,20 @@ export const EmployerForm: React.FC<EmployerFormProps> = ({ lang = 'en', service
       <form noValidate onSubmit={submit} aria-labelledby={headingId}>
         <ErrorSummary items={summaryItems} focusKey={summaryKey} t={t} />
         <TextField id={`${idBase}-jobTitle`} lang={lang} label={t('field.jobTitle')} hint={t('field.jobTitle.hint')} value={values.jobTitle}
-          onChange={set('jobTitle')} error={errorFor('jobTitle')} required announce={say} />
+          onChange={set('jobTitle')} error={errorFor('jobTitle')} required announce={say} voiceNote={false} />
         <TextField id={`${idBase}-employerName`} lang={lang} label={t('field.employerName')} value={values.employerName}
-          onChange={set('employerName')} error={errorFor('employerName')} autoComplete="organization" required announce={say} />
+          onChange={set('employerName')} error={errorFor('employerName')} autoComplete="organization" required announce={say} voiceNote={false} />
         <SelectField id={`${idBase}-location`} label={t('field.location')} value={values.location} onChange={set('location')}
           options={LOCATION_KEYS.map((key) => ({ value: key, label: t(`loc.${key}` as I18nKey) }))}
           placeholder={t('wizard.choose')} error={errorFor('location')} required requiredText={t('wizard.required')} />
         <CheckboxField id={`${idBase}-remote`} label={t('field.remoteJob')} checked={remote} onChange={setRemote} />
         <div className="mt-4">
           <TextField id={`${idBase}-description`} lang={lang} label={t('field.description')} hint={t('field.description.hint')}
-            value={values.description} onChange={set('description')} error={errorFor('description')} multiline required announce={say} />
+            value={values.description} onChange={set('description')} error={errorFor('description')} multiline required announce={say} voiceNote={false} />
         </div>
         <TextField id={`${idBase}-contactEmail`} lang={lang} label={t('field.contactEmail')} value={values.contactEmail}
           onChange={set('contactEmail')} error={errorFor('contactEmail')} type="email" inputMode="email" autoComplete="email"
-          spellCheck={false} optional voice={false} />
+          spellCheck={false} optional voiceNote={false} />
 
         <fieldset className={ui.fieldset}>
           <legend className={ui.legend}>{t('employer.offersLegend')}</legend>

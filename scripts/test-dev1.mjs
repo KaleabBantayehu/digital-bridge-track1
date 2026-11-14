@@ -209,6 +209,7 @@ check('11 No duplicate IDs on required host and demo pages', () => {
 
 check('12 Production bundle, copied pages, audio and gzip budget', () => {
   const build = spawnSync('pnpm', ['-F', '@db/web-components', 'build'], {
+    shell: process.platform === 'win32', // pnpm is pnpm.cmd on Windows
     cwd: root,
     encoding: 'utf8',
     timeout: 180_000,
@@ -310,7 +311,10 @@ check('13 Signup aliases, guide pages and built-page axe audit', () => {
         const { port } = server.address();
         const options = { headless: true, args: ['--no-sandbox'] };
         try { browser = await chromium.launch({ ...options, executablePath: '/usr/bin/chromium' }); }
-        catch { browser = await chromium.launch(options); }
+        catch {
+          try { browser = await chromium.launch(options); }
+          catch { browser = await chromium.launch({ ...options, channel: 'chrome' }); } // installed Chrome (Windows dev machines)
+        }
         const context = await browser.newContext();
         for (const path of pages) {
           const page = await context.newPage();

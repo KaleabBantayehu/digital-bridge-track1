@@ -4,10 +4,12 @@ import type { Lang } from '@db/shared-schemas';
 import { t } from '../i18n';
 import { cleanId, ui } from '../wizard/ui';
 import {
-  blobToDataUrl, canRecordVoiceNote, getSpeechRecognition, pickAudioMime, speakText, speechLocale, stopSpeaking,
+  blobToDataUrl, canRecordVoiceNote, setFieldListening, getSpeechRecognition, pickAudioMime, speakText, speechLocale, stopSpeaking,
   type SpeechRecognitionLike,
 } from './speech';
 import { hasVoiceNote, removeVoiceNote, setVoiceNote, useVoiceNotes } from './voiceNotes';
+import { FidelHelper } from '../fields/FidelHelper';
+import { normaliseSpoken, spellOut, type SpokenKind } from './spokenInput';
 
 export interface VoiceFieldProps {
   lang: Lang;
@@ -23,18 +25,26 @@ export interface VoiceFieldProps {
    * under this key in the voice-notes map. Use for free-text answers such as names and cover notes.
    */
   voiceNoteKey?: string;
+  /** Amharic UI: show the Latin -> Fidel helper inside the review box, to fix a misheard name quickly. */
+  fidelHelper?: boolean;
+  /** What the field holds, so spoken numbers / "at" / "dot" become digits and symbols (default 'text'). */
+  spokenKind?: SpokenKind;
 }
 
 type Phase = 'idle' | 'listening' | 'review' | 'recording' | 'preview';
 
 /** Longest voice note we keep on the device (keeps a note well inside localStorage limits). */
 const MAX_RECORDING_MS = 60_000;
+/** Amharic: if speech-to-text has produced nothing after this long, switch to a voice note. */
+const AM_EMPTY_TRANSCRIPT_MS = 5_000;
+/** Speech-to-text errors that mean "Amharic recognition will not work here" (Guide §5 traps). */
+const AM_FALLBACK_ERRORS = new Set(['no-speech', 'network', 'not-allowed', 'language-not-supported', 'service-not-allowed', 'audio-capture']);
 
 /**
  * Mic button + mandatory editable "Review what we heard" step with read-back (CLAUDE.md §3.8, Guide v2 §5),
  * plus a MediaRecorder voice-note fallback that works where speech-to-text does not.
  */
-export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse, targetRef, announce, voiceNoteKey }) => {
+export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse, targetRef, announce, voiceNoteKey, fidelHelper, spokenKind = 'text' }) => {
   const [phase, setPhase] = useState<Phase>('idle');
   const [heard, setHeard] = useState('');
   const [note, setNote] = useState('');
@@ -47,6 +57,9 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
   const chunksRef = useRef<Blob[]>([]);
   const blobRef = useRef<Blob | null>(null);
   const limitRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const amTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const startedAtRef = useRef(0);
+  const secondsRef = useRef<number | undefined>(undefined);
   const speakingRef = useRef(false);
   const gotResult = useRef(false);
   const reviewRef = useRef<HTMLInputElement>(null);
@@ -71,6 +84,7 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
     () => () => {
       recognitionRef.current?.abort();
       clearTimeout(limitRef.current);
+      clearTimeout(amTimerRef.current);
       const recorder = recorderRef.current;
       if (recorder) {
         recorder.onstop = null;
@@ -89,7 +103,10 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
 
   useEffect(() => {
     if (phase === 'review') reviewRef.current?.focus();
+    // Tell voice control to stop listening for commands while this field has the microphone.
+    setFieldListening(phase === 'listening' || phase === 'recording');
   }, [phase]);
+  useEffect(() => () => setFieldListening(false), []);
 
   const say = (message: string) => {
     setNote(message);
@@ -97,10 +114,33 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
   };
 
   // ---- Speech to text -------------------------------------------------------------------------------------------
+  /**
+   * Amharic speech-to-text is missing or broken on many devices (Guide §5). Switch to recording a voice note in the
+   * same place, with a plain explanation, or, where recording is impossible too, to typing with the Fidel helper.
+   */
+  const amharicFallback = () => {
+    clearTimeout(amTimerRef.current);
+    gotResult.current = true; // the explanation replaces the "nothing heard" note
+    const recognition = recognitionRef.current;
+    recognitionRef.current = null;
+    recognition?.abort();
+    if (voiceNoteKey && canRecordVoiceNote()) {
+      void startRecording(true);
+    } else {
+      setPhase('idle');
+      say(t(lang, 'voice.amFallbackType'));
+      targetRef.current?.focus();
+    }
+  };
+
   const start = () => {
     setReviewNote('');
     const Recognition = getSpeechRecognition();
     if (!Recognition) {
+      if (lang === 'am') {
+        amharicFallback();
+        return;
+      }
       say(t(lang, 'voice.unsupported'));
       targetRef.current?.focus();
       return;
@@ -113,14 +153,23 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
       recognition.maxAlternatives = 1;
       gotResult.current = false;
       recognition.onresult = (event) => {
-        const transcript = Array.from({ length: event.results.length }, (_, i) => event.results[i][0]?.transcript ?? '').join(' ').trim();
+        const raw = Array.from({ length: event.results.length }, (_, i) => event.results[i][0]?.transcript ?? '').join(' ').trim();
+        // "ዜሮ ዘጠኝ አንድ…" -> "091…", "name at gmail dot com" -> "name@gmail.com" (still editable before use).
+        const transcript = normaliseSpoken(raw, spokenKind);
         if (!transcript) return;
+        clearTimeout(amTimerRef.current);
         gotResult.current = true;
         setHeard(transcript);
         setPhase('review');
         say(t(lang, 'voice.heard', { text: transcript }));
       };
       recognition.onerror = (event) => {
+        if (recognitionRef.current !== recognition) return; // already switched to a voice note
+        if (lang === 'am' && AM_FALLBACK_ERRORS.has(event.error)) {
+          amharicFallback();
+          return;
+        }
+        clearTimeout(amTimerRef.current);
         gotResult.current = true; // error already explained; skip the "nothing heard" note
         setPhase('idle');
         if (event.error === 'not-allowed' || event.error === 'service-not-allowed') say(t(lang, 'voice.denied'));
@@ -130,6 +179,8 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
         if (event.error !== 'aborted') targetRef.current?.focus();
       };
       recognition.onend = () => {
+        if (recognitionRef.current !== recognition) return; // already switched to a voice note
+        clearTimeout(amTimerRef.current);
         recognitionRef.current = null;
         setPhase((p) => (p === 'listening' ? 'idle' : p));
         if (!gotResult.current) say(t(lang, 'voice.nothing'));
@@ -138,7 +189,17 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
       recognition.start();
       setPhase('listening');
       say(t(lang, 'voice.listening'));
+      if (lang === 'am') {
+        clearTimeout(amTimerRef.current);
+        amTimerRef.current = setTimeout(() => {
+          if (!gotResult.current && recognitionRef.current === recognition) amharicFallback();
+        }, AM_EMPTY_TRANSCRIPT_MS);
+      }
     } catch {
+      if (lang === 'am') {
+        amharicFallback();
+        return;
+      }
       setPhase('idle');
       say(t(lang, 'voice.error'));
       targetRef.current?.focus();
@@ -146,6 +207,7 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
   };
 
   const stopListening = () => {
+    clearTimeout(amTimerRef.current);
     recognitionRef.current?.stop();
   };
 
@@ -161,7 +223,7 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
 
   /** Read the reviewed text back so a blind learner can check what speech recognition wrote. */
   const readBack = () => {
-    const ok = speakText(lang, heard, () => {
+    const ok = speakText(lang, spellOut(heard, spokenKind), () => {
       speakingRef.current = false;
     });
     speakingRef.current = ok;
@@ -180,9 +242,11 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
   };
 
   // ---- Voice note (MediaRecorder) -------------------------------------------------------------------------------
-  const startRecording = async () => {
+  const startRecording = async (fromAmharicFallback = false) => {
     if (!voiceNoteKey) return;
     recognitionRef.current?.abort();
+    recognitionRef.current = null;
+    secondsRef.current = undefined;
     if (speakingRef.current) stopSpeaking();
     setPreviewUrl('');
     blobRef.current = null;
@@ -197,6 +261,7 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
       };
       recorder.onstop = () => {
         clearTimeout(limitRef.current);
+        secondsRef.current = (Date.now() - startedAtRef.current) / 1000;
         stopTracks();
         recorderRef.current = null;
         const blob = new Blob(chunksRef.current, { type: recorder.mimeType || mimeType || 'audio/webm' });
@@ -219,8 +284,11 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
       };
       recorderRef.current = recorder;
       recorder.start();
+      startedAtRef.current = Date.now();
       setPhase('recording');
-      say(t(lang, 'note.recording'));
+      say(t(lang, fromAmharicFallback ? 'voice.amFallback' : 'note.recording'));
+      // The mic button is disabled while recording; keep keyboard focus on the Stop recording button.
+      if (fromAmharicFallback) requestAnimationFrame(() => recordBtnRef.current?.focus());
       limitRef.current = setTimeout(() => {
         if (recorder.state === 'recording') recorder.stop();
       }, MAX_RECORDING_MS);
@@ -241,7 +309,7 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
     if (!voiceNoteKey || !blobRef.current) return;
     let saved = false;
     try {
-      saved = setVoiceNote(voiceNoteKey, await blobToDataUrl(blobRef.current));
+      saved = setVoiceNote(voiceNoteKey, await blobToDataUrl(blobRef.current), secondsRef.current);
     } catch {
       saved = false;
     }
@@ -282,6 +350,7 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
           type="button"
           onClick={listening ? stopListening : start}
           aria-pressed={listening}
+          data-db-action="voice-answer"
           disabled={recording}
           className={ui.btnToggle(listening)}
         >
@@ -311,11 +380,17 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
       {note && phase !== 'review' && <p className="mt-1 text-sm text-stone-800">{note}</p>}
 
       {phase === 'review' && (
-        <div className="mt-3 rounded-md border-2 border-terracotta bg-white p-3">
+        <div className="mt-3 rounded-xl border-2 border-terracotta bg-white p-3 shadow-card">
           <label htmlFor={reviewId} className={ui.label}>
             {t(lang, 'voice.reviewLabel')}
           </label>
-          <input id={reviewId} ref={reviewRef} type="text" value={heard} onChange={(e) => setHeard(e.target.value)} className={ui.input} />
+          <input
+            id={reviewId}
+            ref={reviewRef}
+            type="text"
+            inputMode={spokenKind === 'tel' ? 'tel' : spokenKind === 'email' ? 'email' : undefined}
+            dir={spokenKind === 'text' ? undefined : 'ltr'}
+            value={heard} onChange={(e) => setHeard(e.target.value)} className={ui.input} />
           <div className="mt-3 flex flex-wrap gap-2">
             <button type="button" onClick={useAnswer} disabled={!heard.trim()} className={ui.btnPrimary}>
               <Check aria-hidden="true" focusable="false" className="h-5 w-5 shrink-0" />
@@ -334,11 +409,14 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
             </button>
           </div>
           {reviewNote && <p className="mt-2 text-sm text-stone-800">{reviewNote}</p>}
+          {fidelHelper && (
+            <FidelHelper fieldLabel={t(lang, 'voice.reviewLabel')} value={heard} onChange={setHeard} announce={announce} targetRef={reviewRef} />
+          )}
         </div>
       )}
 
       {phase === 'preview' && previewUrl && (
-        <div className="mt-3 rounded-md border-2 border-terracotta bg-white p-3">
+        <div className="mt-3 rounded-xl border-2 border-terracotta bg-white p-3 shadow-card">
           <p id={previewLabelId} className={ui.label}>
             {t(lang, 'note.previewLabel', { field: fieldLabel })}
           </p>
@@ -361,7 +439,7 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
       )}
 
       {savedNote && phase !== 'preview' && (
-        <div className="mt-3 rounded-md border-2 border-stone-300 bg-white p-3">
+        <div className="mt-3 rounded-xl border border-sand bg-white p-3 shadow-card">
           <p id={savedLabelId} className={ui.label}>
             {t(lang, 'note.savedLabel', { field: fieldLabel })}
           </p>

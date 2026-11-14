@@ -78,3 +78,64 @@ export const blobToDataUrl = (blob: Blob) =>
     reader.onerror = () => reject(reader.error);
     reader.readAsDataURL(blob);
   });
+
+// ---- Visual read-aloud helpers (no installed voice for the language) ----------------------------------------------
+
+/** Split text into short phrases for the on-screen read-aloud (Ethiopic ። ፣ ፤ and Latin punctuation). */
+export function splitPhrases(text: string): string[] {
+  return text
+    .split(/(?<=[.!?።፧፨;፤])\s+|\n+/)
+    .map((phrase) => phrase.trim())
+    .filter(Boolean);
+}
+
+let audioContext: AudioContext | null = null;
+
+/**
+ * A short, quiet two-note chime synthesised with Web Audio. No audio file is needed, so it never 404s and works
+ * offline. Silently does nothing where Web Audio is unavailable.
+ */
+export function playChime(kind: 'start' | 'next' = 'next'): void {
+  try {
+    const Ctor = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!Ctor) return;
+    audioContext ??= new Ctor();
+    const ctx = audioContext;
+    if (ctx.state === 'suspended') void ctx.resume();
+    const notes = kind === 'start' ? [660, 880] : [740];
+    notes.forEach((frequency, index) => {
+      const at = ctx.currentTime + index * 0.14;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = frequency;
+      gain.gain.setValueAtTime(0.0001, at);
+      gain.gain.exponentialRampToValueAtTime(0.08, at + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, at + 0.35);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(at);
+      osc.stop(at + 0.4);
+    });
+  } catch {
+    // Sound is a bonus; the on-screen highlight still works.
+  }
+}
+
+// ---- Microphone hand-off between voice control (commands) and a field's own dictation / voice note ---------------
+let fieldBusy = false;
+const busyListeners = new Set<(busy: boolean) => void>();
+
+/** A field started (true) or finished (false) dictation or a voice-note recording. */
+export function setFieldListening(busy: boolean): void {
+  if (fieldBusy === busy) return;
+  fieldBusy = busy;
+  busyListeners.forEach((listener) => listener(busy));
+}
+
+export const isFieldListening = () => fieldBusy;
+
+/** Voice control pauses while a field is listening, so a spoken answer is never taken as a command. */
+export function onFieldListening(listener: (busy: boolean) => void): () => void {
+  busyListeners.add(listener);
+  return () => busyListeners.delete(listener);
+}

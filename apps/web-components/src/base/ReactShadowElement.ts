@@ -37,13 +37,14 @@ function redactPrivateSupportData(value: unknown, visited = new WeakMap<object, 
 export abstract class ReactShadowElement extends HTMLElement {
   static version = '1.0.0';
   static get observedAttributes(): string[] {
-    return ['api', 'api-url', 'partner-id', 'lang', 'theme', 'mode', 'lti-token', 'session-id'];
+    return ['api', 'api-url', 'partner-id', 'lang', 'theme', 'mode', 'lti-token', 'session-id', 'audio-base-url'];
   }
 
   private reactRoot?: Root;
   private mountPoint?: HTMLDivElement;
 
   connectedCallback(): void {
+    loadDocumentFonts();
     if (!this.shadowRoot) {
       const shadow = this.attachShadow({ mode: 'open' });
       const style = document.createElement('style');
@@ -91,57 +92,29 @@ export abstract class ReactShadowElement extends HTMLElement {
     return this.getAttribute('partner-id') || 'alx-demo';
   }
 
+  /** Base URL that holds audio/am/manifest.json with recorded Amharic prompts (optional). */
+  protected get audioBaseUrl(): string | undefined {
+    return this.getAttribute('audio-base-url') || undefined;
+  }
+
   protected get theme(): 'terracotta' | 'high-contrast' {
     return this.getAttribute('theme') === 'high-contrast' ? 'high-contrast' : 'terracotta';
   }
 
   protected dispatchHostEvent(name: string, detail: unknown, profile?: OnboardingProfile): void {
+    // Guide v2 events are created once, by WizardShell (SIGNUP_EVENTS). Here they only get a privacy guard:
+    // 'db-signup:support' never leaves the widget unless the learner chose to share support with their provider,
+    // and 'db-signup:done' never carries support data.
+    if (name === 'db-signup:support' && profile?.support?.tellLearningProvider !== true) return;
+    if (name === 'db-signup:done') {
+      this.dispatchEvent(new CustomEvent(name, { detail: redactPrivateSupportData(detail), bubbles: true, composed: true }));
+      return;
+    }
     const safeDetail =
       hasSupportSharingConsent(detail) || profile?.support?.tellLearningProvider === true
         ? detail
         : redactPrivateSupportData(detail);
     this.dispatchEvent(new CustomEvent(name, { detail: safeDetail, bubbles: true, composed: true }));
-
-    if (!this.supportsSignupEventAliases) return;
-
-    if (name === DB_EVENTS.completed) {
-      const sourceProfile = profile ?? (isRecord(detail) && isOnboardingProfile(detail.profile) ? detail.profile : undefined);
-      if (sourceProfile) {
-        const safeProfile = Object.fromEntries(
-          Object.entries(sourceProfile).filter(([key]) => key !== 'support' && key !== 'voiceNotes'),
-        );
-        this.dispatchEvent(
-          new CustomEvent('db-signup:done', {
-            detail: {
-              profile: safeProfile,
-              voiceNotes: isRecord(detail) && Array.isArray(detail.voiceNotes) ? detail.voiceNotes : [],
-            },
-            bubbles: true,
-            composed: true,
-          }),
-        );
-      }
-    }
-
-    if (name === DB_EVENTS.supportRequested) {
-      const support = isRecord(detail) && 'support' in detail ? detail.support : undefined;
-      this.dispatchEvent(
-        new CustomEvent('db-signup:support', {
-          detail: {
-            support:
-              profile?.support?.tellLearningProvider === true
-                ? support ?? profile.support
-                : '[redacted]',
-          },
-          bubbles: true,
-          composed: true,
-        }),
-      );
-    }
-  }
-
-  protected get supportsSignupEventAliases(): boolean {
-    return false;
   }
 
   protected render(node: ReactNode): void {
@@ -152,16 +125,16 @@ export abstract class ReactShadowElement extends HTMLElement {
   protected abstract prepareRuntime(): Promise<void>;
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null;
-}
+let fontsRequested = false;
 
-function isOnboardingProfile(value: unknown): value is OnboardingProfile {
-  return (
-    isRecord(value) &&
-    typeof value.id === 'string' &&
-    typeof value.partnerId === 'string' &&
-    typeof value.lang === 'string' &&
-    isRecord(value.progress)
-  );
+/** Fonts are document-scoped, so load them once into document.head (CLAUDE.md §2.7), with system fallbacks. */
+function loadDocumentFonts(): void {
+  if (fontsRequested || typeof document === 'undefined') return;
+  fontsRequested = true;
+  if (document.querySelector('link[data-db-fonts]')) return;
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = 'https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;600;700&display=swap';
+  link.dataset.dbFonts = '';
+  document.head.append(link);
 }

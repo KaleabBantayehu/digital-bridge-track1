@@ -41,9 +41,44 @@
     }
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', setupHostAccessibility, { once: true });
-  } else {
+  /**
+   * Top-bar language switch (signup, profile, jobs): sets lang on every Digital Bridge widget on the page.
+   * ?lang=am in the URL, or the learner's last choice on this device, is applied on load.
+   */
+  function setupWidgetLanguage() {
+    const buttons = document.querySelectorAll('[data-db-lang]');
+    if (!buttons.length) return;
+    const widgets = () =>
+      document.querySelectorAll('db-signup, db-onboarding-wizard, db-career-gateway, db-employer-accommodations');
+    const apply = (lang) => {
+      widgets().forEach((widget) => widget.setAttribute('lang', lang));
+      buttons.forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.dbLang === lang)));
+      try {
+        localStorage.setItem('db-host-lang', lang);
+      } catch (error) {
+        // Storage blocked: the choice still applies to this page.
+      }
+    };
+    buttons.forEach((button) => button.addEventListener('click', () => apply(button.dataset.dbLang)));
+    let initial = new URLSearchParams(location.search).get('lang');
+    if (initial !== 'en' && initial !== 'am') {
+      try {
+        initial = localStorage.getItem('db-host-lang');
+      } catch (error) {
+        initial = null;
+      }
+    }
+    if (initial === 'en' || initial === 'am') apply(initial);
+  }
+
+  function setupAll() {
     setupHostAccessibility();
+    setupWidgetLanguage();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupAll, { once: true });
+  } else {
+    setupAll();
   }
 })();

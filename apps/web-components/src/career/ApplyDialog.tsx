@@ -75,14 +75,16 @@ export const ApplyDialog: React.FC<ApplyDialogProps> = ({ lang, job, profile, se
     event.preventDefault();
     if (!job) return;
     const found: Partial<Record<Field, ErrorCode>> = {};
-    if (!values.givenName.trim()) found.givenName = 'REQUIRED';
-    if (!values.familyName.trim()) found.familyName = 'REQUIRED';
+    // A voice note kept for a name during onboarding (same key) answers it here too: no redundant entry (3.3.7).
+    const notes = getVoiceNotes();
+    if (!values.givenName.trim() && !hasVoiceNote(notes, 'givenName')) found.givenName = 'REQUIRED';
+    if (!values.familyName.trim() && !hasVoiceNote(notes, 'familyName')) found.familyName = 'REQUIRED';
     if (!values.phone.trim()) found.phone = 'REQUIRED';
     else if (!normaliseEtPhone(values.phone)) found.phone = 'INVALID_ET_PHONE';
     if (values.email.trim() && !EMAIL_RE.test(values.email.trim())) found.email = 'INVALID_EMAIL';
     // A kept voice note counts as an answer (Guide v2 §5: works where speech-to-text does not).
     const noteKey = coverNoteKey(job.id);
-    const voiceNote = hasVoiceNote(getVoiceNotes(), noteKey);
+    const voiceNote = hasVoiceNote(notes, noteKey);
     if (!values.coverNote.trim() && !voiceNote) found.coverNote = 'REQUIRED';
     if (Object.keys(found).length) {
       setErrors(found);
@@ -146,9 +148,9 @@ export const ApplyDialog: React.FC<ApplyDialogProps> = ({ lang, job, profile, se
           <TextField id={`${idBase}-familyName`} lang={lang} label={t(lang, 'field.familyName')} value={values.familyName} onChange={set('familyName')}
             error={errorFor('familyName')} autoComplete="family-name" spellCheck={false} required announce={announce} />
           <TextField id={`${idBase}-phone`} lang={lang} label={t(lang, 'field.phone')} hint={t(lang, 'field.phone.hint')} value={values.phone}
-            onChange={set('phone')} error={errorFor('phone')} type="tel" inputMode="tel" autoComplete="tel" required announce={announce} />
+            onChange={set('phone')} error={errorFor('phone')} type="tel" inputMode="tel" autoComplete="tel" required announce={announce} voiceNote={false} />
           <TextField id={`${idBase}-email`} lang={lang} label={t(lang, 'field.email')} value={values.email} onChange={set('email')}
-            error={errorFor('email')} type="email" inputMode="email" autoComplete="email" spellCheck={false} optional voice={false} />
+            error={errorFor('email')} type="email" inputMode="email" autoComplete="email" spellCheck={false} optional voiceNote={false} />
           <TextField id={`${idBase}-coverNote`} lang={lang} label={t(lang, 'field.coverNote')} hint={t(lang, 'field.coverNote.hint')}
             value={values.coverNote} onChange={set('coverNote')} error={errorFor('coverNote')} multiline required announce={announce}
             onVoiceUsed={() => setInputMode('voice')} voiceNoteKey={coverNoteKey(job.id)} />

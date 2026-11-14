@@ -58,6 +58,16 @@ function toValue(parts: Parts, calendar: CalendarKind): DateOfBirth | undefined 
 export function formatDob(value: DateOfBirth, lang: Lang, calendar: CalendarKind = value.displayCalendar): string {
   const [y, m, d] = value.iso.split('-').map(Number);
   if (calendar === 'ethiopian') {
+    if (lang === 'am') {
+      // Guide v2 §9: the platform's own Ethiopic calendar formatter, e.g. "1 መስከረም 2000".
+      try {
+        return new Intl.DateTimeFormat('am-ET-u-ca-ethiopic', { day: 'numeric', month: 'long', year: 'numeric' }).format(
+          new Date(Date.UTC(y, m - 1, d, 12)),
+        );
+      } catch {
+        // No ICU Ethiopic data (rare): fall through to our own month names.
+      }
+    }
     const eth = value.ethiopian ?? gregorianToEthiopian(y, m, d);
     return `${ETHIOPIAN_MONTHS[eth.month - 1][lang]} ${eth.day}, ${eth.year}`;
   }

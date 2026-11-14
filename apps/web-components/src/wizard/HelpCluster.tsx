@@ -1,4 +1,4 @@
-import React, { useId, useRef } from 'react';
+import React, { useId, useRef, useState } from 'react';
 import { BookOpen, HelpCircle, Languages, ShieldCheck, X } from 'lucide-react';
 import { I18N, type Lang } from '@db/shared-schemas';
 import { otherLang, t } from '../i18n';
@@ -29,31 +29,43 @@ export const HelpCluster: React.FC<HelpClusterProps> = ({
   const openerRef = useRef<HTMLButtonElement>(null);
   const dialogTitleId = cleanId(useId());
   const target = otherLang(lang);
+  // The on-screen read-aloud panel renders here, after every help button (stable focus order, 3.2.6).
+  const [panelSlot, setPanelSlot] = useState<HTMLDivElement | null>(null);
 
   const openHelp = () => dialogRef.current?.showModal();
   const closeHelp = () => dialogRef.current?.close();
 
   return (
-    <div role="group" aria-label={t(lang, 'help.groupLabel')} className="mb-6 flex flex-wrap gap-2">
-      <ReadAloudButton lang={lang} text={readText} promptKey={promptKey} announce={announce} audioBaseUrl={audioBaseUrl} />
+    <div className="mb-6">
+    <div role="group" aria-label={t(lang, 'help.groupLabel')} className="flex flex-wrap gap-2 rounded-2xl border border-sand bg-white/70 p-2">
+      <ReadAloudButton
+        lang={lang}
+        text={readText}
+        promptKey={promptKey}
+        announce={announce}
+        audioBaseUrl={audioBaseUrl}
+        pill
+        panelSlot={panelSlot}
+        actionId="read"
+      />
 
-      <button type="button" onClick={() => onSwitchLang(target)} className={ui.btnSecondary}>
+      <button type="button" onClick={() => onSwitchLang(target)} className={ui.btnPill} data-db-action="lang">
         <Languages aria-hidden="true" focusable="false" className="h-5 w-5 shrink-0" />
         <span className="sr-only">{t(lang, 'lang.switchTo')}: </span>
         <span lang={target}>{I18N[target]['lang.selfName']}</span>
       </button>
 
-      <button type="button" onClick={onToggleSimple} aria-pressed={simple} className={ui.btnToggle(simple)}>
+      <button type="button" onClick={onToggleSimple} aria-pressed={simple} className={ui.btnPillToggle(simple)}>
         <BookOpen aria-hidden="true" focusable="false" className="h-5 w-5 shrink-0" />
         {t(lang, 'help.simpleWords')}
       </button>
 
-      <button type="button" ref={openerRef} onClick={openHelp} aria-haspopup="dialog" className={ui.btnSecondary}>
+      <button type="button" ref={openerRef} onClick={openHelp} aria-haspopup="dialog" className={ui.btnPill}>
         <HelpCircle aria-hidden="true" focusable="false" className="h-5 w-5 shrink-0" />
         {t(lang, 'help.needHelp')}
       </button>
 
-      <button type="button" onClick={onOpenPrivacy} aria-haspopup="dialog" className={ui.btnSecondary}>
+      <button type="button" onClick={onOpenPrivacy} aria-haspopup="dialog" className={ui.btnPill}>
         <ShieldCheck aria-hidden="true" focusable="false" className="h-5 w-5 shrink-0" />
         {t(lang, 'help.privacy')}
       </button>
@@ -82,6 +94,8 @@ export const HelpCluster: React.FC<HelpClusterProps> = ({
           </button>
         </div>
       </dialog>
+    </div>
+    <div ref={setPanelSlot} />
     </div>
   );
 };

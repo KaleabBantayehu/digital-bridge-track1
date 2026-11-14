@@ -1,5 +1,4 @@
 import React from 'react';
-import { DB_EVENTS } from '@db/shared-schemas';
 import { ApiBackedElement } from './ApiBackedElement';
 import { setPersistenceScope, useOnboardingStore } from '../state/store';
 import { startSyncQueue } from '../state/syncQueue';
@@ -11,26 +10,8 @@ export class DbOnboardingWizardElement extends ApiBackedElement {
   private editModeReady = false;
   private editModeInitialized = false;
   private editModeProgress?: { currentStep: number; completedAt?: string };
-  private unsubscribeStore?: () => void;
-
-  protected get supportsSignupEventAliases(): boolean {
-    return true;
-  }
-
-  connectedCallback(): void {
-    super.connectedCallback();
-    let currentStep = useOnboardingStore.getState().profile.progress.currentStep;
-    this.unsubscribeStore = useOnboardingStore.subscribe((state) => {
-      const nextStep = state.profile.progress.currentStep;
-      if (nextStep === currentStep) return;
-      currentStep = nextStep;
-      this.dispatchHostEvent('db-signup:step', { step: nextStep + 1, of: 7 });
-    });
-  }
 
   disconnectedCallback(): void {
-    this.unsubscribeStore?.();
-    this.unsubscribeStore = undefined;
     this.restoreEditModeProgress();
     super.disconnectedCallback();
   }
@@ -40,7 +21,8 @@ export class DbOnboardingWizardElement extends ApiBackedElement {
     const store = useOnboardingStore.getState();
     if (store.profile.lang !== this.currentLang) store.setLang(this.currentLang);
     const requestedMode = this.getAttribute('mode');
-    const mode = requestedMode === 'lti' || requestedMode === 'partner-assisted' ? requestedMode : 'standalone';
+    const mode =
+      requestedMode === 'lti' || requestedMode === 'partner-assisted' || requestedMode === 'edit' ? requestedMode : 'standalone';
     this.render(
       <WizardShell
         key={`${requestedMode === 'edit' ? 'edit' : 'onboarding'}-${this.editModeReady}`}
@@ -51,13 +33,10 @@ export class DbOnboardingWizardElement extends ApiBackedElement {
         mode={mode}
         ltiToken={this.getAttribute('lti-token') ?? undefined}
         sessionId={this.getAttribute('session-id') ?? undefined}
-        onDispatch={(name, detail) => {
-          const profile = useOnboardingStore.getState().profile;
-          this.dispatchHostEvent(name, detail, profile);
-          if (name === DB_EVENTS.stepSaved && typeof detail === 'object' && detail !== null && 'stepId' in detail && detail.stepId === 'support') {
-            this.dispatchHostEvent('db-signup:support', { support: profile.support }, profile);
-          }
-        }}
+        audioBaseUrl={this.audioBaseUrl}
+        // WizardShell emits each event once: DB_EVENTS plus the Guide v2 'db-signup:step' {step, of},
+        // 'db-signup:done' and consent-gated 'db-signup:support'. This element only adds the privacy guard.
+        onDispatch={(name, detail) => this.dispatchHostEvent(name, detail, useOnboardingStore.getState().profile)}
         services={this.services}
       />,
     );
@@ -72,9 +51,8 @@ export class DbOnboardingWizardElement extends ApiBackedElement {
     useOnboardingStore.getState().setLang(this.currentLang);
     if (this.getAttribute('mode') === 'edit' && !this.editModeInitialized) {
       const profile = useOnboardingStore.getState().profile;
-      const currentStep = profile.progress.completedAt
-        ? 1
-        : Math.min(Math.max(profile.progress.currentStep, 1), 5);
+      // mode="edit" opens on the profile summary ("Edit my profile"), where every answer is one "Edit" away.
+      const currentStep = profile.progress.totalSteps - 1;
       this.editModeProgress = {
         currentStep: profile.progress.currentStep,
         completedAt: profile.progress.completedAt,

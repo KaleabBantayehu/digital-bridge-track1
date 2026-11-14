@@ -75,7 +75,21 @@ pnpm gate
 
 ## Partner integration
 
-Load the versioned bundle and add the custom elements to any HTML page:
+The shortest install is one script and one tag (Technical Guide §3–§4):
+
+```html
+<script type="module" src="https://your-module.example/db-signup.js"></script>
+<db-signup lang="am" api="https://your-module.example/api/v1"></db-signup>
+<script>
+  document.addEventListener('db-signup:done', (e) => console.log(e.detail));
+</script>
+```
+
+`<db-signup>` is an alias of `<db-onboarding-wizard>`, and `api` is an alias of `api-url`. The same file is
+published as `db-signup.js`, `module/db-signup.js`, `assets/js/db-signup.js` and the versioned
+`db-widgets.v1.0.0.js`.
+
+The longer form with every widget:
 
 ```html
 <script type="module"
@@ -101,15 +115,80 @@ If `api-url` is missing or unreachable, the client automatically uses the
 deterministic offline `MockApiService`. Draft data remains on the device and is
 synced when connectivity returns.
 
-Supported settings include `api-url`, `partner-id`, `lang` (`en` or `am`),
-`theme` (`terracotta` or `high-contrast`), and `mode` (`standalone`, `lti`, or
-`partner-assisted`).
+Supported settings include `api-url` (or `api`), `partner-id`, `lang` (`en` or `am`),
+`theme` (`terracotta` or `high-contrast`), `mode` (`standalone`, `edit`, `lti`, or
+`partner-assisted`), and `audio-base-url` (folder that holds `audio/am/manifest.json` for read-aloud
+fallback clips; `pages/*.html` use `../assets`).
 
 The widgets emit the shared CustomEvents
 `db:onboarding-step-saved`, `db:onboarding-completed`,
 `db:support-requested`, `db:job-filter-changed`, `db:job-applied`, and
-`db:error`. Events bubble across the Shadow DOM boundary and never include
+`db:error`, plus the Technical Guide v2 contract:
+
+| Event | `detail` |
+| --- | --- |
+| `db-signup:step` | `{ step, of }` (1-based, once per step change) |
+| `db-signup:done` | `{ profile: { name, phone, language, idRoute }, voiceNotes }`, never support choices |
+| `db-signup:support` | `{ support: [...] }`, sent separately and only when the learner chose to share |
+
+Events bubble across the Shadow DOM boundary (`composed: true`) and never include
 private support or accommodation data without explicit consent.
+
+### Where to see it
+
+| Page (after `pnpm -F @db/web-components build`, serve `apps/web-components/dist`) | What it proves |
+| --- | --- |
+| `pages/signup.html` | `<db-signup>` inside Savanna; listens for `db-signup:done` and links to the learner homepage |
+| `pages/profile.html` | `<db-signup mode="edit">`: review and edit answers, export or delete data |
+| `pages/jobs.html` | Career Gateway + employer accommodations form + schema.org `JobPosting` JSON-LD |
+| `pages/homepage-v1-self-paced.html`, `homepage-v1-paced.html`, `concept-with-navigation.html` | Savanna pages patched only through `assets/css/host-a11y-fixes.css` and `assets/js/host-a11y-fixes.js` |
+| `demo/blank.html` | Outside Savanna: no Bootstrap, no Savanna CSS, same widgets |
+
+Add `?lang=am` to signup, profile or jobs, or use the English / አማርኛ switch in the top bar.
+
+## Voice, Amharic and low-literacy support
+
+- **Answer by voice** on every text field (browser Web Speech API, `am-ET` or `en-US`). The transcript always
+  lands in an editable review box with **Read back my answer** and **Use this answer**; nothing is auto-submitted.
+- **Spoken numbers and symbols:** "ዜሮ ዘጠኝ አንድ አንድ …" or "zero nine one one …" becomes `0911…`; Ethiopic
+  numerals (፩–፱) are accepted; "abebe at gmail dot com" / "… አት … ዶት com" becomes an e-mail address.
+- **Voice notes:** "Record a voice note instead" (MediaRecorder) on free-text fields. When Amharic speech-to-text
+  is missing or fails (no text after 5 s, or `language-not-supported`, `network`, `not-allowed`, …), the
+  widget switches to recording a voice note by itself and explains why. A kept note answers the field.
+- **Voice control** (hands-free, for learners who cannot see the screen or cannot type or point): turn it on with
+  the first button in the widget or **Alt + V**, then say *next / back / repeat / down / up / choose / answer /
+  help / stop* (or ቀጥል / ተመለስ / ድገም / ታች / ላይ / ምረጥ / መልስ / እርዳታ / አቁም). Each command gets a soft cue,
+  a visible confirmation and a screen-reader announcement. If the device has no Amharic recognition it says so and
+  listens for the English words.
+- **Read aloud** uses an installed voice when there is one. Otherwise it plays a bundled cue and always shows a
+  caption box with the current phrase highlighted, so it also works with the sound off.
+- **Fidel helper** (Amharic UI): type sounds with English letters (`abebe` → አበበ, `addis ababa` → አዲስ አበባ)
+  and fix the last letter's vowel with one tap.
+- **Simple words** switch, icons with each choice, Ethiopian calendar (13 months, Intl Ethiopic formatting in
+  Amharic), Ethiopian phone formats (`09…`, `07…`, `+251…`).
+
+## Verified on 14 November 2026
+
+| Check | Command | Result |
+| --- | --- | --- |
+| Type check | `pnpm typecheck` | web-components and API clean |
+| Unit tests | `pnpm -F @db/web-components test` | 27 / 27 |
+| Judge audit of built pages (axe en + am, overlap, reflow, voice fallback, voice control, captions, 404s) | `node scripts/judge-audit.mjs` | 103 / 103, 0 axe violations of any impact |
+| Dev 1 audit | `node scripts/test-dev1.mjs` | 13 / 13 |
+| API judge checks | `scripts/test-api.ps1` (API running) | 13 / 13 |
+| Bundle | Vite build | 597 KB raw, **148.5 KB gzipped** (budget 250 KB) |
+| Slow 3G (400 ms, 400 kbit/s, gzipped) | CDP emulation | widget usable in 4.2 s on `demo/blank.html`, 8.5 s inside Savanna (its own 1.3 MB CSS) |
+
+Details and the criterion-by-criterion table: [CONFORMANCE.md](./CONFORMANCE.md) and
+[WCAG_2_2_AA_CONFORMANCE_REPORT.md](./WCAG_2_2_AA_CONFORMANCE_REPORT.md).
+
+### Known limitations
+
+- NVDA, TalkBack, real microphones and real Amharic voices have not been tested with a co-designer yet.
+- The bundled read-aloud files are tone cues, not recorded Amharic speech (regenerate with
+  `node scripts/generate-audio-cues.mjs`; replace with native-speaker recordings through the manifest).
+- Chrome's speech recognition sends audio to Google's speech service; voice notes stay on the device.
+- The Amharic wording needs a native-speaker review.
 
 ## REST API
 

@@ -49,11 +49,11 @@ export function validateStep(step: number, p: OnboardingProfile, partner: Partne
         errors.route = 'REQUIRED';
         break;
       }
-      if ((id.route === 'national_id_or_passport' || id.route === 'refugee_id') && !id.referenceNumber?.trim()) errors.referenceNumber = 'REQUIRED';
+      if ((id.route === 'national_id_or_passport' || id.route === 'refugee_id') && !id.referenceNumber?.trim() && !hasVoiceNote(voiceNotes, 'referenceNumber')) errors.referenceNumber = 'REQUIRED';
       if (id.route === 'community_document' && !id.documentKind) errors.documentKind = 'REQUIRED';
       if (id.route === 'partner_voucher') {
         if (!partner.partnerId) errors.partnerId = 'REQUIRED';
-        if (!partner.agentId.trim()) errors.agentId = 'REQUIRED';
+        if (!partner.agentId.trim() && !hasVoiceNote(voiceNotes, 'agentId')) errors.agentId = 'REQUIRED';
         if (!partner.consent) errors.partnerConsent = 'CONSENT_REQUIRED';
       }
       break;

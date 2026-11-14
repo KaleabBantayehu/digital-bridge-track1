@@ -45,12 +45,59 @@ function write(notes: VoiceNotes): boolean {
   return true;
 }
 
+// Recording length per note, kept beside (not inside) the notes map so the map stays field -> data URL.
+const metaKey = () => `${storageKey()}Meta`;
+
+function readSeconds(): Record<string, number> {
+  try {
+    const raw = localStorage.getItem(metaKey());
+    const parsed: unknown = raw ? JSON.parse(raw) : null;
+    return parsed && typeof parsed === 'object' ? (parsed as Record<string, number>) : {};
+  } catch {
+    return {};
+  }
+}
+
+function writeSeconds(meta: Record<string, number>): void {
+  try {
+    if (Object.keys(meta).length) localStorage.setItem(metaKey(), JSON.stringify(meta));
+    else localStorage.removeItem(metaKey());
+  } catch {
+    // Length is a nice-to-have label; the note itself is already saved.
+  }
+}
+
+/** Whole seconds of a kept note, if we measured it while recording. */
+export const getVoiceNoteSeconds = (field: string): number | undefined => readSeconds()[field];
+
 /** Returns false when the note could not be saved (e.g. storage full). */
-export const setVoiceNote = (field: string, dataUrl: string): boolean => write({ ...getVoiceNotes(), [field]: dataUrl });
+export function setVoiceNote(field: string, dataUrl: string, seconds?: number): boolean {
+  const ok = write({ ...getVoiceNotes(), [field]: dataUrl });
+  if (ok && seconds !== undefined) writeSeconds({ ...readSeconds(), [field]: Math.max(1, Math.round(seconds)) });
+  return ok;
+}
 
 export function removeVoiceNote(field: string): void {
   const { [field]: _removed, ...rest } = getVoiceNotes();
+  const { [field]: _seconds, ...restSeconds } = readSeconds();
+  writeSeconds(restSeconds);
   write(rest);
+}
+
+/** "Delete my data": remove every kept note and its metadata from this device. */
+export function clearVoiceNotes(): void {
+  writeSeconds({});
+  write({});
+}
+
+/** Keys that belong to other flows (job applications, employer forms), not to the onboarding profile. */
+const NON_PROFILE_PREFIXES = ['coverNote:', 'employer:'];
+
+/** Voice notes that answer onboarding questions (what `db-signup:done` carries). */
+export function profileVoiceNotes(): VoiceNotes {
+  return Object.fromEntries(
+    Object.entries(getVoiceNotes()).filter(([key]) => !NON_PROFILE_PREFIXES.some((prefix) => key.startsWith(prefix))),
+  );
 }
 
 /** Drop the in-memory copy (after "Delete my data" cleared storage). */

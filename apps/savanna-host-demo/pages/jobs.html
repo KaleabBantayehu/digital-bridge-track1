@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../assets/css/app.css" media="all" />
     <link rel="stylesheet" href="../assets/css/static-page.css" media="all" />
     <link rel="stylesheet" href="../assets/css/host-a11y-fixes.css" media="all" />
+    <link rel="icon" type="image/png" href="../assets/img/alx-navy.png" />
     <script type="application/ld+json">
       [
         {
@@ -37,28 +38,35 @@
       ]
     </script>
   </head>
-  <body class="signed_in env_development notranslate" translate="no" data-theme-suffix="_alx">
+  <body class="signed_in env_development notranslate db-host-body" translate="no" data-theme-suffix="_alx">
     <a class="skip-link" href="#main-content">Skip to main content</a>
-    <header class="header d-flex align-items-center position-fixed top-0 w-100" role="banner">
-      <a class="logo-container p-1" href="../index.html" aria-label="ALX Savanna Home">
-        <img src="../assets/img/holberton-logo-full-alx.png" alt="" />
+    <header class="db-savanna-topbar">
+      <a class="logo-container db-topbar-logo" href="homepage-v1-self-paced.html">
+        <img src="../assets/img/holberton-logo-full-alx.png" alt="ALX Savanna home" />
       </a>
-      <nav aria-label="Learner navigation">
-        <ul class="d-flex gap-3 list-unstyled mb-0">
-          <li><a href="homepage-v1-self-paced.html">Home</a></li>
-          <li><a href="profile.html">My Profile</a></li>
-          <li><a href="jobs.html" aria-current="page">Jobs</a></li>
+      <nav class="db-topbar-nav" aria-label="Learner navigation">
+        <ul>
+          <li><a href="homepage-v1-self-paced.html">Dashboard</a></li>
+          <li><a href="signup.html">Sign up</a></li>
+          <li><a href="profile.html">My Profile (edit)</a></li>
+          <li><a href="jobs.html" aria-current="page">Career Gateway (jobs)</a></li>
+          <li><a href="../demo/blank.html">Blank host demo</a></li>
         </ul>
       </nav>
+      <div class="db-topbar-lang" role="group" aria-label="Widget language">
+        <button type="button" data-db-lang="en" aria-pressed="true">English</button>
+        <button type="button" data-db-lang="am" aria-pressed="false"><span lang="am">አማርኛ</span></button>
+      </div>
     </header>
-    <main class="content container-lg" id="main-content">
-      <h1 class="h2">Career Gateway</h1>
+    <main class="db-host-main" id="main-content">
+      <h1 class="h2 mb-3">Career Gateway</h1>
       <db-career-gateway lang="en" partner-id="alx-savanna"></db-career-gateway>
-      <section aria-labelledby="employer-accommodations-title">
-        <h2 id="employer-accommodations-title">Employer accommodations</h2>
-        <db-employer-accommodations lang="en"></db-employer-accommodations>
+      <section aria-labelledby="employer-accommodations-title" class="mt-5">
+        <h2 id="employer-accommodations-title" class="h3 mb-3">Employer accommodations</h2>
+        <db-employer-accommodations lang="en" partner-id="alx-savanna"></db-employer-accommodations>
       </section>
     </main>
+    <script src="../assets/js/host-a11y-fixes.js"></script>
     <script type="module" src="../assets/js/db-widgets.v1.0.0.js"></script>
   </body>
 </html>

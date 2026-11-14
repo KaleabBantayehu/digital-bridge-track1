@@ -3,20 +3,28 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Host tokens. When the host page is Bootstrap/Savanna we follow its body font, text colour and primary colour;
+ * on a blank page we fall back to the Digital Bridge palette (parchment #FAF7F2, ink #1C1917, terracotta #9E3B24).
+ */
 :host {
   display: block;
   font-size: 16px;
-  --db-bg: #FAF6F0;
+  --db-surface: #FAF7F2;
+  --db-border: #D6CFC2;
   --db-fg: var(--bs-body-color, #1c1917);
   --db-primary: var(--bs-primary, #7a2b18);
   --db-focus-ring: #7A2B18;
+  --db-font: var(--bs-body-font-family, system-ui, 'Noto Sans Ethiopic', sans-serif);
   color: var(--db-fg);
-  background-color: var(--db-bg);
-  font-family: var(--bs-body-font-family, system-ui, 'Noto Sans Ethiopic', sans-serif);
+  background-color: transparent;
+  font-family: var(--db-font);
+  line-height: 1.5;
 }
 
 :host([theme='high-contrast']) {
-  --db-bg: #fff;
+  --db-surface: #fff;
+  --db-border: #000;
   --db-fg: #000;
   --db-primary: #000;
   --db-focus-ring: #000;
@@ -36,7 +44,7 @@
 }
 
 :host .bg-parchment {
-  background-color: var(--db-bg) !important;
+  background-color: var(--db-surface) !important;
 }
 
 :host .text-ink {
@@ -54,12 +62,46 @@
   scroll-margin-bottom: 6rem;
 }
 
+/* 44px targets. Checkboxes and radios keep their 24px box; their whole label row is the 44px target. */
 :host button,
 :host a,
-:host input,
 :host select,
-:host textarea {
+:host textarea,
+:host input:not([type='checkbox']):not([type='radio']) {
   min-height: 44px;
+}
+
+/* Native <progress>, styled inside the shadow root (track: sand, value: terracotta). */
+:host progress {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 0;
+  border-radius: 9999px;
+  background-color: #EFE9DF;
+  overflow: hidden;
+}
+
+:host progress::-webkit-progress-bar {
+  background-color: #EFE9DF;
+  border-radius: 9999px;
+}
+
+:host progress::-webkit-progress-value {
+  background-color: var(--db-primary);
+  border-radius: 9999px;
+}
+
+:host progress::-moz-progress-bar {
+  background-color: var(--db-primary);
+  border-radius: 9999px;
+}
+
+/* Read-aloud highlight: the phrase being "read" on screen. */
+:host mark.db-phrase-current {
+  background-color: #FCE9A8;
+  color: #1c1917;
+  border-radius: 0.25rem;
+  box-shadow: 0 0 0 2px #7a2b18;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -70,5 +112,11 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+@media (forced-colors: active) {
+  :host progress::-webkit-progress-value {
+    background-color: Highlight;
   }
 }

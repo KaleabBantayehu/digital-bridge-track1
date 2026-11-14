@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import {
-  ArrowLeft, ArrowRight, CalendarDays, CheckCircle2, ClipboardCheck, Contact, HeartHandshake, Phone, ShieldCheck, User, Users,
+  ArrowLeft, ArrowRight, CalendarDays, CheckCircle2, ClipboardCheck, Contact, HeartHandshake, Phone, ShieldCheck, User, Users, WifiOff,
 } from 'lucide-react';
 import {
   DB_EVENTS, SIGNUP_EVENTS, type Lang, type OnboardingProfile, type SignupDoneDetail, type SignupStepDetail, type SignupSupportDetail,
@@ -18,8 +18,9 @@ import { localServices, type Dev2Services } from './services';
 import { FIELD_LABELS, fieldId, type FieldErrors, type StepDefinition, type StepProps } from './types';
 import { normaliseStep, partnerDraftFrom, validateStep, type PartnerDraft } from './validation';
 import { cleanId, cx, ui } from './ui';
+import { VoiceControl } from './VoiceControl';
 import { ETHIOPIC_CSS, scriptClass } from '../i18n/script';
-import { getVoiceNotes, resetVoiceNotes } from '../voice/voiceNotes';
+import { clearVoiceNotes, getVoiceNotes, profileVoiceNotes } from '../voice/voiceNotes';
 import { WelcomeConsentStep } from './steps/WelcomeConsentStep';
 import { NameStep } from './steps/NameStep';
 import { ContactStep } from './steps/ContactStep';
@@ -89,6 +90,9 @@ export const WizardShell: React.FC<WizardShellProps> = ({
   const [summaryKey, setSummaryKey] = useState(0);
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const editMode = mode === 'edit';
+  // Offline (no network, or the API fell back to the on-device mock): say so in words, persistently.
+  const storeOffline = useOnboardingStore((s) => s.isOffline);
+  const [networkOffline, setNetworkOffline] = useState(() => typeof navigator !== 'undefined' && navigator.onLine === false);
   const [finished, setFinished] = useState(!editMode && !!profile.progress.completedAt);
   const [partnerDraft, setPartnerDraft] = useState<PartnerDraft>(() => partnerDraftFrom(profile));
 
@@ -124,6 +128,24 @@ export const WizardShell: React.FC<WizardShellProps> = ({
       setFinished(false);
     }
   }, [editMode, setStoreStep]);
+
+  useEffect(() => {
+    const goOffline = () => {
+      setNetworkOffline(true);
+      announce(translate(useOnboardingStore.getState().profile.lang, 'status.offlineSaved'));
+    };
+    const goOnline = () => {
+      setNetworkOffline(false);
+      announce(translate(useOnboardingStore.getState().profile.lang, 'status.backOnline'));
+    };
+    window.addEventListener('offline', goOffline);
+    window.addEventListener('online', goOnline);
+    return () => {
+      window.removeEventListener('offline', goOffline);
+      window.removeEventListener('online', goOnline);
+    };
+  }, [announce]);
+  const offline = networkOffline || storeOffline;
 
   /** Becomes true after the first navigation, so remounted headings take focus but page load never does. */
   const interacted = useRef(false);
@@ -211,7 +233,7 @@ export const WizardShell: React.FC<WizardShellProps> = ({
         language: lang,
         idRoute: profile.identity?.route,
       },
-      voiceNotes: getVoiceNotes(),
+      voiceNotes: profileVoiceNotes(),
     };
     dispatch(SIGNUP_EVENTS.done, done);
     // Separate on purpose, and only when the learner chose to share specific needs.
@@ -227,6 +249,7 @@ export const WizardShell: React.FC<WizardShellProps> = ({
 
   const onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
+    interacted.current = true;
     if (step === TOTAL_STEPS - 1) {
       finish();
       return;
@@ -246,7 +269,7 @@ export const WizardShell: React.FC<WizardShellProps> = ({
 
   const deleteAll = async () => {
     await services.deleteAllData(profile.id);
-    resetVoiceNotes();
+    clearVoiceNotes();
     updateProfile(blankProfileFields(profile));
     setPartnerDraft({ partnerId: '', agentId: '', consent: false });
     setErrors({});
@@ -283,15 +306,18 @@ export const WizardShell: React.FC<WizardShellProps> = ({
       aria-label={t('app.name')}
       data-theme={theme}
       className={cx(
-        'w-full max-w-[48rem] mx-auto p-4 sm:p-6 rounded-lg border-2 font-sans text-base leading-relaxed break-words',
+        'w-full max-w-[48rem] mx-auto p-4 sm:p-8 rounded-2xl font-sans text-base leading-relaxed break-words',
         scriptClass(lang),
-        highContrast ? 'bg-white text-black border-black' : 'bg-parchment text-ink border-terracotta',
+        highContrast ? 'bg-white text-black border-2 border-black' : 'bg-parchment text-ink border border-sand shadow-card',
       )}
     >
       <style>{ETHIOPIC_CSS}</style>
       <LiveRegion announcement={announcement} />
 
-      <p className="text-sm font-semibold uppercase tracking-wide text-terracotta-dark mb-2">{t('app.name')}</p>
+      <p className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-terracotta-dark">
+        <span aria-hidden="true" className="inline-block h-2.5 w-2.5 rounded-full bg-terracotta" />
+        {t('app.name')}
+      </p>
       {mode === 'partner-assisted' && (
         <p className={ui.notice}>
           <Users aria-hidden="true" focusable="false" className="h-6 w-6 shrink-0 text-terracotta" />
@@ -299,7 +325,16 @@ export const WizardShell: React.FC<WizardShellProps> = ({
         </p>
       )}
 
+      {offline && (
+        <p className={ui.notice}>
+          <WifiOff aria-hidden="true" focusable="false" className="h-6 w-6 shrink-0 text-terracotta" />
+          <span>{t('status.offlineSaved')}</span>
+        </p>
+      )}
+
       <ProgressBar currentStep={finished ? TOTAL_STEPS - 1 : step} totalSteps={TOTAL_STEPS} t={t} />
+
+      <VoiceControl lang={lang} rootRef={rootRef} announce={announce} />
 
       <HelpCluster
         lang={lang}
@@ -315,7 +350,7 @@ export const WizardShell: React.FC<WizardShellProps> = ({
 
       {finished ? (
         <div>
-          <StepHeading id={headingId} focusKey="finished" focusOnMount={interacted.current}>
+          <StepHeading id={headingId} focusKey="finished" focusOnMount={interacted.current} allowFocus={interacted.current}>
             <span className="flex items-center gap-2">
               <CheckCircle2 aria-hidden="true" focusable="false" className="h-7 w-7 shrink-0 text-green-800" />
               {headingText}
@@ -329,7 +364,7 @@ export const WizardShell: React.FC<WizardShellProps> = ({
         </div>
       ) : (
         <form noValidate onSubmit={onSubmit} aria-labelledby={headingId}>
-          <StepHeading id={headingId} focusKey={step} skipFocus={errorItems.length > 0} focusOnMount={interacted.current}>
+          <StepHeading id={headingId} focusKey={step} skipFocus={errorItems.length > 0} focusOnMount={interacted.current} allowFocus={interacted.current}>
             {headingText}
           </StepHeading>
 
@@ -344,9 +379,9 @@ export const WizardShell: React.FC<WizardShellProps> = ({
 
           <StepComponent {...stepProps} />
 
-          <div className="mt-8 flex flex-wrap gap-3 border-t-2 border-stone-300 pt-4">
+          <div className="mt-8 flex flex-wrap gap-3 border-t border-sand pt-5">
             {step > 0 && (
-              <button type="button" onClick={() => goToStep(step - 1)} className={ui.btnSecondary}>
+              <button type="button" onClick={() => goToStep(step - 1)} className={ui.btnSecondary} data-db-action="back">
                 <ArrowLeft aria-hidden="true" focusable="false" className="h-5 w-5 shrink-0" />
                 {t('wizard.back')}
               </button>
