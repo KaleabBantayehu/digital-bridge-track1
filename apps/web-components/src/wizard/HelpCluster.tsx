@@ -71,7 +71,7 @@ export const HelpCluster: React.FC<HelpClusterProps> = ({
               <X aria-hidden="true" focusable="false" className="h-5 w-5" />
             </button>
           </div>
-          <ul className="list-disc pl-5 space-y-2 mb-4">
+          <ul className="list-disc ps-5 space-y-2 mb-4">
             <li>{t(lang, 'help.dialogBody1')}</li>
             <li>{t(lang, 'help.dialogBody2')}</li>
             <li>{t(lang, 'help.dialogBody3')}</li>

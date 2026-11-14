@@ -27,12 +27,14 @@ export interface TextFieldProps {
   spellCheck?: boolean;
   /** Called after the user accepts a voice answer (lets callers record inputMode: 'voice'). */
   onVoiceUsed?: () => void;
+  /** Optional (additive): enables the MediaRecorder voice-note fallback, stored under this key. */
+  voiceNoteKey?: string;
 }
 
 /** Labelled text input/textarea with hint, inline error, autocomplete, paste allowed, and voice input. */
 export const TextField: React.FC<TextFieldProps> = ({
   id, lang, label, value, onChange, hint, error, required, optional, type = 'text', inputMode, autoComplete,
-  multiline, voice = true, announce, spellCheck, onVoiceUsed,
+  multiline, voice = true, announce, spellCheck, onVoiceUsed, voiceNoteKey,
 }) => {
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
   const hintId = hint ? `${id}-hint` : undefined;
@@ -95,6 +97,7 @@ export const TextField: React.FC<TextFieldProps> = ({
           fieldLabel={label}
           targetRef={inputRef}
           announce={announce}
+          voiceNoteKey={voiceNoteKey}
           onUse={(text) => {
             onChange(multiline && value ? `${value} ${text}` : text);
             onVoiceUsed?.();

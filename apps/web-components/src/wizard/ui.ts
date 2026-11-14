@@ -3,7 +3,7 @@
 export const cx = (...parts: (string | false | null | undefined)[]) => parts.filter(Boolean).join(' ');
 
 const focusable = 'scroll-my-24 focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-terracotta';
-const btnBase = `inline-flex items-center justify-center gap-2 min-h-[44px] min-w-[44px] px-4 py-2 rounded-md font-semibold text-base leading-snug text-left disabled:opacity-60 disabled:cursor-not-allowed ${focusable}`;
+const btnBase = `inline-flex items-center justify-center gap-2 min-h-[44px] min-w-[44px] px-4 py-2 rounded-md font-semibold text-base leading-snug text-start disabled:opacity-60 disabled:cursor-not-allowed ${focusable}`;
 
 const secondaryColors = 'bg-white text-terracotta-dark border-2 border-terracotta hover:bg-parchment';
 // Pressed state uses its own colour set (never layered on secondaryColors: Tailwind's CSS order would let the

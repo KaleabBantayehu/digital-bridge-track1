@@ -5,6 +5,7 @@ import { formatDob } from '../../fields/EthiopianDateSelect';
 import { PARTNER_ORGS } from './IdentityStep';
 import type { StepProps } from '../types';
 import { ui } from '../ui';
+import { hasVoiceNote, useVoiceNotes } from '../../voice/voiceNotes';
 
 interface Row {
   label: string;
@@ -12,8 +13,11 @@ interface Row {
 }
 
 /** Accessible summary (<h3> per section, <dl> rows) with an Edit button that jumps back to each step. */
-export const ReviewStep: React.FC<StepProps> = ({ lang, t, profile, goToStep, openPrivacy }) => {
+export const ReviewStep: React.FC<StepProps> = ({ lang, t, profile, goToStep, openPrivacy, editMode }) => {
   const notGiven = <span className="italic">{t('review.notGiven')}</span>;
+  const voiceNotes = useVoiceNotes();
+  const nameValue = (field: 'givenName' | 'familyName') =>
+    profile.name[field] || (hasVoiceNote(voiceNotes, field) ? t('review.voiceNote') : notGiven);
   const yesNo = (v: boolean) => t(v ? 'common.yes' : 'common.no');
   const id = profile.identity;
   const partner = PARTNER_ORGS.find((o) => o.id === id?.partnerVoucher?.partnerId);
@@ -28,8 +32,8 @@ export const ReviewStep: React.FC<StepProps> = ({ lang, t, profile, goToStep, op
     },
     {
       step: 1, titleKey: 'review.name', rows: [
-        { label: t('field.givenName'), value: profile.name.givenName || notGiven },
-        { label: t('field.familyName'), value: profile.name.familyName || notGiven },
+        { label: t('field.givenName'), value: nameValue('givenName') },
+        { label: t('field.familyName'), value: nameValue('familyName') },
       ],
     },
     {
@@ -56,13 +60,13 @@ export const ReviewStep: React.FC<StepProps> = ({ lang, t, profile, goToStep, op
         {
           label: t('support.legend'),
           value: profile.support?.needs.length ? (
-            <ul className="list-disc pl-5">
+            <ul className="list-disc ps-5">
               {profile.support.needs.map((n) => (
                 <li key={n}>{n === 'other' && profile.support?.otherText ? profile.support.otherText : supportLabel(lang, n)}</li>
               ))}
             </ul>
           ) : (
-            t('review.none')
+            t(profile.support?.preferNotToSay ? 'review.preferNotToSay' : 'review.none')
           ),
         },
       ],
@@ -93,7 +97,7 @@ export const ReviewStep: React.FC<StepProps> = ({ lang, t, profile, goToStep, op
       ))}
       <button type="button" onClick={openPrivacy} className={`${ui.btnSecondary} mb-2`}>
         <ShieldCheck aria-hidden="true" focusable="false" className="h-5 w-5 shrink-0" />
-        {t('help.privacy')}
+        {t(editMode ? 'edit.privacy' : 'help.privacy')}
       </button>
     </>
   );

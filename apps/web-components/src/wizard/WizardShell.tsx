@@ -2,7 +2,9 @@ import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 
 import {
   ArrowLeft, ArrowRight, CalendarDays, CheckCircle2, ClipboardCheck, Contact, HeartHandshake, Phone, ShieldCheck, User, Users,
 } from 'lucide-react';
-import { DB_EVENTS, type Lang, type OnboardingProfile } from '@db/shared-schemas';
+import {
+  DB_EVENTS, SIGNUP_EVENTS, type Lang, type OnboardingProfile, type SignupDoneDetail, type SignupStepDetail, type SignupSupportDetail,
+} from '@db/shared-schemas';
 import { useOnboardingStore } from '../state/store';
 import { errorText, makeT, t as translate } from '../i18n';
 import { LiveRegion, useAnnouncer } from './LiveRegion';
@@ -16,6 +18,8 @@ import { localServices, type Dev2Services } from './services';
 import { FIELD_LABELS, fieldId, type FieldErrors, type StepDefinition, type StepProps } from './types';
 import { normaliseStep, partnerDraftFrom, validateStep, type PartnerDraft } from './validation';
 import { cleanId, cx, ui } from './ui';
+import { ETHIOPIC_CSS, scriptClass } from '../i18n/script';
+import { getVoiceNotes, resetVoiceNotes } from '../voice/voiceNotes';
 import { WelcomeConsentStep } from './steps/WelcomeConsentStep';
 import { NameStep } from './steps/NameStep';
 import { ContactStep } from './steps/ContactStep';
@@ -29,7 +33,8 @@ export interface WizardShellProps {
   partnerId?: string;
   lang?: Lang;
   theme?: "terracotta" | "high-contrast";
-  mode?: "standalone" | "lti" | "partner-assisted";
+  /** "edit" (additive, Guide v2 §5): mounted from profile.html as the "My Profile" editor; opens on the summary. */
+  mode?: "standalone" | "lti" | "partner-assisted" | "edit";
   ltiToken?: string;
   sessionId?: string;
   onDispatch?: (eventName: string, detail: unknown) => void;
@@ -83,7 +88,8 @@ export const WizardShell: React.FC<WizardShellProps> = ({
   const [errors, setErrors] = useState<FieldErrors>({});
   const [summaryKey, setSummaryKey] = useState(0);
   const [privacyOpen, setPrivacyOpen] = useState(false);
-  const [finished, setFinished] = useState(!!profile.progress.completedAt);
+  const editMode = mode === 'edit';
+  const [finished, setFinished] = useState(!editMode && !!profile.progress.completedAt);
   const [partnerDraft, setPartnerDraft] = useState<PartnerDraft>(() => partnerDraftFrom(profile));
 
   // `lang` attribute on the custom element wins on change (Dev 1 passes it through).
@@ -111,6 +117,14 @@ export const WizardShell: React.FC<WizardShellProps> = ({
     });
   }, [services, updateProfile, announce]);
 
+  // mode="edit": land on the profile summary (Step 7) so every answer is one "Edit" away.
+  useEffect(() => {
+    if (editMode) {
+      setStoreStep(TOTAL_STEPS - 1);
+      setFinished(false);
+    }
+  }, [editMode, setStoreStep]);
+
   /** Becomes true after the first navigation, so remounted headings take focus but page load never does. */
   const interacted = useRef(false);
 
@@ -118,6 +132,14 @@ export const WizardShell: React.FC<WizardShellProps> = ({
     (name: string, detail: unknown) => emitEvent(onDispatch, rootRef.current, name, detail),
     [onDispatch],
   );
+
+  const lastStepEvent = useRef(-1);
+  useEffect(() => {
+    if (lastStepEvent.current === step) return;
+    lastStepEvent.current = step;
+    const detail: SignupStepDetail = { step: step + 1, of: TOTAL_STEPS };
+    dispatch(SIGNUP_EVENTS.step, detail);
+  }, [step, dispatch]);
 
   const goToStep = useCallback(
     (next: number) => {
@@ -159,7 +181,7 @@ export const WizardShell: React.FC<WizardShellProps> = ({
     interacted.current = true;
     // Re-check every step; send the user to the first one that still needs an answer.
     for (let s = 0; s < TOTAL_STEPS - 1; s++) {
-      const found = validateStep(s, profile, partnerDraft);
+      const found = validateStep(s, profile, partnerDraft, getVoiceNotes());
       if (Object.keys(found).length > 0) {
         setStoreStep(s);
         showErrors(found);
@@ -171,7 +193,7 @@ export const WizardShell: React.FC<WizardShellProps> = ({
       progress: { ...profile.progress, currentStep: step, completedSteps: STEP_IDS.map((_, i) => i), completedAt },
     });
     setFinished(true);
-    announce(t('review.finishedTitle'));
+    announce(t(editMode ? 'edit.savedTitle' : 'review.finishedTitle'));
     // Support data travels only if the learner explicitly chose to share it with their learning provider.
     dispatch(DB_EVENTS.completed, {
       profileId: profile.id,
@@ -180,6 +202,27 @@ export const WizardShell: React.FC<WizardShellProps> = ({
       completedAt,
       ...(profile.support?.tellLearningProvider ? { support: profile.support } : {}),
     });
+
+    // Technical Guide v2 contract. `done` never carries support choices.
+    const done: SignupDoneDetail = {
+      profile: {
+        name: [profile.name.givenName, profile.name.familyName].map((n) => n.trim()).filter(Boolean).join(' '),
+        phone: profile.contact.phone,
+        language: lang,
+        idRoute: profile.identity?.route,
+      },
+      voiceNotes: getVoiceNotes(),
+    };
+    dispatch(SIGNUP_EVENTS.done, done);
+    // Separate on purpose, and only when the learner chose to share specific needs.
+    const support = profile.support;
+    if (support?.tellLearningProvider && !support.preferNotToSay && support.needs.length > 0) {
+      const detail: SignupSupportDetail = {
+        support: support.needs,
+        ...(support.needs.includes('other') && support.otherText ? { otherText: support.otherText } : {}),
+      };
+      dispatch(SIGNUP_EVENTS.support, detail);
+    }
   };
 
   const onSubmit = (event: React.FormEvent) => {
@@ -188,7 +231,7 @@ export const WizardShell: React.FC<WizardShellProps> = ({
       finish();
       return;
     }
-    const found = validateStep(step, profile, partnerDraft);
+    const found = validateStep(step, profile, partnerDraft, getVoiceNotes());
     if (Object.keys(found).length > 0) {
       showErrors(found);
       return;
@@ -196,13 +239,14 @@ export const WizardShell: React.FC<WizardShellProps> = ({
     const normalised = normaliseStep(step, profile, partnerDraft);
     if (normalised) updateProfile(normalised);
     setErrors({});
-    setStoreStep(step + 1);
+    setStoreStep(editMode ? TOTAL_STEPS - 1 : step + 1);
     announce(t('wizard.saved'));
     dispatch(DB_EVENTS.stepSaved, { profileId: profile.id, step, stepId: STEP_IDS[step] }); // no answers in the event
   };
 
   const deleteAll = async () => {
     await services.deleteAllData(profile.id);
+    resetVoiceNotes();
     updateProfile(blankProfileFields(profile));
     setPartnerDraft({ partnerId: '', agentId: '', consent: false });
     setErrors({});
@@ -213,12 +257,21 @@ export const WizardShell: React.FC<WizardShellProps> = ({
   const StepComponent = def.Component;
   const title = t(def.titleKey);
   const hint = t(simple ? def.simpleHintKey : def.hintKey);
-  const headingText = finished ? t('review.finishedTitle') : t('wizard.stepHeading', { current: step + 1, total: TOTAL_STEPS, title });
-  const readText = finished ? `${t('review.finishedTitle')}. ${t('review.finishedBody')}` : `${title}. ${hint}${step === 0 ? ` ${t('banner.intro')}` : ''}`;
+  const onSummary = step === TOTAL_STEPS - 1;
+  const finishedTitle = t(editMode ? 'edit.savedTitle' : 'review.finishedTitle');
+  const finishedBody = t(editMode ? 'edit.savedBody' : 'review.finishedBody');
+  const headingText = finished
+    ? finishedTitle
+    : editMode && onSummary
+      ? t('edit.title')
+      : t('wizard.stepHeading', { current: step + 1, total: TOTAL_STEPS, title });
+  const shownHint = editMode && onSummary ? t('edit.hint') : hint;
+  const readText = finished ? `${finishedTitle}. ${finishedBody}` : `${headingText}. ${shownHint}${step === 0 ? ` ${t('banner.intro')}` : ''}`;
+  const submitLabel = onSummary ? t(editMode ? 'edit.save' : 'wizard.finish') : t(editMode ? 'edit.saveReturn' : 'wizard.next');
 
   const stepProps: StepProps = {
     lang, t, simple, idBase, profile, update: updateProfile, errors, errorFor, announce, services,
-    openPrivacy: () => setPrivacyOpen(true), goToStep, partnerDraft, setPartnerDraft,
+    openPrivacy: () => setPrivacyOpen(true), goToStep, partnerDraft, setPartnerDraft, editMode,
   };
 
   const highContrast = theme === 'high-contrast';
@@ -231,9 +284,11 @@ export const WizardShell: React.FC<WizardShellProps> = ({
       data-theme={theme}
       className={cx(
         'w-full max-w-[48rem] mx-auto p-4 sm:p-6 rounded-lg border-2 font-sans text-base leading-relaxed break-words',
+        scriptClass(lang),
         highContrast ? 'bg-white text-black border-black' : 'bg-parchment text-ink border-terracotta',
       )}
     >
+      <style>{ETHIOPIC_CSS}</style>
       <LiveRegion announcement={announcement} />
 
       <p className="text-sm font-semibold uppercase tracking-wide text-terracotta-dark mb-2">{t('app.name')}</p>
@@ -266,10 +321,10 @@ export const WizardShell: React.FC<WizardShellProps> = ({
               {headingText}
             </span>
           </StepHeading>
-          <p className="mb-6">{t('review.finishedBody')}</p>
+          <p className="mb-6">{finishedBody}</p>
           <button type="button" onClick={() => goToStep(TOTAL_STEPS - 1)} className={ui.btnSecondary}>
             <ArrowLeft aria-hidden="true" focusable="false" className="h-5 w-5 shrink-0" />
-            {t('step6.title')}
+            {t(editMode ? 'edit.title' : 'step6.title')}
           </button>
         </div>
       ) : (
@@ -284,7 +339,7 @@ export const WizardShell: React.FC<WizardShellProps> = ({
           {step === 0 && <p className="mb-3 font-semibold">{t('banner.intro')}</p>}
           <p className="mb-6 flex items-start gap-3">
             {simple && <def.Icon aria-hidden="true" focusable="false" className="h-8 w-8 shrink-0 text-terracotta" />}
-            <span>{hint}</span>
+            <span>{shownHint}</span>
           </p>
 
           <StepComponent {...stepProps} />
@@ -297,8 +352,8 @@ export const WizardShell: React.FC<WizardShellProps> = ({
               </button>
             )}
             <button type="submit" className={ui.btnPrimary}>
-              {step === TOTAL_STEPS - 1 ? t('wizard.finish') : t('wizard.next')}
-              {step === TOTAL_STEPS - 1 ? (
+              {submitLabel}
+              {onSummary || editMode ? (
                 <CheckCircle2 aria-hidden="true" focusable="false" className="h-5 w-5 shrink-0" />
               ) : (
                 <ArrowRight aria-hidden="true" focusable="false" className="h-5 w-5 shrink-0" />

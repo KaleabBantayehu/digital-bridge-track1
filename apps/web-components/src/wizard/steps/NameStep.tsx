@@ -15,6 +15,7 @@ export const NameStep: React.FC<StepProps> = ({ lang, t, idBase, profile, update
         onChange={(v) => setName('givenName', v)}
         error={errorFor('givenName')}
         autoComplete="given-name"
+        voiceNoteKey="givenName"
         spellCheck={false}
         required
         announce={announce}
@@ -28,6 +29,7 @@ export const NameStep: React.FC<StepProps> = ({ lang, t, idBase, profile, update
         onChange={(v) => setName('familyName', v)}
         error={errorFor('familyName')}
         autoComplete="family-name"
+        voiceNoteKey="familyName"
         spellCheck={false}
         required
         announce={announce}

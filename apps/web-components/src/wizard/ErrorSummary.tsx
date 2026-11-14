@@ -51,7 +51,7 @@ export const ErrorSummary: React.FC<ErrorSummaryProps> = ({ items, focusKey, t }
         {t('errors.summaryTitle')}
       </h3>
       <p className="mt-1 mb-2">{t('errors.summaryIntro')}</p>
-      <ul className="list-disc pl-6 space-y-1">
+      <ul className="list-disc ps-6 space-y-1">
         {items.map((item) => (
           <li key={item.targetId}>
             <a

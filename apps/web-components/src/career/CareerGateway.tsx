@@ -12,6 +12,8 @@ import { ApplyDialog } from './ApplyDialog';
 import { EmployerForm } from './EmployerForm';
 import { JobCard } from './JobCard';
 import { CAREER_FILTERS, jobOffers } from './jobText';
+import { jobPostingsJsonLd } from './jobPosting';
+import { ETHIOPIC_CSS, scriptClass } from '../i18n/script';
 
 export interface CareerGatewayProps {
   apiUrl?: string;
@@ -116,9 +118,11 @@ export const CareerGateway: React.FC<CareerGatewayProps> = ({
       data-theme={theme}
       className={cx(
         'w-full max-w-[56rem] mx-auto p-4 sm:p-6 rounded-lg border-2 font-sans text-base leading-relaxed break-words',
+        scriptClass(lang),
         highContrast ? 'bg-white text-black border-black' : 'bg-parchment text-ink border-terracotta',
       )}
     >
+      <style>{ETHIOPIC_CSS}</style>
       <LiveRegion announcement={announcement} />
 
       <h2 id={headingId} tabIndex={-1} className="flex items-center gap-2 text-2xl font-bold mb-1">
@@ -179,6 +183,9 @@ export const CareerGateway: React.FC<CareerGatewayProps> = ({
                 {visibleJobs.length === 0 ? (
                   <p className={ui.notice}>{t('filter.none')}</p>
                 ) : (
+                  <>
+                  {/* schema.org/JobPosting for the jobs on screen (Guide v2 §7). Not rendered or announced. */}
+                  <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jobPostingsJsonLd(visibleJobs, lang) }} />
                   <ul aria-label={t('job.listLabel')} className="space-y-4">
                     {visibleJobs.map((job) => (
                       <li key={job.id}>
@@ -186,6 +193,7 @@ export const CareerGateway: React.FC<CareerGatewayProps> = ({
                       </li>
                     ))}
                   </ul>
+                  </>
                 )}
               </>
             )}

@@ -16,7 +16,7 @@
   <body>
     <main>
       <h1 class="host-note">Dev 2 local harness (not shipped)</h1>
-      <p class="host-note">Mounts WizardShell and CareerGateway inside open shadow roots, the same way Dev 1's custom elements will. Run <code>pnpm -F @db/web-components dev</code>, then open <code>/dev2-preview.html</code>. Add <code>?lang=am</code> for Amharic.</p>
+      <p class="host-note">Mounts WizardShell and CareerGateway inside open shadow roots, the same way Dev 1's custom elements will. Run <code>pnpm -F @db/web-components dev</code>, then open <code>/dev2-preview.html</code>. Add <code>?lang=am</code> for Amharic, <code>?mode=edit</code> for the My Profile editor.</p>
       <div id="wizard-host"></div>
       <div id="career-host"></div>
     </main>
@@ -27,7 +27,10 @@
       import { WizardShell } from '/src/wizard/WizardShell.tsx';
       import { CareerGateway } from '/src/career/CareerGateway.tsx';
 
-      const lang = new URLSearchParams(location.search).get('lang') === 'am' ? 'am' : 'en';
+      const params = new URLSearchParams(location.search);
+      const lang = params.get('lang') === 'am' ? 'am' : 'en';
+      const mode = params.get('mode') || 'standalone';
+      const roots = {};
       const log = (name, detail) => console.info('[host received]', name, detail);
 
       function mount(hostId, Component, props) {
@@ -37,12 +40,17 @@
         style.textContent = css;
         const container = document.createElement('div');
         shadow.append(style, container);
-        createRoot(container).render(React.createElement(Component, props));
-        // Host-page listener: proves events cross the shadow boundary (composed: true).
-        host.addEventListener('db:onboarding-completed', (e) => log(e.type, e.detail));
+        roots[hostId] = { root: createRoot(container), Component };
+        roots[hostId].root.render(React.createElement(Component, props));
+        // Host-page listeners: prove events cross the shadow boundary (composed: true).
+        for (const name of ['db:onboarding-completed', 'db-signup:step', 'db-signup:done', 'db-signup:support']) {
+          host.addEventListener(name, (e) => log(e.type, JSON.stringify(e.detail)));
+        }
       }
 
-      mount('wizard-host', WizardShell, { lang });
+      // Test hook: re-render with new props (e.g. { mode: 'edit' }) keeping the in-memory store.
+      window.__rerender = (hostId, props) => roots[hostId].root.render(React.createElement(roots[hostId].Component, props));
+      mount('wizard-host', WizardShell, { lang, mode });
       mount('career-host', CareerGateway, {});
     </script>
   </body>

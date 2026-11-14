@@ -7,19 +7,38 @@ import { CheckboxField } from '../../fields/CheckboxField';
 import { fieldId, type StepProps } from '../types';
 import { ui } from '../ui';
 
+/**
+ * Order follows Technical Guide v2 §5: captions / sign language, screen reader support, large text, more time first,
+ * then the remaining functional needs.
+ */
 export const SUPPORT_NEEDS: SupportNeed[] = [
-  'screen_reader_materials', 'sign_language_captions', 'step_free_venue', 'extra_time',
-  'high_contrast_large_text', 'audio_instructions', 'written_not_phone', 'quiet_workspace', 'other',
+  'sign_language_captions', 'screen_reader_materials', 'high_contrast_large_text', 'extra_time',
+  'audio_instructions', 'written_not_phone', 'step_free_venue', 'quiet_workspace', 'other',
 ];
 
-/** Private support request. Functional needs only; no diagnosis, no medical proof (CLAUDE.md §4). */
+/**
+ * Private support request. Functional needs only; no diagnosis, no medical proof (CLAUDE.md §4).
+ * "Prefer not to say" is one tap, same size and place as every other choice (Guide v2 §5).
+ */
 export const SupportStep: React.FC<StepProps> = ({ lang, t, idBase, profile, update, announce }) => {
   const support: SupportPreferences = profile.support ?? { needs: [], tellLearningProvider: false };
-  const setSupport = (partial: Partial<SupportPreferences>) => update({ support: { ...support, ...partial } });
+  const setSupport = (next: SupportPreferences) => update({ support: next });
 
   const toggleNeed = (need: SupportNeed, checked: boolean) => {
     const needs = checked ? [...support.needs, need] : support.needs.filter((n) => n !== need);
-    setSupport({ needs, otherText: needs.includes('other') ? support.otherText : undefined });
+    if (checked && support.preferNotToSay) announce(t('support.choiceCleared'));
+    setSupport({
+      ...support,
+      needs,
+      otherText: needs.includes('other') ? support.otherText : undefined,
+      preferNotToSay: checked ? false : support.preferNotToSay,
+    });
+  };
+
+  const togglePreferNotToSay = (checked: boolean) => {
+    // Choosing it clears every specific need (nothing private is kept "just in case").
+    setSupport(checked ? { needs: [], tellLearningProvider: false, preferNotToSay: true } : { ...support, preferNotToSay: false });
+    if (checked) announce(t('support.preferNotToSay.chosen'));
   };
 
   return (
@@ -33,15 +52,23 @@ export const SupportStep: React.FC<StepProps> = ({ lang, t, idBase, profile, upd
         <legend className={ui.legend}>
           {t('support.legend')} <span className="font-normal">{t('wizard.optional')}</span>
         </legend>
-        {SUPPORT_NEEDS.map((need) => (
-          <CheckboxField
-            key={need}
-            id={fieldId(idBase, `need-${need}`)}
-            label={supportLabel(lang, need)}
-            checked={support.needs.includes(need)}
-            onChange={(checked) => toggleNeed(need, checked)}
-          />
-        ))}
+        <CheckboxField
+          id={fieldId(idBase, 'preferNotToSay')}
+          label={t('support.preferNotToSay')}
+          checked={!!support.preferNotToSay}
+          onChange={togglePreferNotToSay}
+        />
+        <div className="border-t-2 border-stone-300 mt-1 pt-1">
+          {SUPPORT_NEEDS.map((need) => (
+            <CheckboxField
+              key={need}
+              id={fieldId(idBase, `need-${need}`)}
+              label={supportLabel(lang, need)}
+              checked={support.needs.includes(need)}
+              onChange={(checked) => toggleNeed(need, checked)}
+            />
+          ))}
+        </div>
       </fieldset>
 
       {support.needs.includes('other') && (
@@ -51,19 +78,21 @@ export const SupportStep: React.FC<StepProps> = ({ lang, t, idBase, profile, upd
           label={t('field.otherText')}
           hint={t('field.otherText.hint')}
           value={support.otherText ?? ''}
-          onChange={(otherText) => setSupport({ otherText })}
+          onChange={(otherText) => setSupport({ ...support, otherText })}
           multiline
           optional
           announce={announce}
         />
       )}
 
-      <CheckboxField
-        id={fieldId(idBase, 'tellLearningProvider')}
-        label={t('support.tellProvider')}
-        checked={support.tellLearningProvider}
-        onChange={(tellLearningProvider) => setSupport({ tellLearningProvider })}
-      />
+      {support.needs.length > 0 && (
+        <CheckboxField
+          id={fieldId(idBase, 'tellLearningProvider')}
+          label={t('support.tellProvider')}
+          checked={support.tellLearningProvider}
+          onChange={(tellLearningProvider) => setSupport({ ...support, tellLearningProvider })}
+        />
+      )}
     </>
   );
 };

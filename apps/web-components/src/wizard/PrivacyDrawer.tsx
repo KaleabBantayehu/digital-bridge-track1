@@ -3,6 +3,7 @@ import { Download, Trash2, X } from 'lucide-react';
 import type { Lang, OnboardingProfile } from '@db/shared-schemas';
 import { t } from '../i18n';
 import { cleanId, ui } from './ui';
+import { getVoiceNotes } from '../voice/voiceNotes';
 
 export interface PrivacyDrawerProps {
   lang: Lang;
@@ -56,7 +57,7 @@ export const PrivacyDrawer: React.FC<PrivacyDrawerProps> = ({ lang, open, onClos
   };
 
   const exportData = () => {
-    const json = JSON.stringify({ exportedAt: new Date().toISOString(), profile }, null, 2);
+    const json = JSON.stringify({ exportedAt: new Date().toISOString(), profile, voiceNotes: getVoiceNotes() }, null, 2);
     const url = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
     setExportJson(json);
     setDownloadUrl(url);

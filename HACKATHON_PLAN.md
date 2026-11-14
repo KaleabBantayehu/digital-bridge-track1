@@ -109,6 +109,7 @@ Companion files: `CLAUDE.md` (coding law) · `TRACK_1_MASTER_REQUIREMENTS.md` (w
 - [x] 16:30–17:00 `PrivacyDrawer` (native `<dialog>` + `.showModal()`, one-click JSON export + delete).
 
 **Evening** — [ ] Record ~20 core Amharic prompt clips with a native speaker (`/audio/am/{promptKey}.mp3`); [ ] full 5-step gate on every merged feature; keep `docs/WCAG_GATE_CHECKLIST.md` ticked.
+**Technical Guide v2 (14 Nov) upgrades** — [x] MediaRecorder voice-note fallback + "Read back my answer" in the voice review box (§5); [x] "Prefer not to say" + guide support options, no diagnosis (§5); [x] `db-signup:step` / `db-signup:done` / separate `db-signup:support` events (§3, §5); [x] `mode="edit"` My Profile editor (§5); [x] `src/i18n/en.json` + `am.json` (generated from shared-schemas), Amharic line-height 1.7 / no caps / no letter spacing, logical CSS properties (§3, §9); [x] schema.org/JobPosting JSON-LD in Career Gateway (§7); [x] `CONFORMANCE.md` in §11 table format (automated evidence; NVDA/TalkBack/real mic pending).
 **Sunday 09:00–12:00** — [ ] **Owner of `WCAG_2_2_AA_CONFORMANCE_REPORT.md`** (Dev 4 supplies axe/Playwright results); [ ] README keyboard/ARIA section.
 **Done =** full wizard + career flow with keyboard only; NVDA announcements verified; no English leaking into `am`; mic degrades cleanly.
 

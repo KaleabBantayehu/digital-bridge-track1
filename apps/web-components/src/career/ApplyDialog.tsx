@@ -11,6 +11,7 @@ import type { Dev2Services } from '../wizard/services';
 import { EMAIL_RE } from '../wizard/validation';
 import { cleanId, ui } from '../wizard/ui';
 import { jobTitle } from './jobText';
+import { getVoiceNotes, hasVoiceNote } from '../voice/voiceNotes';
 
 export interface ApplyDialogProps {
   lang: Lang;
@@ -23,6 +24,8 @@ export interface ApplyDialogProps {
   onClose: () => void;
   onSubmitted: (application: JobApplication) => void;
 }
+
+const coverNoteKey = (jobId: string) => `coverNote:${jobId}`;
 
 type Field = 'givenName' | 'familyName' | 'phone' | 'email' | 'coverNote';
 const LABELS: Record<Field, I18nKey> = {
@@ -77,7 +80,10 @@ export const ApplyDialog: React.FC<ApplyDialogProps> = ({ lang, job, profile, se
     if (!values.phone.trim()) found.phone = 'REQUIRED';
     else if (!normaliseEtPhone(values.phone)) found.phone = 'INVALID_ET_PHONE';
     if (values.email.trim() && !EMAIL_RE.test(values.email.trim())) found.email = 'INVALID_EMAIL';
-    if (!values.coverNote.trim()) found.coverNote = 'REQUIRED';
+    // A kept voice note counts as an answer (Guide v2 §5: works where speech-to-text does not).
+    const noteKey = coverNoteKey(job.id);
+    const voiceNote = hasVoiceNote(getVoiceNotes(), noteKey);
+    if (!values.coverNote.trim() && !voiceNote) found.coverNote = 'REQUIRED';
     if (Object.keys(found).length) {
       setErrors(found);
       setSummaryKey((k) => k + 1);
@@ -93,7 +99,13 @@ export const ApplyDialog: React.FC<ApplyDialogProps> = ({ lang, job, profile, se
       const application = await services.submitApplication({
         jobId: job.id,
         applicantProfileId: profile.id,
-        answers: [{ questionId: 'cover_note', text: values.coverNote.trim(), inputMode }],
+        answers: [{
+          questionId: 'cover_note',
+          text: values.coverNote.trim(),
+          inputMode: voiceNote ? 'voice' : inputMode,
+          // Reference only; the audio itself stays on this device until a real upload endpoint exists.
+          ...(voiceNote ? { audioRef: `voice-note:${noteKey}` } : {}),
+        }],
         // Support needs are attached ONLY when the candidate ticked the box. Filters used are never included.
         ...(share && shareable.length
           ? { adjustmentRequest: { items: shareable, note: profile.support?.otherText, shareConsent: true as const } }
@@ -139,7 +151,7 @@ export const ApplyDialog: React.FC<ApplyDialogProps> = ({ lang, job, profile, se
             error={errorFor('email')} type="email" inputMode="email" autoComplete="email" spellCheck={false} optional voice={false} />
           <TextField id={`${idBase}-coverNote`} lang={lang} label={t(lang, 'field.coverNote')} hint={t(lang, 'field.coverNote.hint')}
             value={values.coverNote} onChange={set('coverNote')} error={errorFor('coverNote')} multiline required announce={announce}
-            onVoiceUsed={() => setInputMode('voice')} />
+            onVoiceUsed={() => setInputMode('voice')} voiceNoteKey={coverNoteKey(job.id)} />
 
           <div className="rounded-md border-2 border-stone-300 bg-white p-3 mb-4">
             <CheckboxField id={`${idBase}-share`} label={t(lang, 'apply.share')} checked={share} onChange={setShare} />

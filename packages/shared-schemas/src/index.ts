@@ -16,6 +16,8 @@ export interface SupportPreferences {
   needs: SupportNeed[];
   otherText?: string;
   tellLearningProvider: boolean;
+  /** Additive (Guide v2 §5): the learner chose "Prefer not to say". When true, `needs` is empty. */
+  preferNotToSay?: boolean;
 }
 
 export type IdentityRoute = 'national_id_or_passport' | 'refugee_id' | 'community_document' | 'partner_voucher';
@@ -92,6 +94,23 @@ export const DB_EVENTS = {
   jobApplied: 'db:job-applied',
   error: 'db:error',
 } as const;
+
+/** Track 1 Technical Guide v2 (§3, §5) event names. Emitted alongside DB_EVENTS; support is never inside `done`. */
+export const SIGNUP_EVENTS = {
+  step: 'db-signup:step',
+  done: 'db-signup:done',
+  support: 'db-signup:support',
+} as const;
+
+/** Field name -> data: URL of a voice note the learner chose to keep instead of (or as well as) typed text. */
+export type VoiceNotes = Record<string, string>;
+
+export interface SignupStepDetail { step: number; of: number }
+export interface SignupDoneDetail {
+  profile: { name: string; phone?: string; language: Lang; idRoute?: IdentityRoute };
+  voiceNotes: VoiceNotes;
+}
+export interface SignupSupportDetail { support: SupportNeed[]; otherText?: string }
 
 export const ETHIOPIAN_MONTHS: { number: number; en: string; am: string }[] = [
   { number: 1, en: 'Meskerem', am: 'መስከረም' },
@@ -334,8 +353,8 @@ const I18N_EN = {
   'field.otherText': 'Tell us in your own words',
   'field.otherText.hint': 'For example: I prefer a seat near the door.',
 
-  'need.screen_reader_materials': 'Materials that work with a screen reader',
-  'need.sign_language_captions': 'Sign language or captions',
+  'need.screen_reader_materials': 'Screen reader support (materials that work with a screen reader)',
+  'need.sign_language_captions': 'Captions or an Ethiopian Sign Language interpreter',
   'need.step_free_venue': 'Step-free building (no stairs)',
   'need.extra_time': 'Extra time',
   'need.high_contrast_large_text': 'Large text or high contrast',
@@ -387,6 +406,35 @@ const I18N_EN = {
   'voice.nothing': 'We did not hear anything. Try again or type your answer.',
   'voice.used': 'Answer added. You can still change it.',
   'voice.error': 'Voice input stopped. You can type your answer instead.',
+  'voice.readBack': 'Read back my answer',
+  'voice.reading': 'Reading your answer aloud.',
+  'voice.readBackUnavailable': 'Read back is not available in this browser or language. The text is shown above so you can check it.',
+  'note.record': 'Record a voice note for {field} instead',
+  'note.stop': 'Stop recording',
+  'note.recording': 'Recording. Speak now, then press Stop recording. You have up to 1 minute.',
+  'note.recorded': 'Recording stopped. Listen to it, then choose Keep voice note.',
+  'note.previewLabel': 'Your new voice note for {field}',
+  'note.keep': 'Keep voice note',
+  'note.again': 'Record again',
+  'note.kept': 'Voice note kept for {field}. You can also type the answer, but you do not have to.',
+  'note.savedLabel': 'Saved voice note for {field}',
+  'note.remove': 'Remove voice note for {field}',
+  'note.removed': 'Voice note removed.',
+  'note.denied': 'The microphone is blocked, so we could not record. You can type your answer instead.',
+  'note.tooBig': 'This voice note is too big to save on this device. Record a shorter one or type your answer.',
+  'note.error': 'Recording stopped. You can try again or type your answer.',
+  'review.voiceNote': 'Voice note kept (we will listen to it)',
+  'support.preferNotToSay': 'Prefer not to say. I do not want to ask for support now.',
+  'support.preferNotToSay.chosen': 'Prefer not to say chosen. No support will be requested. You can change this at any time.',
+  'support.choiceCleared': 'Prefer not to say is no longer selected.',
+  'review.preferNotToSay': 'Prefer not to say',
+  'edit.title': 'Edit my profile',
+  'edit.hint': 'Choose "Edit" next to any answer to change it. Changes are saved on this device as you type.',
+  'edit.saveReturn': 'Save and return to my profile',
+  'edit.save': 'Save my profile',
+  'edit.savedTitle': 'Your profile is saved',
+  'edit.savedBody': 'Your changes are saved. You can keep editing at any time.',
+  'edit.privacy': 'Download or delete my data',
 
   'career.title': 'Career Gateway — find a job',
   'career.intro': 'Jobs from employers who offer workplace support.',
@@ -581,8 +629,8 @@ const I18N_AM: Record<I18nKey, string> = {
   'field.otherText': 'በራስዎ ቃላት ይንገሩን',
   'field.otherText.hint': 'ለምሳሌ፦ ከበሩ አጠገብ መቀመጥ እመርጣለሁ።',
 
-  'need.screen_reader_materials': 'በስክሪን አንባቢ የሚሠሩ ጽሑፎች',
-  'need.sign_language_captions': 'የምልክት ቋንቋ ወይም የጽሑፍ ትርጉም',
+  'need.screen_reader_materials': 'የስክሪን አንባቢ ድጋፍ (በስክሪን አንባቢ የሚሠሩ ጽሑፎች)',
+  'need.sign_language_captions': 'የጽሑፍ ትርጉም (ካፕሽን) ወይም የኢትዮጵያ ምልክት ቋንቋ አስተርጓሚ',
   'need.step_free_venue': 'ደረጃ የሌለው ሕንፃ',
   'need.extra_time': 'ተጨማሪ ጊዜ',
   'need.high_contrast_large_text': 'ትልቅ ጽሑፍ ወይም ከፍተኛ ንፅፅር',
@@ -634,6 +682,35 @@ const I18N_AM: Record<I18nKey, string> = {
   'voice.nothing': 'ምንም አልሰማንም። እንደገና ይሞክሩ ወይም መልስዎን ይጻፉ።',
   'voice.used': 'መልሱ ገብቷል። አሁንም መቀየር ይችላሉ።',
   'voice.error': 'የድምጽ ግብዓቱ ቆሟል። በምትኩ መልስዎን መጻፍ ይችላሉ።',
+  'voice.readBack': 'መልሴን መልሰው ያንብቡልኝ',
+  'voice.reading': 'መልስዎን ጮክ ብለን እያነበብን ነው።',
+  'voice.readBackUnavailable': 'በዚህ አሳሽ ወይም ቋንቋ መልሶ ማንበብ አይሠራም። እንዲያረጋግጡት ጽሑፉ ከላይ ይታያል።',
+  'note.record': 'በምትኩ ለ{field} የድምጽ መልእክት ይቅረጹ',
+  'note.stop': 'መቅዳት አቁም',
+  'note.recording': 'እየቀዳን ነው። አሁን ይናገሩ፤ ከዚያ "መቅዳት አቁም"ን ይጫኑ። እስከ 1 ደቂቃ መናገር ይችላሉ።',
+  'note.recorded': 'መቅዳቱ ቆሟል። ያዳምጡት፤ ከዚያ "የድምጽ መልእክቱን አቆይ"ን ይምረጡ።',
+  'note.previewLabel': 'ለ{field} አዲሱ የድምጽ መልእክትዎ',
+  'note.keep': 'የድምጽ መልእክቱን አቆይ',
+  'note.again': 'እንደገና ቅዳ',
+  'note.kept': 'ለ{field} የድምጽ መልእክት ተቀምጧል። መልሱን መጻፍም ይችላሉ፤ ግን ግዴታ አይደለም።',
+  'note.savedLabel': 'ለ{field} የተቀመጠ የድምጽ መልእክት',
+  'note.remove': 'ለ{field} የተቀመጠውን የድምጽ መልእክት አስወግድ',
+  'note.removed': 'የድምጽ መልእክቱ ተወግዷል።',
+  'note.denied': 'ማይክሮፎኑ ስለታገደ መቅዳት አልቻልንም። በምትኩ መልስዎን መጻፍ ይችላሉ።',
+  'note.tooBig': 'ይህ የድምጽ መልእክት በዚህ መሣሪያ ላይ ለማስቀመጥ በጣም ትልቅ ነው። አጠር ያለ ይቅረጹ ወይም መልስዎን ይጻፉ።',
+  'note.error': 'መቅዳቱ ቆሟል። እንደገና መሞከር ወይም መልስዎን መጻፍ ይችላሉ።',
+  'review.voiceNote': 'የድምጽ መልእክት ተቀምጧል (እናዳምጠዋለን)',
+  'support.preferNotToSay': 'መናገር አልፈልግም። አሁን ድጋፍ መጠየቅ አልፈልግም።',
+  'support.preferNotToSay.chosen': '"መናገር አልፈልግም" ተመርጧል። ምንም ድጋፍ አይጠየቅም። ይህን በማንኛውም ጊዜ መቀየር ይችላሉ።',
+  'support.choiceCleared': '"መናገር አልፈልግም" ከእንግዲህ አልተመረጠም።',
+  'review.preferNotToSay': 'መናገር አልፈልግም',
+  'edit.title': 'የእኔን መገለጫ አስተካክል',
+  'edit.hint': 'ማንኛውንም መልስ ለመቀየር ከጎኑ ያለውን "አስተካክል" ይምረጡ። ሲጽፉ ለውጦቹ በዚህ መሣሪያ ላይ ይቀመጣሉ።',
+  'edit.saveReturn': 'አስቀምጥና ወደ መገለጫዬ ተመለስ',
+  'edit.save': 'መገለጫዬን አስቀምጥ',
+  'edit.savedTitle': 'መገለጫዎ ተቀምጧል',
+  'edit.savedBody': 'ለውጦችዎ ተቀምጠዋል። በማንኛውም ጊዜ ማስተካከል ይችላሉ።',
+  'edit.privacy': 'መረጃዬን አውርድ ወይም ሰርዝ',
 
   'career.title': 'የሥራ መግቢያ — ሥራ ይፈልጉ',
   'career.intro': 'የሥራ ቦታ ድጋፍ ከሚሰጡ ቀጣሪዎች የተገኙ ሥራዎች።',

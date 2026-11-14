@@ -1,4 +1,5 @@
-import { normaliseEtPhone, type IdentityVerification, type OnboardingProfile } from '@db/shared-schemas';
+import { normaliseEtPhone, type IdentityVerification, type OnboardingProfile, type VoiceNotes } from '@db/shared-schemas';
+import { hasVoiceNote } from '../voice/voiceNotes';
 import type { FieldErrors } from './types';
 
 export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -20,15 +21,16 @@ export const partnerDraftFrom = (p: OnboardingProfile): PartnerDraft => ({
 });
 
 /** Validate one step on "Continue" (never on every keystroke). Returns field -> ErrorCode, in DOM order. */
-export function validateStep(step: number, p: OnboardingProfile, partner: PartnerDraft): FieldErrors {
+/** A kept voice note (Guide v2 §5) answers a free-text field when speech-to-text is unavailable. */
+export function validateStep(step: number, p: OnboardingProfile, partner: PartnerDraft, voiceNotes: VoiceNotes = {}): FieldErrors {
   const errors: FieldErrors = {};
   switch (step) {
     case 0:
       if (!p.consent.saveAnswers) errors.saveAnswers = 'CONSENT_REQUIRED';
       break;
     case 1:
-      if (!p.name.givenName.trim()) errors.givenName = 'REQUIRED';
-      if (!p.name.familyName.trim()) errors.familyName = 'REQUIRED';
+      if (!p.name.givenName.trim() && !hasVoiceNote(voiceNotes, 'givenName')) errors.givenName = 'REQUIRED';
+      if (!p.name.familyName.trim() && !hasVoiceNote(voiceNotes, 'familyName')) errors.familyName = 'REQUIRED';
       break;
     case 2: {
       const phone = p.contact.phone?.trim() ?? '';

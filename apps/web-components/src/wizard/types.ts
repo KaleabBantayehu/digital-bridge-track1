@@ -23,6 +23,8 @@ export interface StepProps {
   goToStep: (step: number) => void;
   partnerDraft: PartnerDraft;
   setPartnerDraft: (draft: PartnerDraft) => void;
+  /** Optional (additive): true when the wizard is mounted as the "My Profile" editor (mode="edit"). */
+  editMode?: boolean;
 }
 
 export const fieldId = (idBase: string, field: string) => `${idBase}-${field}`;
