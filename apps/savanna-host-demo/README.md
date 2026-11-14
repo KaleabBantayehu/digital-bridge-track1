@@ -55,4 +55,15 @@ the accessibility tree and no id appears twice):
 
 Everything else is inert.
 
+## Digital Bridge overlays and integration examples
+
+The original captured Savanna CSS (`application_alx.css`, `app.css`) and JavaScript (`static-page.js`)
+remain unchanged. Digital Bridge accessibility overrides are isolated in
+`assets/css/host-a11y-fixes.css`; `assets/css/static-page.css` retains only the original frozen-page
+sidebar rules.
+
+Open `pages/signup.html` for onboarding, `pages/profile.html` for the prefilled profile editor,
+`pages/jobs.html` for Career Gateway and employer accommodations, or `demo/blank.html` to see the
+widgets on a host with no Bootstrap or Savanna styles. The blank demo loads the standalone
+`db-signup.js` alias and displays signup event summaries without exposing profile contact details.
 

@@ -32,9 +32,9 @@
     <link rel="stylesheet" href="../assets/css/typekit-xgz4ilr-css.css" />
     <link rel="stylesheet" href="../assets/css/application_alx.css" media="all" />
 
-    <link rel="icon" type="image/x-icon" href="/favicon_alx.ico" />
+    <link rel="icon" type="image/png" href="../assets/img/alx-navy.png" />
 
-    <link rel="apple-touch-icon" href="/apple-touch-icon_alx.png" />
+    <link rel="apple-touch-icon" href="../assets/img/alx-navy.png" />
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -47,22 +47,32 @@
     <link rel="stylesheet" href="../assets/css/app.css" media="all" />
 
     <link rel="stylesheet" href="../assets/css/static-page.css" media="all" />
+    <link rel="stylesheet" href="../assets/css/host-a11y-fixes.css" media="all" />
   </head>
 
   <body class="signed_in env_development notranslate" translate="no" data-theme-suffix="_alx">
+    <a class="skip-link" href="#main-content">Skip to main content</a>
     <!-- Google Tag Manager (noscript) -->
 
     <!-- End Google Tag Manager (noscript) -->
 
     <div data-react-class="header/Header" data-react-cache-id="header/Header-0">
-      <div class="header d-flex align-items-center position-fixed top-0 w-100" style="z-index: 1000">
+      <div class="header d-flex align-items-center position-fixed top-0 w-100" role="banner" style="z-index: 1000">
         <div class="header-left align-items-center d-flex position-fixed px-2" style="z-index: 2">
-          <div class="hamburger mb-0 p-2 color-primary" style="cursor: pointer; font-size: 24px">
-            <i class="fa-solid fa-fas fa-bars"></i>
-          </div>
-          <a class="logo-container p-1" href="#" rel="noreferrer" target=""
+          <button
+            type="button"
+            class="hamburger mb-0 p-2 color-primary border-0 bg-transparent"
+            aria-label="Toggle navigation sidebar"
+            aria-expanded="true"
+            aria-controls="sidebar"
+            style="cursor: pointer; font-size: 24px; min-width: 44px; min-height: 44px"
+          >
+            <i class="fa-solid fa-fas fa-bars" aria-hidden="true"></i>
+          </button>
+          <a class="logo-container p-1" href="#" aria-label="ALX Savanna Home" rel="noreferrer" target=""
             ><div
               class="logo mx-auto"
+              aria-hidden="true"
               style="background-image: url(&quot;../assets/img/holberton-logo-full-alx.png&quot;)"
             ></div
           ></a>
@@ -71,6 +81,8 @@
       </div>
       <div
         class="sidebar navigation bg-white border-end position-fixed overflow-scroll bottom-0 start-0 expanded"
+        role="navigation"
+        aria-label="Main"
         id="sidebar"
         style="background-color: rgb(255, 255, 255); border-color: rgb(238, 238, 238)"
       >
@@ -87,7 +99,7 @@
               <div class="ps-3 overflow-hidden text-nowrap" style="display: block">Access my learning</div></a
             >
           </li>
-          <hr title="My resources" />
+          <li><hr aria-hidden="true" /><span class="visually-hidden">My resources</span></li>
           <li>
             <a href="#" rel="noreferrer" target="_self"
               ><div class="icon"><i aria-hidden="true" class="fa-solid fa-graduation-cap"></i></div>
@@ -118,7 +130,7 @@
               <div class="ps-3 overflow-hidden text-nowrap" style="display: block">Video on demand</div></a
             >
           </li>
-          <hr title="My Campus" />
+          <li><hr aria-hidden="true" /><span class="visually-hidden">My Campus</span></li>
           <li>
             <a href="#" rel="noreferrer" target="_self"
               ><div class="icon"><i aria-hidden="true" class="fa-solid fa-users"></i></div>
@@ -129,7 +141,7 @@
             class="bg-white border-top border-end position-fixed p-2 bottom-0 start-0 mb-0"
             style="background-color: rgb(255, 255, 255); border-color: rgb(238, 238, 238)"
           >
-            <a href="#"
+            <a href="profile.html"
               ><div class="image"><i aria-hidden="true" class="fa-solid fa-user"></i></div>
               <div class="flex-grow-1 ps-3 overflow-hidden text-nowrap" style="display: block">My Profile</div></a
             >
@@ -138,7 +150,8 @@
       </div>
     </div>
 
-    <main class="content" id="content">
+    <main class="content" id="main-content">
+      <h1 class="visually-hidden">Learner dashboard — VA Foundations</h1>
       <div id="layout-bars" style="padding-top: 118px">
         <div
           data-react-class="curriculums/CurrentCurriculumScrollBehavior"
@@ -148,14 +161,15 @@
         <div class="align-items-center d-flex px-5 py-3" id="student-current-curriculum">
           <div id="student-switch-curriculum">
             <div class="btn-group">
-              <div
-                class="align-items-center d-flex flex-shrink-0 gap-3"
+              <button
+                type="button"
+                class="align-items-center d-flex flex-shrink-0 gap-3 border-0 bg-transparent p-0 text-start"
                 aria-expanded="false"
+                aria-haspopup="true"
                 data-bs-auto-close="outside"
                 data-bs-toggle="dropdown"
-                type="button"
               >
-                <div class="curriculum-switcher-label d-flex flex-column">
+                <span class="curriculum-switcher-label d-flex flex-column">
                   <span class="fs-sm fw-medium text-muted text-truncate"> ALX program </span>
 
                   <span class="fs-4 fw-semibold text-truncate"> VA-1: VA Foundations &amp; Professional Identity </span>
@@ -163,17 +177,17 @@
                   <span class="align-items-center d-flex fs-sm gap-2">
                     <span class="text-muted">Average: <span class="fw-medium">16.0%</span></span>
                   </span>
-                </div>
+                </span>
 
-                <div class="d-flex flex-column justify-content-center">
+                <span class="d-flex flex-column justify-content-center">
                   <span class="curriculum-switcher-caret-up">
                     <i aria-hidden="true" class="fa-solid fa-angle-up fa-fw"></i>
                   </span>
                   <span class="curriculum-switcher-caret-down">
                     <i aria-hidden="true" class="fa-solid fa-angle-down fa-fw"></i>
                   </span>
-                </div>
-              </div>
+                </span>
+              </button>
               <ul class="curriculum-switcher-menu p-3 dropdown-menu">
                 <div class="curriculum-switcher-mosaic">
                   <div class="curriculum-switcher-program">
@@ -295,6 +309,7 @@
               <div class="program-progress-bar">
                 <div class="progress shadow-none" style="--bs-progress-height: 0.5rem">
                   <div
+                    aria-label="Course progress"
                     aria-valuemax="100"
                     aria-valuemin="0"
                     aria-valuenow="0.0"
@@ -327,7 +342,7 @@
 
       <article class="">
           <section aria-labelledby="db-host-onboarding-title" class="mb-4 p-3">
-            <h1 id="db-host-onboarding-title" class="h4 mb-3">Learner Onboarding &amp; Career Gateway</h1>
+            <h2 id="db-host-onboarding-title" class="h4 mb-3">Learner Onboarding &amp; Career Gateway</h2>
             <db-onboarding-wizard partner-id="alx-savanna" lang="en" theme="terracotta" mode="standalone"></db-onboarding-wizard>
             <db-career-gateway partner-id="alx-savanna" lang="en" theme="terracotta"></db-career-gateway>
           </section>
@@ -352,7 +367,7 @@
               >
                 <div class="card curriculum-score-card homepage-card border-primary border-2 rounded-3 w-100 h-100">
                   <div class="card-body d-flex flex-column align-items-center p-4">
-                    <h3 class="card-title text-center mb-2 mt-2 text-primary">Course Progression</h3>
+                    <h2 class="card-title text-center mb-2 mt-2 text-primary">Course Progression</h2>
                     <p class="text-center text-muted mb-4 mx-4">Track your journey from enrollment to certification.</p>
                     <p class="text-center text-black mb-2 mx-4">
                       Score <strong>70% or higher</strong> to <strong>earn your badge</strong> and
@@ -469,7 +484,7 @@
                   >
                     <div class="row g-0">
                       <div class="col-lg-5 border-primary-subtle border-1 activities-border">
-                        <div class="card-header fw-medium fs-6 bg-transparent border-0">My activities</div>
+                        <h2 class="card-header fw-medium fs-6 bg-transparent border-0 m-0">My activities</h2>
                         <div class="px-3 pb-3">
                           <button
                             class="btn w-100 text-start mb-2 fs-5 border-0 lh-lg py-3 shadow-none rounded-3 fw-light"
@@ -513,12 +528,12 @@
                                   <span class="fw-bold">0%</span>
                                 </div>
                               </div>
-                              <h5
+                              <h3
                                 class="fw-light mb-0 flex-md-grow-1"
                                 style="min-width: 9rem; overflow-wrap: break-word"
                               >
                                 Module 2 Recap Quiz
-                              </h5>
+                              </h3>
                               <div class="d-grid d-md-block align-self-stretch align-self-md-auto">
                                 <span><a class="btn btn-outline-primary" href="#">Start Learning</a></span>
                               </div>
@@ -549,12 +564,12 @@
                                   <span class="fw-bold">80%</span>
                                 </div>
                               </div>
-                              <h5
+                              <h3
                                 class="fw-light mb-0 flex-md-grow-1"
                                 style="min-width: 9rem; overflow-wrap: break-word"
                               >
                                 Module 1 Recap Quiz
-                              </h5>
+                              </h3>
                               <div class="d-grid d-md-block align-self-stretch align-self-md-auto">
                                 <a class="btn btn-outline-secondary" href="#">Show</a>
                               </div>
@@ -582,12 +597,12 @@
                                   <span class="fw-bold">0%</span>
                                 </div>
                               </div>
-                              <h5
+                              <h3
                                 class="fw-light mb-0 flex-md-grow-1"
                                 style="min-width: 9rem; overflow-wrap: break-word"
                               >
                                 Module 2 Recap Quiz
-                              </h5>
+                              </h3>
                               <div class="d-grid d-md-block align-self-stretch align-self-md-auto">
                                 <span><a class="btn btn-outline-primary" href="#">Start Learning</a></span>
                               </div>
@@ -615,12 +630,12 @@
                                   <span class="fw-bold">0%</span>
                                 </div>
                               </div>
-                              <h5
+                              <h3
                                 class="fw-light mb-0 flex-md-grow-1"
                                 style="min-width: 9rem; overflow-wrap: break-word"
                               >
                                 Mastery Project: VA Profile Video
-                              </h5>
+                              </h3>
                               <div class="d-grid d-md-block align-self-stretch align-self-md-auto">
                                 <span><a class="btn btn-outline-primary" href="#">Start Learning</a></span>
                               </div>
@@ -636,18 +651,20 @@
 
             <div class="col-lg-4 d-flex">
               <div class="card homepage-card border-primary-subtle rounded-3 w-100">
-                <div class="card-header fw-medium fs-6">
+                <h2 class="card-header fw-medium fs-6 m-0">
                   My Pacing Boost
-                  <span
+                  <button
+                    type="button"
                     data-bs-toggle="tooltip"
                     data-bs-placement="top"
-                    class="ms-2"
+                    class="ms-2 border-0 bg-transparent p-0"
                     aria-label="The clock starts at the moment you access your first content of the course."
-                    data-bs-original-title="The clock starts at the moment you access your first content of the course."
+                    data-bs-title="The clock starts at the moment you access your first content of the course."
+                    style="min-width: 44px; min-height: 44px"
                   >
-                    <i class="fa-solid fa-circle-info text-muted" style="font-size: 0.8rem"></i>
-                  </span>
-                </div>
+                    <i aria-hidden="true" class="fa-solid fa-circle-info text-muted" style="font-size: 0.8rem"></i>
+                  </button>
+                </h2>
 
                 <div class="card-body py-0 fs-6">
                   <div data-react-class="homepage/MyPacingBoost" data-react-cache-id="homepage/MyPacingBoost-0">
@@ -722,7 +739,7 @@
 
             <div class="col-lg-8 d-flex">
               <div class="card homepage-card border-primary-subtle rounded-3 w-100">
-                <div class="card-header fw-medium fs-6">My upcoming events</div>
+                <h2 class="card-header fw-medium fs-6 m-0">My upcoming events</h2>
 
                 <div class="card-body py-0 fs-6">
                   <div class="list-group list-group-flush">
@@ -847,7 +864,7 @@
                   >
                 </div>
               </div>
-              <h3 class="fw-bold mb-2">Congratulations, Amara!</h3>
+              <h3 class="fw-bold mb-2" id="curriculum-validation-congrats-label">Congratulations, Amara!</h3>
               <p class="text-muted mb-0">You earned a new badge for VA-1: VA Foundations &amp; Professional Identity</p>
             </div>
             <div class="modal-footer border-0 justify-content-center gap-2 pb-4">
@@ -871,24 +888,24 @@
       <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="markdown-guide-modal-label">Markdown guide</h1>
+            <h2 class="modal-title fs-5" id="markdown-guide-modal-label">Markdown guide</h2>
             <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
           </div>
           <div class="modal-body">
-            <h4>Emphasis</h4>
+            <h3 class="h4">Emphasis</h3>
             <pre>
 **<strong>bold</strong>**
 *<em>italics</em>*
 ~~<strike>strikethrough</strike>~~</pre
             >
-            <h4>Headers</h4>
+            <h3 class="h4">Headers</h3>
             <pre>
 # Big header
 ## Medium header
 ### Small header
 #### Tiny header</pre
             >
-            <h4>Lists</h4>
+            <h3 class="h4">Lists</h3>
             <pre>
 * Generic list item
 * Generic list item
@@ -898,14 +915,14 @@
 2. Numbered list item
 3. Numbered list item</pre
             >
-            <h4>Links</h4>
+            <h3 class="h4">Links</h3>
             <pre>[Text to display](http://www.example.com)</pre>
-            <h4>Quotes</h4>
+            <h3 class="h4">Quotes</h3>
             <pre>
 &gt; This is a quote.
 &gt; It can span multiple lines!</pre
             >
-            <h4>Images</h4>
+            <h3 class="h4">Images</h3>
             <p>CSS style available: <code>width, height, opacity</code></p>
             <pre>
 ![](http://www.example.com/image.jpg)
@@ -913,7 +930,7 @@
 ![](http://www.example.com/image.jpg | height: 124px | width: 80px | opacity: 0.6)
 </pre
             >
-            <h4>Downloadable file</h4>
+            <h3 class="h4">Downloadable file</h3>
             <p>
               Insert a file hosted at a public <code>https://</code> URL as a clickable download link. The icon and
               label are auto-detected from the file extension. Use the <i class="fa-solid fa-file-arrow-down"></i> tool
@@ -930,7 +947,7 @@
               <code>c</code> (.c, .h), <code>text</code> (.txt, .md, .csv, .log). Unrecognized extensions render with a
               generic file icon.
             </p>
-            <h4>Video</h4>
+            <h3 class="h4">Video</h3>
             <p>
               Embed a single on-demand video by its <code>id</code> from the Video library. Use the
               <i class="fa-solid fa-film"></i> tool in the editor toolbar to pick a video — only online, public, and
@@ -940,7 +957,7 @@
 ::video 42 ::
 </pre
             >
-            <h4>Rive Animations</h4>
+            <h3 class="h4">Rive Animations</h3>
             <p>
               The recommended way to embed a Rive animation is the <strong>Library Files</strong> tool (<i
                 class="fa-solid fa-photo-film"
@@ -1010,7 +1027,7 @@
 ::rive data: eyJzcmMiOiJodHRwczovL2V4YW1wbGUuY29tL2FuaW1hdGlvbi5yaXYiLCJzdGF0ZU1hY2hpbmUiOiJTdGF0ZSBNYWNoaW5lIDEifQ== ::
 </pre
             >
-            <h4>GitHub Content</h4>
+            <h3 class="h4">GitHub Content</h3>
             <p>
               GitHub content embeds pull a file from a repository's default branch at render time and display it inline.
               Use the GitHub insert tool in the editor toolbar to fill in the fields and validate the paths — you do not
@@ -1056,7 +1073,7 @@
 ::github-content data: eyJvcmciOiJhY21lLWNvcnAiLCJyZXBvIjoiY29uY2VwdHMiLCJwYXRoIjoiZG9jcy90b3BpYy9yZWFkbWUubWQiLCJmaWxlcyI6WyJkb2NzL3RvcGljL2hlbHBlci5weSIsImRvY3MvdG9waWMvYXNzZXRzL2RpYWdyYW0ucG5nIl19 ::
 </pre
             >
-            <h4>Chidi InlineChat</h4>
+            <h3 class="h4">Chidi InlineChat</h3>
             <p>
               Chidi embeds use a single <code>data:</code> attribute holding a Base64-encoded JSON config. Use the Chidi
               insert tool (<i class="fa-solid fa-robot"></i>) in the editor toolbar to generate it; double-click an
@@ -1093,7 +1110,7 @@
                 <code>content_clarity</code>
               </li>
             </ul>
-            <h4>Tables</h4>
+            <h3 class="h4">Tables</h3>
             <pre>| Column 1 | Column 2 | Column 3 |
 | -------- | -------- | -------- |
 | John     | Doe      | Male     |
@@ -1106,7 +1123,7 @@
 | John | Doe | Male |
 | Mary | Smith | Female |
 </pre>
-            <h4>Displaying code</h4>
+            <h3 class="h4">Displaying code</h3>
             <pre>`var example = "hello!";`
 
 <em>Or spanning multiple lines...</em>
@@ -1130,7 +1147,7 @@ alert(example);
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="program-structure-modal-label">ALX program</h1>
+            <h2 class="modal-title fs-5" id="program-structure-modal-label">ALX program</h2>
             <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
           </div>
           <div class="modal-body">
@@ -1413,6 +1430,7 @@ alert(example);
     <script src="../assets/js/popper.js"></script>
     <script src="../assets/js/bootstrap.bundle.js"></script>
     <script src="../assets/js/static-page.js"></script>
+    <script src="../assets/js/host-a11y-fixes.js"></script>
     <script type="module" src="../assets/js/db-widgets.v1.0.0.js"></script>
   </body>
 </html>

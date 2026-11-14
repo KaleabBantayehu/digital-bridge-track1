@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Digital Bridge outside Savanna</title>
+    <style>
+      body { max-width: 56rem; margin: 2rem auto; padding: 0 1rem; font: 1rem/1.5 system-ui, sans-serif; color: #1c1917; }
+      :focus-visible { outline: 3px solid #7a2b18; outline-offset: 2px; }
+      #event-log { min-height: 8rem; padding: 1rem; border: 2px solid #7a2b18; overflow-wrap: anywhere; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Digital Bridge on a blank host</h1>
+      <p>This page has no Bootstrap or Savanna stylesheet. The widgets use host tokens when present and accessible defaults when they are not.</p>
+      <section aria-labelledby="signup-title">
+        <h2 id="signup-title">Onboarding</h2>
+        <db-signup lang="en"></db-signup>
+      </section>
+      <section aria-labelledby="career-title">
+        <h2 id="career-title">Career Gateway</h2>
+        <db-career-gateway lang="en"></db-career-gateway>
+      </section>
+      <section aria-labelledby="event-log-title">
+        <h2 id="event-log-title">Widget events</h2>
+        <ol id="event-log" aria-live="polite" aria-relevant="additions"></ol>
+      </section>
+    </main>
+    <script>
+      const eventLog = document.getElementById('event-log');
+      for (const eventName of ['db-signup:step', 'db-signup:done', 'db-signup:support']) {
+        document.addEventListener(eventName, (event) => {
+          const item = document.createElement('li');
+          const detail = event.detail && typeof event.detail === 'object' ? { ...event.detail } : event.detail;
+          if (detail && typeof detail === 'object' && 'profile' in detail) {
+            detail.profile = { id: detail.profile.id, partnerId: detail.profile.partnerId, lang: detail.profile.lang };
+          }
+          item.textContent = `${eventName}: ${JSON.stringify(detail)}`;
+          eventLog.append(item);
+        });
+      }
+    </script>
+    <script type="module" src="../db-signup.js"></script>
+  </body>
+</html>

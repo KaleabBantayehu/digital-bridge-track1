@@ -6,14 +6,69 @@
 :host {
   display: block;
   font-size: 16px;
-  color: #1C1917;
-  background-color: #FAF6F0;
-  font-family: 'Manrope', 'Noto Sans Ethiopic', 'Nyala', sans-serif;
+  --db-bg: #FAF6F0;
+  --db-fg: var(--bs-body-color, #1c1917);
+  --db-primary: var(--bs-primary, #7a2b18);
+  --db-focus-ring: #7A2B18;
+  color: var(--db-fg);
+  background-color: var(--db-bg);
+  font-family: var(--bs-body-font-family, system-ui, 'Noto Sans Ethiopic', sans-serif);
 }
 
-*:focus-visible {
-  outline: 3px solid #9E3B24 !important;
-  outline-offset: 2px !important;
+:host([theme='high-contrast']) {
+  --db-bg: #fff;
+  --db-fg: #000;
+  --db-primary: #000;
+  --db-focus-ring: #000;
+}
+
+:host([theme='high-contrast']) *:focus-visible {
+  outline-color: var(--db-focus-ring) !important;
+}
+
+:host *:focus-visible {
+  outline: 3px solid var(--db-focus-ring);
+  outline-offset: 2px;
+}
+
+:host .border-terracotta {
+  border-color: var(--db-primary) !important;
+}
+
+:host .bg-parchment {
+  background-color: var(--db-bg) !important;
+}
+
+:host .text-ink {
+  color: var(--db-fg) !important;
+}
+
+:host a,
+:host button,
+:host input,
+:host select,
+:host textarea,
+:host summary,
+:host [tabindex]:not([tabindex='-1']) {
   scroll-margin-top: 6rem;
   scroll-margin-bottom: 6rem;
+}
+
+:host button,
+:host a,
+:host input,
+:host select,
+:host textarea {
+  min-height: 44px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host *,
+  :host *::before,
+  :host *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
