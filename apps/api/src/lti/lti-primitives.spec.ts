@@ -196,18 +196,48 @@ test("login state is cookie-bound, single-use, and expires after five minutes", 
   const nonceStore = new NonceStore(() => now);
   const stateStore = new LoginStateStore(() => now);
   const nonce = nonceStore.issue();
-  const issued = stateStore.issue(nonce);
+  const context = {
+    nonce,
+    issuer: "https://lms.example",
+    clientId: "digital-bridge",
+    targetLinkUri: "https://tool.example/onboarding",
+  };
+  const issued = stateStore.issue(context);
 
-  assert.equal(stateStore.consume(issued.state, "wrong-cookie"), undefined);
-  assert.equal(stateStore.consume(issued.state, issued.cookieValue), nonce);
-  assert.equal(stateStore.consume(issued.state, issued.cookieValue), undefined);
+  assert.deepEqual(stateStore.consume(issued.state, "wrong-cookie"), {
+    valid: false,
+    reason: "invalid",
+  });
+  assert.deepEqual(stateStore.consume(issued.state, issued.cookieValue), {
+    valid: true,
+    context,
+  });
+  assert.deepEqual(stateStore.consume(issued.state, issued.cookieValue), {
+    valid: false,
+    reason: "invalid",
+  });
 
-  const expiring = stateStore.issue(nonceStore.issue());
+  const expiring = stateStore.issue({
+    ...context,
+    nonce: nonceStore.issue(),
+  });
   now += LOGIN_STATE_TTL_MS;
-  assert.equal(stateStore.consume(expiring.state, expiring.cookieValue), undefined);
+  assert.deepEqual(stateStore.consume(expiring.state, expiring.cookieValue), {
+    valid: false,
+    reason: "expired",
+  });
 });
 
 test("login state refuses a nonce without sufficient random-token shape", () => {
   const stateStore = new LoginStateStore(() => 1_000);
-  assert.throws(() => stateStore.issue("predictable"), /32-byte base64url/);
+  assert.throws(
+    () =>
+      stateStore.issue({
+        nonce: "predictable",
+        issuer: "https://lms.example",
+        clientId: "digital-bridge",
+        targetLinkUri: "https://tool.example/onboarding",
+      }),
+    /32-byte base64url/,
+  );
 });
