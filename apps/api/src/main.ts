@@ -1,6 +1,8 @@
 // apps/api/src/main.ts
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
+import * as fs from 'fs';
+import * as path from 'path';
 import { Module, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { CoreApiModule } from './core-api.module';
@@ -22,7 +24,11 @@ async function bootstrap() {
     .setVersion("1.0")
     .addBearerAuth()
     .build();
-  SwaggerModule.setup("api/docs", app, SwaggerModule.createDocument(app, config));
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup("api/docs", app, document);
+  const docsDir = path.join(process.cwd(), "docs");
+  fs.mkdirSync(docsDir, { recursive: true });
+  fs.writeFileSync(path.join(docsDir, "openapi.json"), JSON.stringify(document, null, 2), "utf8");
 
   await app.listen(process.env.PORT || 3000);
 }

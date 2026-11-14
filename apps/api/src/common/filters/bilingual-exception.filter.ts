@@ -30,9 +30,17 @@ const SUMMARY: Record<string, Localized> = {
     en: "You are not authorised to perform this action.",
     am: "ይህን ተግባር ለማከናወን ፈቃድ የለዎትም።",
   },
+  Forbidden: {
+    en: "You do not have permission to perform this action.",
+    am: "ይህን ተግባር ለማከናወን ፈቃድ የለዎትም።",
+  },
   InternalError: {
     en: "Something went wrong. Please try again.",
     am: "ችግር ተፈጥሯል። እባክዎ እንደገና ይሞክሩ።",
+  },
+  RateLimited: {
+    en: "Too many requests. Please wait a moment and try again.",
+    am: "ብዙ ጥያቄዎች ተልከዋል። እባክዎ ትንሽ ቆይተው ይሞክሩ።",
   },
 };
 
@@ -41,6 +49,7 @@ function errorName(status: number, requested?: string): BilingualApiError["error
   if (status === HttpStatus.UNAUTHORIZED) return "Unauthorized";
   if (status === HttpStatus.FORBIDDEN) return "Forbidden";
   if (status === HttpStatus.NOT_FOUND) return "NotFound";
+  if (status === HttpStatus.GONE) return "NotFound";
   if (status === HttpStatus.CONFLICT) return "Conflict";
   if (status === HttpStatus.TOO_MANY_REQUESTS) return "RateLimited";
   if (status === HttpStatus.UNPROCESSABLE_ENTITY || status === HttpStatus.BAD_REQUEST) {
@@ -91,6 +100,10 @@ export class BilingualExceptionFilter implements ExceptionFilter {
       : Array.isArray(raw.fieldErrors)
         ? raw.fieldErrors.map((item: any) => field(String(item.field || "form"), codeFor(item.code)))
         : [];
+
+    if (status === HttpStatus.TOO_MANY_REQUESTS && fields.length === 0) {
+      fields.push(field("form", "RATE_LIMITED"));
+    }
 
     if (Array.isArray(raw.message)) {
       for (const message of raw.message) {

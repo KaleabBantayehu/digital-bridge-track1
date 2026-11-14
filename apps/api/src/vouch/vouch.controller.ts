@@ -1,11 +1,38 @@
-import { Controller, Post, Body, HttpStatus } from "@nestjs/common";
-import { ApiTags, ApiOperation } from "@nestjs/swagger";
+import { Controller, Post, Body, HttpStatus, UseGuards } from "@nestjs/common";
+import { ApiProperty, ApiPropertyOptional, ApiTags, ApiOperation } from "@nestjs/swagger";
+import { Throttle } from "@nestjs/throttler";
+import { IsBoolean, IsOptional, IsString } from "class-validator";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { randomUUID } from "crypto";
 import { PartnerVoucherEntity } from "./entities/partner-voucher.entity";
 import { OnboardingService } from "../onboarding/onboarding.service";
 import { throwBilingualHttp } from "../common/filters/bilingual-exception.filter";
+import { RequireScopes } from "../common/decorators/require-scopes.decorator";
+import { ScopesGuard } from "../common/guards/scopes.guard";
+
+class PartnerVouchDto {
+  @ApiProperty()
+  @IsString()
+  sessionId!: string;
+
+  @ApiProperty({ example: "AAAPD" })
+  @IsString()
+  partnerOrg!: string;
+
+  @ApiProperty()
+  @IsString()
+  agentName!: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  agentRole?: string;
+
+  @ApiProperty()
+  @IsBoolean()
+  learnerConsentConfirmed!: boolean;
+}
 
 @ApiTags("Partner Assisted Verification (/api/v1/onboarding)")
 @Controller("onboarding")
@@ -17,16 +44,12 @@ export class VouchController {
   ) {}
 
   @Post("partner-vouch")
+  @UseGuards(ScopesGuard)
+  @RequireScopes("partner:vouch")
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @ApiOperation({ summary: "Partner organisation vouches for a learner without standard ID (with consent)" })
   async createVoucher(
-    @Body()
-    body: {
-      sessionId: string;
-      partnerOrg: string;
-      agentName: string;
-      agentRole?: string;
-      learnerConsentConfirmed: boolean;
-    }
+    @Body() body: PartnerVouchDto
   ) {
     if (!body?.sessionId || !body?.partnerOrg || !body?.agentName || !body?.learnerConsentConfirmed) {
       throwBilingualHttp(HttpStatus.UNPROCESSABLE_ENTITY, "CONSENT_REQUIRED", "ValidationError");

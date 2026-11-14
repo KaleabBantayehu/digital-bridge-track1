@@ -1,13 +1,22 @@
 # Co-Designer Session Log
-Date/time: Saturday 14 Nov 2026 | Location/device: ____ | Co-designer (initials only, consent given: Y/N): ____
-AT used: NVDA / TalkBack / Keyboard-Only / 400% Zoom / Sound Off
 
-| # | Task | Completed unaided? (Y/N) | Time | Blocker / quote | Severity (S1-S4) | Owner | Fix commit | Retested |
-|---|------|--------------------------|------|-----------------|------------------|-------|------------|----------|
-| 1 | Onboard with typed answers | | | | | | | |
-| 2 | Onboard using voice on 2 fields | | | | | | | |
-| 3 | Pick 'Refer me' partner route | | | | | | | |
-| 4 | Save & resume via SMS link | | | | | | | |
-| 5 | Switch to Amharic + Ethiopian calendar | | | | | | | |
-| 6 | Filter jobs privately & apply | | | | | | | |
-| 7 | Trigger validation error & recover | | | | | | | |
+Date/time: ____________________
+Location/device: ____________________
+Co-designer initials only (consent given: Y/N): ____________________
+
+| Task # | Device & AT Used (NVDA / TalkBack / Keyboard / 200-400% Zoom / Sound Off) | Completed Unaided? (Y/N) | Time Taken | Ease Score (1-5) | Exact Co-Designer Quote / Observation | Severity (S1-S4) | Fix Commit / Status |
+|---|---|---|---|---|---|---|---|
+| 1. Onboard by typing (one question per screen, keyboard/screen reader) | | | | | | | |
+| 2. Onboard using voice input with review & edit on two fields | | | | | | | |
+| 3. Verify identity via “Refer me” partner voucher route (or Refugee ID) | | | | | | | |
+| 4. Pause and resume onboarding via 24h SMS resume link | | | | | | | |
+| 5. Switch to Amharic (`am`) and select a date in the 13-month Ethiopian calendar | | | | | | | |
+| 6. Privately filter jobs by “Support I Need” and submit a job application | | | | | | | |
+| 7. Trigger a validation error and recover using the bilingual Error Summary | | | | | | | |
+
+## Follow-up notes
+
+- S1/S2 blockers fixed before the next co-designer round: ____________________
+- Retest date/time: ____________________
+- Facilitator: ____________________
+- Scribe: ____________________

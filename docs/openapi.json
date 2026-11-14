@@ -1,0 +1,530 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "operationId": "HealthController_check",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/auth/token": {
+      "post": {
+        "operationId": "AuthController_token",
+        "summary": "Issue a development partner bearer token",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "OAuth 2.0"
+        ]
+      }
+    },
+    "/api/v1/onboarding/sessions": {
+      "post": {
+        "operationId": "OnboardingController_create",
+        "summary": "Create a new offline-compatible onboarding session",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSessionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Onboarding (/api/v1/onboarding)"
+        ]
+      }
+    },
+    "/api/v1/onboarding/sessions/{id}": {
+      "patch": {
+        "operationId": "OnboardingController_patch",
+        "summary": "Idempotently save step data and increment revision",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchSessionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Onboarding (/api/v1/onboarding)"
+        ]
+      },
+      "get": {
+        "operationId": "OnboardingController_get",
+        "summary": "Retrieve onboarding session (support preferences excluded by default)",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "includePrivateSupport",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Onboarding (/api/v1/onboarding)"
+        ]
+      }
+    },
+    "/api/v1/onboarding/sessions/{id}/resume-sms": {
+      "post": {
+        "operationId": "SmsController_requestSms",
+        "summary": "Send a 24h single-use SMS resume link to an Ethiopian phone number",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResumeSmsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "SMS Save & Resume (/api/v1/onboarding)"
+        ]
+      }
+    },
+    "/api/v1/onboarding/resume/{token}": {
+      "get": {
+        "operationId": "SmsController_resume",
+        "summary": "Restore an onboarding session from a single-use SMS token",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "SMS Save & Resume (/api/v1/onboarding)"
+        ]
+      }
+    },
+    "/api/v1/onboarding/partner-vouch": {
+      "post": {
+        "operationId": "VouchController_createVoucher",
+        "summary": "Partner organisation vouches for a learner without standard ID (with consent)",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PartnerVouchDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Partner Assisted Verification (/api/v1/onboarding)"
+        ]
+      }
+    },
+    "/api/v1/career/jobs": {
+      "get": {
+        "operationId": "CareerController_list",
+        "summary": "List jobs without associating private filters with a learner",
+        "parameters": [
+          {
+            "name": "accommodations",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "screen_reader_software,flexible_hours",
+              "type": "string"
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Career Gateway"
+        ]
+      },
+      "post": {
+        "operationId": "CareerController_create",
+        "summary": "Post a job with workplace accommodations",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateJobDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Career Gateway"
+        ]
+      }
+    },
+    "/api/v1/career/applications": {
+      "post": {
+        "operationId": "CareerController_apply",
+        "summary": "Submit a job application",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateApplicationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Career Gateway"
+        ]
+      }
+    },
+    "/api/v1/privacy/export": {
+      "get": {
+        "operationId": "PrivacyController_export",
+        "summary": "Export all data held for a learner",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Privacy"
+        ]
+      }
+    },
+    "/api/v1/privacy/data": {
+      "delete": {
+        "operationId": "PrivacyController_remove",
+        "summary": "Permanently delete learner data",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Privacy"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Digital Bridge Accessible Onboarding & Career Gateway API",
+    "description": "",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "TokenRequestDto": {
+        "type": "object",
+        "properties": {
+          "clientId": {
+            "type": "string",
+            "example": "demo-partner"
+          },
+          "clientSecret": {
+            "type": "string",
+            "example": "demo-secret"
+          },
+          "scopes": {
+            "example": [
+              "partner:vouch"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "clientId",
+          "clientSecret",
+          "scopes"
+        ]
+      },
+      "CreateSessionDto": {
+        "type": "object",
+        "properties": {
+          "lang": {
+            "type": "string",
+            "enum": [
+              "en",
+              "am"
+            ],
+            "default": "en"
+          },
+          "partnerId": {
+            "type": "string",
+            "default": "alx-demo"
+          }
+        }
+      },
+      "PatchSessionDto": {
+        "type": "object",
+        "properties": {
+          "step": {
+            "type": "string",
+            "enum": [
+              "consent",
+              "name",
+              "contact",
+              "dateOfBirth",
+              "identity",
+              "support",
+              "progress"
+            ]
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      },
+      "ResumeSmsDto": {
+        "type": "object",
+        "properties": {
+          "phone": {
+            "type": "string",
+            "example": "0911 234 567"
+          }
+        },
+        "required": [
+          "phone"
+        ]
+      },
+      "PartnerVouchDto": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "string"
+          },
+          "partnerOrg": {
+            "type": "string",
+            "example": "AAAPD"
+          },
+          "agentName": {
+            "type": "string"
+          },
+          "agentRole": {
+            "type": "string"
+          },
+          "learnerConsentConfirmed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "sessionId",
+          "partnerOrg",
+          "agentName",
+          "learnerConsentConfirmed"
+        ]
+      },
+      "CreateJobDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "employer": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "remote": {
+            "type": "boolean"
+          },
+          "offeredAccommodations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "deadlineIso": {
+            "type": "string"
+          },
+          "contactEmail": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "employer",
+          "location",
+          "description"
+        ]
+      },
+      "CreateApplicationDto": {
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "string"
+          },
+          "applicantProfileId": {
+            "type": "string"
+          },
+          "answers": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "shareSupportWithEmployer": {
+            "type": "boolean"
+          },
+          "adjustmentRequest": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "jobId",
+          "applicantProfileId",
+          "answers"
+        ]
+      }
+    }
+  }
+}
