@@ -1,5 +1,6 @@
 import React, { type ReactNode } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
+import { DB_EVENTS, type OnboardingProfile } from '@db/shared-schemas';
 import styles from '../styles/index.css?inline';
 
 const privateSupportKeys = /^(support|supportPreferences|accommodations|adjustmentRequest|filters|needs)$/i;
@@ -36,7 +37,7 @@ function redactPrivateSupportData(value: unknown, visited = new WeakMap<object, 
 export abstract class ReactShadowElement extends HTMLElement {
   static version = '1.0.0';
   static get observedAttributes(): string[] {
-    return ['api-url', 'partner-id', 'lang', 'theme', 'mode', 'lti-token', 'session-id'];
+    return ['api', 'api-url', 'partner-id', 'lang', 'theme', 'mode', 'lti-token', 'session-id'];
   }
 
   private reactRoot?: Root;
@@ -83,7 +84,7 @@ export abstract class ReactShadowElement extends HTMLElement {
   }
 
   protected get apiUrl(): string | undefined {
-    return this.getAttribute('api-url') || undefined;
+    return this.getAttribute('api') || this.getAttribute('api-url') || undefined;
   }
 
   protected get partnerId(): string {
@@ -94,9 +95,53 @@ export abstract class ReactShadowElement extends HTMLElement {
     return this.getAttribute('theme') === 'high-contrast' ? 'high-contrast' : 'terracotta';
   }
 
-  protected dispatchHostEvent(name: string, detail: unknown): void {
-    const safeDetail = hasSupportSharingConsent(detail) ? detail : redactPrivateSupportData(detail);
+  protected dispatchHostEvent(name: string, detail: unknown, profile?: OnboardingProfile): void {
+    const safeDetail =
+      hasSupportSharingConsent(detail) || profile?.support?.tellLearningProvider === true
+        ? detail
+        : redactPrivateSupportData(detail);
     this.dispatchEvent(new CustomEvent(name, { detail: safeDetail, bubbles: true, composed: true }));
+
+    if (!this.supportsSignupEventAliases) return;
+
+    if (name === DB_EVENTS.completed) {
+      const sourceProfile = profile ?? (isRecord(detail) && isOnboardingProfile(detail.profile) ? detail.profile : undefined);
+      if (sourceProfile) {
+        const safeProfile = Object.fromEntries(
+          Object.entries(sourceProfile).filter(([key]) => key !== 'support' && key !== 'voiceNotes'),
+        );
+        this.dispatchEvent(
+          new CustomEvent('db-signup:done', {
+            detail: {
+              profile: safeProfile,
+              voiceNotes: isRecord(detail) && Array.isArray(detail.voiceNotes) ? detail.voiceNotes : [],
+            },
+            bubbles: true,
+            composed: true,
+          }),
+        );
+      }
+    }
+
+    if (name === DB_EVENTS.supportRequested) {
+      const support = isRecord(detail) && 'support' in detail ? detail.support : undefined;
+      this.dispatchEvent(
+        new CustomEvent('db-signup:support', {
+          detail: {
+            support:
+              profile?.support?.tellLearningProvider === true
+                ? support ?? profile.support
+                : '[redacted]',
+          },
+          bubbles: true,
+          composed: true,
+        }),
+      );
+    }
+  }
+
+  protected get supportsSignupEventAliases(): boolean {
+    return false;
   }
 
   protected render(node: ReactNode): void {
@@ -105,4 +150,18 @@ export abstract class ReactShadowElement extends HTMLElement {
 
   protected abstract renderWidget(): void;
   protected abstract prepareRuntime(): Promise<void>;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function isOnboardingProfile(value: unknown): value is OnboardingProfile {
+  return (
+    isRecord(value) &&
+    typeof value.id === 'string' &&
+    typeof value.partnerId === 'string' &&
+    typeof value.lang === 'string' &&
+    isRecord(value.progress)
+  );
 }

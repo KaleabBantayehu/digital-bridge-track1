@@ -1,9 +1,14 @@
 import { DbCareerGatewayElement } from './elements/DbCareerGatewayElement';
 import { DbEmployerAccommodationsElement } from './elements/DbEmployerAccommodationsElement';
 import { DbOnboardingWizardElement } from './elements/DbOnboardingWizardElement';
+import { DbSignupElement } from './elements/DbSignupElement';
 
 if (!customElements.get('db-onboarding-wizard')) {
   customElements.define('db-onboarding-wizard', DbOnboardingWizardElement);
+}
+
+if (!customElements.get('db-signup')) {
+  customElements.define('db-signup', DbSignupElement);
 }
 
 if (!customElements.get('db-career-gateway')) {

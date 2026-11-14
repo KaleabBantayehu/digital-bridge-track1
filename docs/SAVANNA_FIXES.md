@@ -16,8 +16,9 @@ The frozen Savanna pages are patched in place under `apps/savanna-host-demo`; th
    placed one page-level `h1` inside `<main id="main-content">`, and corrected the concept page's
    heading levels without changing its visual heading sizes.
 4. **Sticky header and focus:** Added six-rem scroll margins and a visible three-pixel focus outline
-   for interactive controls. The host script hides the sticky curriculum bar when it would obscure
-   a focused element. Reduced-motion preferences are respected.
+   for interactive controls in the separate `assets/css/host-a11y-fixes.css` sidecar. The host script
+   hides the sticky curriculum bar when it would obscure a focused element. Reduced-motion
+   preferences are respected; Savanna's original CSS and JavaScript remain unchanged.
 5. **Duplicate IDs and ARIA references:** Kept one Markdown guide modal in the paced page,
    assigned unique IDs to repeated assessment controls/anchors, and supplied the missing
    curriculum-congratulations heading reference.
@@ -31,6 +32,12 @@ For one-line onboarding integration, load `db-widgets.v1.0.0.js` with
 `data-lang`, `data-theme`, and `data-api-url` values are copied to the generated widget.
 All components mount into open Shadow DOM roots so host styles do not leak into the widgets.
 
+The Technical Guide examples are available at `pages/signup.html`, `pages/profile.html`,
+`pages/jobs.html`, and `demo/blank.html`. These demonstrate the `<db-signup>` alias, profile edit
+mode, the Career Gateway and employer form, and installation on a host without Bootstrap or
+Savanna styles. The `db-signup:step`, `db-signup:done`, and `db-signup:support` events bubble across
+the Shadow DOM boundary; private support preferences are kept out of completion events.
+
 ## Verification status
 
 | Page | Before host patches | After host patches |
@@ -42,11 +49,12 @@ All components mount into open Shadow DOM roots so host styles do not leak into 
 The production build now includes the real widgets on all inspected pages. Headless Chromium with
 axe-core reported zero violations on the paced homepage, self-paced homepage, concept page,
 standalone demo, and external-partner demo. Each page was also checked for widget Shadow Roots; all
-custom-element instances mounted without page errors.
+custom-element instances mounted without page errors. The 13-point Dev 1 audit also checked all four
+Technical Guide pages in headless Chromium; each had mounted widgets and zero axe-core violations.
 
-The generated `db-widgets.v1.0.0.js` is 531.80 KB raw and 130.17 KB gzipped using `zlib.gzipSync`,
+The generated `db-widgets.v1.0.0.js` is 531.80 KB raw and 131.36 KB gzipped using `zlib.gzipSync`,
 under the 250 KB gzip budget. The browser build copies it to `dist/assets/js/` for the Savanna
-pages and demo pages.
+pages and demo pages, and emits `db-signup.js` at the root and under `module/` and `assets/js/`.
 
 ## Integration verification
 
