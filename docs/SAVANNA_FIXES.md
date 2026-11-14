@@ -39,11 +39,21 @@ All components mount into open Shadow DOM roots so host styles do not leak into 
 | Self-paced homepage | 1 serious link-distinction finding | 0 |
 | Concept with navigation | 6 findings, including critical ARIA and serious focus, progress-name, contrast, and list findings | 0 |
 
-The current axe run also returned zero violations on all four pages (paced, self-paced, concept,
-and standalone). These scans cover host HTML only; the widget bundle was not available.
-The web-component build is blocked by the Dev 2 UI importing `I18N`, which is not exported by the
-current shared-schema package. The standalone widget and complete Savanna-plus-widget pages
-therefore remain unverified.
+The production build now includes the real widgets on all inspected pages. Headless Chromium with
+axe-core reported zero violations on the paced homepage, self-paced homepage, concept page,
+standalone demo, and external-partner demo. Each page was also checked for widget Shadow Roots; all
+custom-element instances mounted without page errors.
+
+The generated `db-widgets.v1.0.0.js` is 531.80 KB raw and 130.17 KB gzipped using `zlib.gzipSync`,
+under the 250 KB gzip budget. The browser build copies it to `dist/assets/js/` for the Savanna
+pages and demo pages.
+
+## Integration verification
+
+The onboarding and career elements mount Dev 2's `WizardShell` and `CareerGateway`, respectively;
+the employer-accommodations element mounts `EmployerForm`. All receive the Dev 1 `ApiClient`-backed
+service adapter. Remote job lists support the API's array response as well as an enveloped response,
+and resume links use the `resume` query parameter consumed by the wizard.
 
 The browser harness reported a 356 CSS-pixel viewport when asked for 320 pixels, so the exact
 320-pixel reflow requirement still needs verification in a browser that honors that viewport.

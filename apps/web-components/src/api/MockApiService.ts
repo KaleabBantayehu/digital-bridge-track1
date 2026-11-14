@@ -225,7 +225,9 @@ export class MockApiService {
   }
 
   async getJobs(filters: SupportFilter[] = []): Promise<{ jobs: JobListing[]; count: number }> {
-    const filteredJobs = jobs.filter((job) => filters.every((filter) => job.offeredAccommodations.includes(filter)));
+    const storedJobs = this.storage.getItem('db:mock-jobs');
+    const availableJobs = [...(storedJobs ? JSON.parse(storedJobs) as JobListing[] : []), ...jobs];
+    const filteredJobs = availableJobs.filter((job) => filters.every((filter) => job.offeredAccommodations.includes(filter)));
     return { jobs: filteredJobs, count: filteredJobs.length };
   }
 
@@ -233,27 +235,57 @@ export class MockApiService {
     return jobs.map(toJobPostingMetadata);
   }
 
-  async apply(payload: JobApplication): Promise<{ id: string; submitted: true }> {
-    const id = `mock-application-${Date.now()}`;
-    this.storage.setItem(`db:mock-application:${id}`, JSON.stringify(payload));
-    return { id, submitted: true };
+  async apply(payload: Omit<JobApplication, 'id' | 'submittedAt'>): Promise<JobApplication> {
+    const application: JobApplication = {
+      ...payload,
+      id: `mock-application-${Date.now()}`,
+      submittedAt: new Date().toISOString(),
+    };
+    this.storage.setItem(`db:mock-application:${application.id}`, JSON.stringify(application));
+    return application;
   }
 
-  async createJob(payload: unknown): Promise<{ id: string; created: true }> {
-    const id = `mock-job-created-${Date.now()}`;
-    this.storage.setItem(`db:mock-job:${id}`, JSON.stringify(payload));
-    return { id, created: true };
+  async createJob(payload: Omit<JobListing, 'id' | 'createdAt'>): Promise<JobListing> {
+    const job: JobListing = {
+      ...payload,
+      id: `mock-job-created-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+    };
+    const storedJobs = this.storage.getItem('db:mock-jobs');
+    const existing = storedJobs ? JSON.parse(storedJobs) as JobListing[] : [];
+    this.storage.setItem('db:mock-jobs', JSON.stringify([job, ...existing]));
+    return job;
   }
 
   async requestResumeSms(
-    profileId: string,
+    profile: OnboardingProfile,
   ): Promise<{ token: string; devLink: string; expiresAt: string }> {
-    const token = `mock-${profileId}-${Date.now()}`;
+    const token = `mock-${profile.id}-${Date.now()}`;
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+    this.storage.setItem(
+      `db:mock-resume:${token}`,
+      JSON.stringify({ profile, expiresAt, used: false }),
+    );
     return {
       token,
       devLink: `${window.location.origin}/?resumeToken=${encodeURIComponent(token)}`,
-      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      expiresAt,
     };
+  }
+
+  async restoreFromResumeToken(
+    token: string,
+  ): Promise<{ ok: true; profile: OnboardingProfile } | { ok: false; code: 'TOKEN_EXPIRED' | 'TOKEN_USED' }> {
+    const key = `db:mock-resume:${token}`;
+    const raw = this.storage.getItem(key);
+    if (!raw) return { ok: false, code: 'TOKEN_EXPIRED' };
+
+    const entry = JSON.parse(raw) as { profile: OnboardingProfile; expiresAt: string; used: boolean };
+    if (entry.used) return { ok: false, code: 'TOKEN_USED' };
+    if (Date.parse(entry.expiresAt) < Date.now()) return { ok: false, code: 'TOKEN_EXPIRED' };
+
+    this.storage.setItem(key, JSON.stringify({ ...entry, used: true }));
+    return { ok: true, profile: entry.profile };
   }
 
   async partnerVouch(payload: unknown): Promise<{ status: 'vouched'; reference: string }> {
@@ -283,6 +315,22 @@ export class MockApiService {
 
   async deleteMyData(profile: OnboardingProfile): Promise<void> {
     this.storage.removeItem(`db:mock-profile:${profile.partnerId}:${profile.id}`);
+    const resumeKeys: string[] = [];
+    for (let index = 0; index < this.storage.length; index += 1) {
+      const key = this.storage.key(index);
+      if (!key?.startsWith('db:mock-resume:')) continue;
+      const value: unknown = JSON.parse(this.storage.getItem(key) ?? 'null');
+      if (
+        typeof value === 'object' &&
+        value !== null &&
+        'profile' in value &&
+        isOnboardingProfile(value.profile) &&
+        value.profile.id === profile.id
+      ) {
+        resumeKeys.push(key);
+      }
+    }
+    resumeKeys.forEach((key) => this.storage.removeItem(key));
     const applicationKeys: string[] = [];
     for (let index = 0; index < this.storage.length; index += 1) {
       const key = this.storage.key(index);
@@ -292,4 +340,8 @@ export class MockApiService {
     }
     applicationKeys.forEach((key) => this.storage.removeItem(key));
   }
+}
+
+function isOnboardingProfile(value: unknown): value is OnboardingProfile {
+  return typeof value === 'object' && value !== null && 'id' in value && typeof value.id === 'string';
 }

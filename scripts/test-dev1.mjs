@@ -72,6 +72,9 @@ check('1 Custom elements and open Shadow DOM', () => {
   assert.match(base, /attachShadow\(\{\s*mode:\s*'open'\s*\}\)/);
   assert.match(base, /style\.textContent\s*=\s*styles/);
   assert.match(base, /index\.css\?inline/);
+  assert.match(read('apps/web-components/src/elements/DbOnboardingWizardElement.tsx'), /<WizardShell\b/);
+  assert.match(read('apps/web-components/src/elements/DbCareerGatewayElement.tsx'), /<CareerGateway\b/);
+  assert.match(read('apps/web-components/src/elements/DbEmployerAccommodationsElement.tsx'), /<EmployerForm\b/);
   for (const attribute of ['api-url', 'partner-id', 'lang', 'theme', 'mode', 'lti-token', 'session-id']) {
     assert.ok(base.includes(`'${attribute}'`), `Missing observed attribute ${attribute}`);
   }

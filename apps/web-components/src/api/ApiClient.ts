@@ -33,6 +33,10 @@ export class ApiClient {
     if (this.mockMode) this.notifyFallback();
   }
 
+  get isOffline(): boolean {
+    return this.mockMode;
+  }
+
   async createSession(lang: Lang, partnerId = this.options.partnerId): Promise<{ id: string }> {
     const response = await this.request<{ id?: unknown }>('/onboarding/sessions', {
       method: 'POST',
@@ -76,44 +80,113 @@ export class ApiClient {
   async getJobs(filters: SupportFilter[] = []): Promise<{ jobs: JobListing[]; count: number }> {
     if (this.mockMode) return this.mock.getJobs(filters);
     const query = filters.length ? `?accommodations=${encodeURIComponent(filters.join(','))}` : '';
-    const response = await this.request<{ jobs?: JobListing[]; count?: number }>(`/career/jobs${query}`);
+    const response = await this.request<unknown>(`/career/jobs${query}`);
     if (!response) return this.mock.getJobs(filters);
-    if (!Array.isArray(response.jobs) || typeof response.count !== 'number') {
-      throw new TypeError('The career jobs response did not match the API contract.');
+    if (Array.isArray(response) && response.every((job) => this.isJobListing(job))) {
+      return { jobs: response, count: response.length };
     }
-    return { jobs: response.jobs, count: response.count };
+    if (
+      typeof response === 'object' &&
+      response !== null &&
+      'jobs' in response &&
+      Array.isArray(response.jobs) &&
+      response.jobs.every((job) => this.isJobListing(job)) &&
+      'count' in response &&
+      typeof response.count === 'number'
+    ) {
+      return { jobs: response.jobs, count: response.count };
+    }
+    throw new TypeError('The career jobs response did not match the API contract.');
   }
 
-  async apply(payload: JobApplication): Promise<unknown> {
-    const response = await this.request('/career/applications', {
+  async apply(payload: Omit<JobApplication, 'id' | 'submittedAt'>): Promise<JobApplication> {
+    const response = await this.request<unknown>('/career/applications', {
       method: 'POST',
       body: JSON.stringify(payload),
     });
-    return response ?? this.mock.apply(payload);
+    if (!response) return this.mock.apply(payload);
+    if (!this.isJobApplication(response)) {
+      throw new TypeError('The application response did not match the API contract.');
+    }
+    return response;
   }
 
-  async createJob(payload: unknown): Promise<unknown> {
-    const response = await this.request('/career/jobs', {
+  async createJob(payload: Omit<JobListing, 'id' | 'createdAt'>): Promise<JobListing> {
+    const response = await this.request<unknown>('/career/jobs', {
       method: 'POST',
       body: JSON.stringify(payload),
     });
-    return response ?? this.mock.createJob(payload);
+    if (!response) return this.mock.createJob(payload);
+    if (!this.isJobListing(response)) {
+      throw new TypeError('The job response did not match the API contract.');
+    }
+    return response;
   }
 
-  async requestResumeSms(profileId: string): Promise<{ token: string; devLink: string; expiresAt: string }> {
-    const response = await this.request<{ token: string; devLink: string; expiresAt: string }>(
-      `/onboarding/sessions/${encodeURIComponent(profileId)}/resume-sms`,
-      { method: 'POST' },
+  async requestResumeSms(
+    profile: OnboardingProfile,
+  ): Promise<{ token: string; devLink: string; expiresAt: string }> {
+    if (this.mockMode) return this.mock.requestResumeSms(profile);
+    const sessionId = await this.ensureRemoteSessionId(profile);
+    if (this.mockMode) return this.mock.requestResumeSms(profile);
+    const response = await this.request<{ token?: string; devLink: string; expiresAt: string }>(
+      `/onboarding/sessions/${encodeURIComponent(sessionId)}/resume-sms`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ phone: profile.contact.phone }),
+      },
     );
-    return response ?? this.mock.requestResumeSms(profileId);
+    if (!response) return this.mock.requestResumeSms(profile);
+    const token = response.token ?? new URL(response.devLink, window.location.href).searchParams.get('resumeToken');
+    if (!token) throw new TypeError('The resume SMS response did not contain a token.');
+    return { ...response, token };
   }
 
-  async partnerVouch(payload: unknown): Promise<{ status: 'vouched'; reference: string }> {
-    const response = await this.request<{ status: 'vouched'; reference: string }>('/onboarding/partner-vouch', {
+  async restoreFromResumeCode(
+    token: string,
+  ): Promise<{ ok: true; profile: OnboardingProfile } | { ok: false; code: 'TOKEN_EXPIRED' | 'TOKEN_USED' }> {
+    if (this.mockMode) return this.mock.restoreFromResumeToken(token);
+    try {
+      const profile = await this.request<OnboardingProfile>(`/onboarding/resume/${encodeURIComponent(token)}`);
+      if (!profile) return this.mock.restoreFromResumeToken(token);
+      return { ok: true, profile };
+    } catch (error) {
+      if (error instanceof ApiRequestError && error.status === 410) {
+        return { ok: false, code: 'TOKEN_EXPIRED' };
+      }
+      throw error;
+    }
+  }
+
+  async partnerVouch(input: {
+    profile: OnboardingProfile;
+    partnerOrg: string;
+    agentName: string;
+  }): Promise<{ status: 'vouched'; reference: string }> {
+    const mockPayload = {
+      partnerOrg: input.partnerOrg,
+      agentName: input.agentName,
+      profileId: input.profile.id,
+      learnerConsentConfirmed: true,
+    };
+    if (this.mockMode) return this.mock.partnerVouch(mockPayload);
+
+    const sessionId = await this.ensureRemoteSessionId(input.profile);
+    if (this.mockMode) return this.mock.partnerVouch(mockPayload);
+    const response = await this.request<{ voucherId?: unknown }>('/onboarding/partner-vouch', {
       method: 'POST',
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        sessionId,
+        partnerOrg: input.partnerOrg,
+        agentName: input.agentName,
+        learnerConsentConfirmed: true,
+      }),
     });
-    return response ?? this.mock.partnerVouch(payload);
+    if (!response) return this.mock.partnerVouch(mockPayload);
+    if (typeof response.voucherId !== 'string' || response.voucherId.length === 0) {
+      throw new TypeError('The partner voucher response did not contain a voucher id.');
+    }
+    return { status: 'vouched', reference: response.voucherId };
   }
 
   async verifyPartnerVoucher(
@@ -175,6 +248,57 @@ export class ApiClient {
     } finally {
       window.clearTimeout(timeout);
     }
+  }
+
+  private async ensureRemoteSessionId(profile: OnboardingProfile): Promise<string> {
+    let sessionId = this.remoteSessionIds.get(profile.id);
+    if (!sessionId && profile.id.startsWith('local-session')) {
+      const session = await this.createSession(profile.lang, profile.partnerId);
+      if (this.mockMode) return profile.id;
+      sessionId = session.id;
+      this.remoteSessionIds.set(profile.id, sessionId);
+    }
+    return sessionId ?? profile.id;
+  }
+
+  private isJobListing(value: unknown): value is JobListing {
+    return (
+      typeof value === 'object' &&
+      value !== null &&
+      'id' in value &&
+      typeof value.id === 'string' &&
+      'title' in value &&
+      (typeof value.title === 'string' || (typeof value.title === 'object' && value.title !== null)) &&
+      'employer' in value &&
+      typeof value.employer === 'string' &&
+      'location' in value &&
+      typeof value.location === 'string' &&
+      'remote' in value &&
+      typeof value.remote === 'boolean' &&
+      'description' in value &&
+      typeof value.description === 'string' &&
+      'offeredAccommodations' in value &&
+      Array.isArray(value.offeredAccommodations) &&
+      'createdAt' in value &&
+      typeof value.createdAt === 'string'
+    );
+  }
+
+  private isJobApplication(value: unknown): value is JobApplication {
+    return (
+      typeof value === 'object' &&
+      value !== null &&
+      'id' in value &&
+      typeof value.id === 'string' &&
+      'jobId' in value &&
+      typeof value.jobId === 'string' &&
+      'applicantProfileId' in value &&
+      typeof value.applicantProfileId === 'string' &&
+      'answers' in value &&
+      Array.isArray(value.answers) &&
+      'submittedAt' in value &&
+      typeof value.submittedAt === 'string'
+    );
   }
 
   private activateMock(): void {

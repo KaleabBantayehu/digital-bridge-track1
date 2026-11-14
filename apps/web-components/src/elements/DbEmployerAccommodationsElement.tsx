@@ -1,22 +1,18 @@
 import React from 'react';
-import { ReactShadowElement } from '../base/ReactShadowElement';
-import { CareerGateway } from '../career/CareerGateway';
+import { ApiBackedElement } from './ApiBackedElement';
+import { EmployerForm } from '../career/EmployerForm';
 
-export class DbEmployerAccommodationsElement extends ReactShadowElement {
+export class DbEmployerAccommodationsElement extends ApiBackedElement {
   static version = '1.0.0';
   protected renderWidget(): void {
+    this.ensureApiServices();
     this.render(
-      <CareerGateway
-        apiUrl={this.apiUrl}
-        partnerId={this.partnerId}
-        lang={this.currentLang}
-        theme={this.theme}
-        onDispatch={(name, detail) => this.dispatchHostEvent(name, detail)}
-      />,
+      <EmployerForm lang={this.currentLang} services={this.services} />,
     );
   }
 
   protected async prepareRuntime(): Promise<void> {
+    this.ensureApiServices();
     await Promise.resolve();
   }
 }

@@ -87,8 +87,9 @@ Companion files: `CLAUDE.md` (coding law) · `TRACK_1_MASTER_REQUIREMENTS.md` (w
 **Sprint 3 · 15:00–17:00**
 - [x] 15:00–16:30 Run axe on both Savanna pages + `standalone.html`; fix host CSS/layout issues the co-designer reports.
 - [x] 16:30–17:00 Before/after axe counts → `docs/SAVANNA_FIXES.md`.
+- [x] Dev 1 + Dev 2 integration: production build and 12-point judge audit pass; built Savanna, standalone, and external-partner pages mount their widgets and pass axe.
 
-**Evening (19:00–23:00)** — [ ] Wire bundled Amharic `.mp3` fallback clips (recorded by Dev 2) as static assets; [ ] Slow-3G/offline reload test; [ ] bundle size < 250 KB gz for onboarding element.
+**Evening (19:00–23:00)** — [ ] Wire bundled Amharic `.mp3` fallback clips (recorded by Dev 2) as static assets; [ ] Slow-3G/offline reload test; [x] bundle size < 250 KB gz for onboarding element (130.17 KB).
 **Sunday 09:00–12:00** — [ ] `Dockerfile` + `docker-compose.yml` (web side) verified; [ ] README "Install in 1 hour" (script-tag door).
 **Done =** tags render standalone **and** in Savanna; draft survives reload and offline; host listener receives `db:onboarding-completed`; axe clean on Savanna.
 

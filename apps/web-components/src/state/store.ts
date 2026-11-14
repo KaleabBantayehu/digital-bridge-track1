@@ -68,7 +68,7 @@ export const useOnboardingStore = create<OnboardingState>()(
         await useOnboardingStore.persist.rehydrate();
       },
       saveStepOfflineFirst: (partial) => get().updateProfile(partial),
-      requestSmsResume: (client) => client.requestResumeSms(get().profile.id),
+      requestSmsResume: (client) => client.requestResumeSms(get().profile),
       verifyPartnerVoucher: (client, referralCode) => client.verifyPartnerVoucher(referralCode),
       fetchJobs: (client, filters = []) => client.getJobs(filters),
       applyToJob: (client, application) => client.apply(application),
