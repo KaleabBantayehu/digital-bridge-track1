@@ -1,40 +1,23 @@
-import type { Lang } from '@db/shared-schemas';
-import { resolveAmharicPromptAudio } from '../api/amharicAudio';
+type AudioManifest = { clips?: Record<string, string> };
+const manifestCache = new Map<string, Promise<AudioManifest | null>>();
 
-const manifests = new Map<string, Promise<Record<string, string> | null>>();
+const base = (value: string) => value.replace(/\/+$/, '');
 
-function loadClips(manifestUrl: string, lang: Lang): Promise<Record<string, string> | null> {
-  let pending = manifests.get(manifestUrl);
-  if (!pending) {
-    pending = fetch(manifestUrl)
-      .then((response) => (response.ok ? response.json() : null))
-      .then((manifest: unknown) => {
-        if (!manifest || typeof manifest !== 'object') return null;
-        const { lang: manifestLang, clips } = manifest as { lang?: unknown; clips?: unknown };
-        if (manifestLang !== lang || !clips || typeof clips !== 'object' || Array.isArray(clips)) return null;
-        return clips as Record<string, string>;
-      })
-      .catch(() => null);
-    manifests.set(manifestUrl, pending);
+async function manifestFor(audioBaseUrl: string, lang: string): Promise<AudioManifest | null> {
+  const url = `${base(audioBaseUrl)}/audio/${lang}/manifest.json`;
+  if (!manifestCache.has(url)) {
+    manifestCache.set(url, fetch(url).then(async (response) => {
+      if (!response.ok) return null;
+      const value: unknown = await response.json();
+      return value && typeof value === 'object' ? value as AudioManifest : null;
+    }).catch(() => null));
   }
-  return pending;
+  return manifestCache.get(url) ?? null;
 }
 
-/**
- * URL of a bundled prompt clip, or null. A clip is only requested when the host set `audio-base-url` AND the
- * manifest ({base}/audio/{lang}/manifest.json) lists that prompt, so a missing file never produces a 404 or a dead
- * button. The bundled clips are tone cues; the caption box always shows the words.
- */
-export async function resolvePromptClip(lang: Lang, promptKey: string, audioBaseUrl?: string): Promise<string | null> {
-  if (!audioBaseUrl) return null;
-  const base = audioBaseUrl.replace(/\/+$/, '');
-  const manifestUrl = `${base}/audio/${lang}/manifest.json`;
-  try {
-    if (lang === 'am') return await resolveAmharicPromptAudio(promptKey, manifestUrl);
-    const clips = await loadClips(manifestUrl, lang);
-    const clip = clips?.[promptKey];
-    return typeof clip === 'string' && clip ? new URL(clip, new URL(manifestUrl, window.location.href)).toString() : null;
-  } catch {
-    return null; // manifest missing or malformed: caption box only, never an error for the learner
-  }
+export async function resolvePromptClip(lang: string, key: string, audioBaseUrl: string): Promise<string | null> {
+  if (!audioBaseUrl || !key || typeof window === 'undefined') return null;
+  const manifest = await manifestFor(audioBaseUrl, lang);
+  const file = manifest?.clips?.[key];
+  return file ? `${base(audioBaseUrl)}/audio/${lang}/${file}` : null;
 }
