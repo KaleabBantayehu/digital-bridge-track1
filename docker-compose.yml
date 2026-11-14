@@ -1,0 +1,16 @@
+services:
+  digital-bridge-track1:
+    build: .
+    container_name: digital-bridge-track1
+    ports:
+      - "3000:3000"
+      - "5173:5173"
+    environment:
+      - PORT=3000
+      - NODE_ENV=development
+      - DB_TYPE=sqlite
+      - DB_DATABASE=data/digital_bridge.sqlite
+    volumes:
+      - sqlite_data:/app/apps/api/data
+volumes:
+  sqlite_data:
