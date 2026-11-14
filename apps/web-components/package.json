@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 5173",
-    "build": "vite build",
+    "build": "pnpm --filter @db/shared-schemas build && vite build && node -e \"const fs=require('fs'); fs.cpSync('../savanna-host-demo', './dist', {recursive:true}); fs.mkdirSync('./dist/assets/js', {recursive:true}); fs.copyFileSync('./dist/db-widgets.v1.0.0.js', './dist/assets/js/db-widgets.v1.0.0.js');\"",
     "typecheck": "tsc --noEmit",
     "lint": "echo \"web-components lint ok\"",
     "test": "vitest run"
