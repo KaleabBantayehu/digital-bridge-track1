@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Digital Bridge — Mock LMS</title>
+    <style>
+      :root { color-scheme: light; font-family: system-ui, sans-serif; }
+      body { background: #f7f5f0; color: #20232a; line-height: 1.5; margin: 0; }
+      main { box-sizing: border-box; margin: 2rem auto; max-width: 42rem; padding: 1.5rem; }
+      section { background: #fff; border: 1px solid #68717d; border-radius: .75rem; padding: 1.25rem; }
+      label { display: block; font-weight: 700; margin-top: 1rem; }
+      input { box-sizing: border-box; font: inherit; margin-top: .35rem; min-height: 44px; padding: .5rem; width: 100%; }
+      button { background: #174e43; border: 2px solid #174e43; border-radius: .35rem; color: white; cursor: pointer; font: inherit; font-weight: 700; margin: .75rem .5rem .25rem 0; min-height: 44px; padding: .55rem .85rem; }
+      button.secondary { background: white; color: #174e43; }
+      :focus-visible { outline: 3px solid #8a321e; outline-offset: 3px; }
+      .hint { color: #414955; }
+      [role="alert"] { color: #8a1f11; font-weight: 700; }
+      code { overflow-wrap: anywhere; }
+      @media (max-width: 30rem) { main { margin: 0 auto; padding: .75rem; } section { padding: .9rem; } button { display: block; margin-right: 0; width: 100%; } }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Digital Bridge Mock LMS</h1>
+      <p class="hint">
+        This local learning-platform simulator signs a real RS256 login token and sends it to the
+        API's normal LTI launch route. The private key stays in this local server.
+      </p>
+      <section aria-labelledby="launch-heading">
+        <h2 id="launch-heading">Start a test launch</h2>
+        <form id="launch-form">
+          <label for="api-base-url">Digital Bridge API base URL</label>
+          <input id="api-base-url" name="api-base-url" type="url" autocomplete="url" required>
+
+          <label for="target-link-uri">Tool page to open</label>
+          <input id="target-link-uri" name="target-link-uri" type="url" autocomplete="url" required>
+          <p class="hint">
+            This exact address must also appear in the API's
+            <code>LTI_TOOL_TARGET_LINK_URIS</code> setting.
+          </p>
+
+          <button type="submit" name="launch-mode" value="valid">Launch with a valid token</button>
+          <button class="secondary" type="submit" name="launch-mode" value="tampered">
+            Test a tampered signature
+          </button>
+          <p id="form-error" role="alert" hidden></p>
+        </form>
+      </section>
+      <p class="hint">
+        For a visual standalone page, build the web components first. Otherwise, the API still
+        verifies the launch and returns the selected target address.
+      </p>
+    </main>
+    <script>
+      const form = document.getElementById("launch-form");
+      const apiBaseInput = document.getElementById("api-base-url");
+      const targetInput = document.getElementById("target-link-uri");
+      const errorMessage = document.getElementById("form-error");
+
+      function isLoopback(url) {
+        return ["localhost", "127.0.0.1", "[::1]"].includes(url.hostname);
+      }
+
+      fetch("/mock-lms/config", { cache: "no-store" })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("The Mock LMS configuration could not be loaded.");
+          }
+          return response.json();
+        })
+        .then((config) => {
+          apiBaseInput.value = config.toolBaseUrl;
+          targetInput.value = config.defaultTargetLinkUri;
+        })
+        .catch(() => {
+          errorMessage.hidden = false;
+          errorMessage.textContent = "The Mock LMS could not load its local configuration.";
+        });
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        errorMessage.hidden = true;
+        let apiBase;
+        let targetLink;
+        try {
+          apiBase = new URL(apiBaseInput.value);
+          targetLink = new URL(targetInput.value);
+        } catch {
+          errorMessage.hidden = false;
+          errorMessage.textContent = "Enter valid web addresses for the API and tool page.";
+          return;
+        }
+        if (
+          apiBase.protocol !== "http:" ||
+          !isLoopback(apiBase) ||
+          apiBase.pathname !== "/" ||
+          apiBase.search ||
+          apiBase.hash ||
+          !["http:", "https:"].includes(targetLink.protocol)
+        ) {
+          errorMessage.hidden = false;
+          errorMessage.textContent = "The API must use a local HTTP address and the tool page must be a valid web address.";
+          return;
+        }
+
+        fetch("/mock-lms/config", { cache: "no-store" })
+          .then((response) => response.json())
+          .then((config) => {
+            const loginUrl = new URL("/api/v1/lti/login", apiBase);
+            loginUrl.searchParams.set("iss", config.issuer);
+            loginUrl.searchParams.set("client_id", config.clientId);
+            loginUrl.searchParams.set("login_hint", "mock-learner@example.test");
+            loginUrl.searchParams.set("target_link_uri", targetLink.href);
+            if (event.submitter && event.submitter.value === "tampered") {
+              loginUrl.searchParams.set("lti_message_hint", "mock-tamper-signature");
+            }
+            window.location.assign(loginUrl.toString());
+          })
+          .catch(() => {
+            errorMessage.hidden = false;
+            errorMessage.textContent = "The Mock LMS could not prepare the login request.";
+          });
+      });
+    </script>
+  </body>
+</html>
