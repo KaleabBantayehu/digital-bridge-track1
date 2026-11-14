@@ -1,16 +1,14 @@
 // apps/api/src/main.ts
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
-import { Module, Controller, Get, ValidationPipe } from '@nestjs/common';
+import { Module, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { CoreApiModule } from './core-api.module';
+import { LtiModule } from './lti/lti.module';
 
-@Controller('health')
-class HealthController {
-  @Get()
-  check() { return { status: 'ok', version: 'v1' }; }
-}
-
-@Module({ controllers: [HealthController] })
+@Module({
+  imports: [CoreApiModule, LtiModule],
+})
 class AppModule {}
 
 async function bootstrap() {
