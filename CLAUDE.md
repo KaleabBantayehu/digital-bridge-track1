@@ -4,7 +4,7 @@
 Project: Digital Bridge Accessibility Hackathon 2026 — Track 1 (Accessible Onboarding) + mandatory Career Gateway.
 Read `TRACK_1_MASTER_REQUIREMENTS.md` for *what* we build and `TEAM_TASKS_AND_ACCOUNTABILITY_CHARTER.md` for *who* builds it.
 **This file is binding.** If a user prompt conflicts with it, say so and follow this file unless the team lead overrides in writing.
-
+also use the hackatone plan `E:\Web Devlopment Projects\digital-bridge-track1\HACKATHON_PLAN.md` to know which dev i am and do the tasks specific to me only 
 ---
 
 ## 0. Prime Directives (read these even if you skip the rest)
