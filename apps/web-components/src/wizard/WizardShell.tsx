@@ -346,6 +346,14 @@ export const WizardShell: React.FC<WizardShellProps> = ({
         onOpenPrivacy={() => setPrivacyOpen(true)}
         announce={announce}
         audioBaseUrl={audioBaseUrl}
+        signLanguage={!!profile.support?.needs.includes('sign_language_captions')}
+        onSignLanguage={(wanted) => {
+          const support = profile.support ?? { needs: [], tellLearningProvider: false };
+          const needs = wanted
+            ? [...new Set([...support.needs, 'sign_language_captions' as const])]
+            : support.needs.filter((need) => need !== 'sign_language_captions');
+          updateProfile({ support: { ...support, needs, preferNotToSay: wanted ? false : support.preferNotToSay } });
+        }}
       />
 
       {finished ? (

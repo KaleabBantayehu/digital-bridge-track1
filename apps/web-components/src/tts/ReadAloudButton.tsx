@@ -115,7 +115,7 @@ export const ReadAloudButton: React.FC<ReadAloudButtonProps> = ({
       announce?.(t(lang, 'help.reading'));
       return;
     }
-    const clip = promptKey ? await resolvePromptClip(lang, promptKey, audioBaseUrl) : null;
+    const clip = promptKey ? await resolvePromptClip(lang, promptKey, audioBaseUrl ?? '') : null;
     if (run !== runRef.current) return; // stopped while looking up the clip
     if (clip) {
       const audio = new Audio(clip);

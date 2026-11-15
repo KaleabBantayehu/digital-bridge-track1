@@ -5,6 +5,8 @@ import { TextField } from '../../fields/TextField';
 import { CheckboxField } from '../../fields/CheckboxField';
 import { fieldId, type StepProps } from '../types';
 import { cleanId, ui } from '../ui';
+import { ReadAloudButton } from '../../tts/ReadAloudButton';
+import { spellOut } from '../../voice/spokenInput';
 
 export const ContactStep: React.FC<StepProps> = ({ lang, t, idBase, profile, update, errorFor, announce, services }) => {
   const [smsResult, setSmsResult] = useState<{ code: string; devLink: string; phone: string } | null>(null);
@@ -120,6 +122,17 @@ export const ContactStep: React.FC<StepProps> = ({ lang, t, idBase, profile, upd
             </a>
           </p>
         )}
+        {smsResult?.code && (
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            {/* Co-designer finding: "message sent code need audio". Spelled out so each character is heard. */}
+            <ReadAloudButton
+              lang={lang}
+              text={t('sms.codeSpoken', { code: spellOut(smsResult.code, 'code') })}
+              label={t('sms.readCode')}
+              announce={announce}
+            />
+          </div>
+        )}
       </section>
 
       <section aria-labelledby={restoreHeadingId} className={ui.card}>
@@ -137,7 +150,8 @@ export const ContactStep: React.FC<StepProps> = ({ lang, t, idBase, profile, upd
           error={restoreError || undefined}
           autoComplete="one-time-code"
           spellCheck={false}
-          voice={false}
+          spokenKind="code"
+          voiceNote={false}
         />
         <button type="button" onClick={restore} className={ui.btnSecondary}>
           {t('sms.restore')}

@@ -1,0 +1,187 @@
+{
+  "hostFiles": {
+    "application_alx.css": "not found (zip entry undefined, local css\\application_alx.css)",
+    "app.css": "not found (zip entry undefined, local css\\app.css)",
+    "static-page.js": "not found (zip entry undefined, local js\\static-page.js)"
+  },
+  "licenceFile": [],
+  "licences": {
+    "MIT": [
+      "@borewit/text-codec",
+      "@hookform/resolvers",
+      "@lukeed/csprng",
+      "@microsoft/tsdoc",
+      "@nestjs/common",
+      "@nestjs/core",
+      "@nestjs/mapped-types",
+      "@nestjs/platform-express",
+      "@nestjs/swagger",
+      "@nestjs/throttler",
+      "@nestjs/typeorm",
+      "@nuxtjs/opencollective",
+      "@pkgjs/parseargs",
+      "@sqltools/formatter",
+      "@tokenizer/inflate",
+      "@tokenizer/token",
+      "@types/react",
+      "@types/validator",
+      "accepts",
+      "ansi-regex",
+      "ansi-styles",
+      "app-root-path",
+      "append-field",
+      "array-flatten",
+      "available-typed-arrays",
+      "balanced-match",
+      "base64-js",
+      "body-parser",
+      "brace-expansion",
+      "buffer",
+      "buffer-from",
+      "busboy",
+      "bytes",
+      "call-bind",
+      "call-bind-apply-helpers",
+      "call-bound",
+      "chalk",
+      "class-transformer",
+      "class-validator",
+      "color-convert"
+    ],
+    "ISC": [
+      "@isaacs/cliui",
+      "ansis",
+      "cliui",
+      "foreground-child",
+      "get-caller-file",
+      "glob",
+      "inherits",
+      "isexe",
+      "iterare",
+      "lru-cache",
+      "lucide-react",
+      "minimatch",
+      "setprototypeof",
+      "signal-exit",
+      "which",
+      "y18n",
+      "yargs-parser"
+    ],
+    "Python-2.0": [
+      "argparse"
+    ],
+    "BSD-2-Clause": [
+      "dotenv",
+      "webidl-conversions"
+    ],
+    "Apache-2.0": [
+      "idb-keyval",
+      "reflect-metadata",
+      "rxjs",
+      "swagger-ui-dist"
+    ],
+    "BSD-3-Clause": [
+      "ieee754",
+      "qs"
+    ],
+    "BlueOak-1.0.0": [
+      "jackspeak",
+      "minipass",
+      "package-json-from-dist",
+      "path-scurry"
+    ],
+    "(MIT AND BSD-3-Clause)": [
+      "sha.js"
+    ],
+    "0BSD": [
+      "tslib"
+    ]
+  },
+  "copyleft": [],
+  "audit": "ERROR 1: {\n  \"actions\": [\n    {\n      \"action\": \"review\",\n      \"module\": \"esbuild\",\n      \"resolves\": [\n        {\n          \"id\": 1102341,\n          \"path\": \"apps__web-components>vite>esbuild\",\n          \"dev\": false,\n          \"optional\": false,\n          \"bundled\": false\n        }\n      ]\n    },\n",
+  "envCommitted": [],
+  "secretLikeLines": [
+    "ERROR 1: "
+  ],
+  "fallbackJwtSecret": [
+    "apps/api/src/auth/auth.controller.ts:35",
+    "apps/api/src/common/guards/scopes.guard.ts:8"
+  ],
+  "medicalWords": [
+    "apps/web-components/src/i18n/en.json:250:  \"support.noProof\": \"No medical proof required. This stays private and is never shared without your permission.\",",
+    "apps/web-components/src/wizard/steps/SupportStep.tsx:20: * Private support request. Functional needs only; no diagnosis, no medical proof (CLAUDE.md §4).",
+    "packages/shared-schemas/src/index.ts:357:  'support.noProof': 'No medical proof required. This stays private and is never shared without your permission.',"
+  ],
+  "apiLogging": [
+    "ERROR 1: "
+  ],
+  "readme": {
+    "headings": [
+      "Digital Bridge Accessible Onboarding & Career Gateway (`<db-signup>` & `<db-career-gateway>`)",
+      "What it does",
+      "The main task we tested",
+      "Run it",
+      "Install, Level 1",
+      "Install, Level 2",
+      "Install, Level 3",
+      "Languages",
+      "Offline and slow connection",
+      "Data and privacy",
+      "Cost to run",
+      "Finished and not finished",
+      "Libraries and their licences"
+    ],
+    "mentionsDockerCompose": false,
+    "mentionsTeam": true,
+    "mentionsEvents": false,
+    "mentions21Oct": false,
+    "openapiYaml": false,
+    "openapiJson": true,
+    "changelog": false,
+    "required": [
+      "Module name / title",
+      "team members",
+      "co-designer",
+      "What it does",
+      "The one task we tested",
+      "Run it",
+      "docker compose",
+      "Install Level 1",
+      "every event",
+      "Install Level 2",
+      "openapi.yaml",
+      "Install Level 3",
+      "Languages",
+      "Offline and slow",
+      "Data and privacy",
+      "Cost to run",
+      "Finished and not finished",
+      "Libraries and their licences",
+      "21 October"
+    ]
+  },
+  "docker": {
+    "cmd": "CMD [\"pnpm\", \"dev\"]",
+    "webDevScript": "vite --port 5173",
+    "viteBindsAllInterfaces": false,
+    "healthcheck": false,
+    "frozenLockfile": false
+  },
+  "tests": [
+    "apps/web-components/src/api/ApiClient.test.ts",
+    "apps/web-components/src/api/amharicAudio.test.ts",
+    "apps/web-components/src/i18n/fidel.test.ts",
+    "apps/web-components/src/state/persistence.test.ts",
+    "apps/web-components/src/voice/commands.test.ts",
+    "apps/web-components/src/voice/spokenInput.test.ts"
+  ],
+  "rootScripts": {
+    "build:schemas": "pnpm -F @db/shared-schemas build",
+    "dev": "pnpm build:schemas && pnpm --parallel -r run dev",
+    "build": "pnpm build:schemas && pnpm -r run build",
+    "lint": "pnpm -r run lint",
+    "typecheck": "pnpm -r run typecheck",
+    "test": "pnpm -r run test",
+    "gate": "pnpm lint && pnpm typecheck && pnpm test"
+  }
+}

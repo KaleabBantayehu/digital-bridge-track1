@@ -134,6 +134,8 @@ export const TextField: React.FC<TextFieldProps> = ({
           voiceNoteKey={noteKey}
           fidelHelper={showFidel && kind === 'text'}
           spokenKind={kind}
+          liveFill={kind === 'code'}
+          currentValue={value}
           onUse={(text) => {
             onChange(multiline && value ? `${value} ${text}` : text);
             onVoiceUsed?.();

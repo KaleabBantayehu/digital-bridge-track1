@@ -1,0 +1,497 @@
+[
+  {
+    "surface": "index.html",
+    "state": "load [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "standalone.html",
+    "state": "load [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "external-partner-demo.html",
+    "state": "load [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "demo/blank.html",
+    "state": "load [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "load [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "load [am]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/profile.html",
+    "state": "load [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/profile.html",
+    "state": "load [am]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/jobs.html",
+    "state": "load [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/jobs.html",
+    "state": "load [am]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/homepage-v1-self-paced.html",
+    "state": "load [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/homepage-v1-paced.html",
+    "state": "load [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/concept-with-navigation.html",
+    "state": "load [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "step1-welcome [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "step1-error [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "step2-name [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "step2-error [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "step3-contact [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "step3-error [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "step4-dob [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "step4-error [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "step5-identity [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "step5-error [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "step6-support [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "step7-review [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "finished [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "privacy dialog [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "help dialog [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "step1-welcome [am]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "step1-error [am]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "step2-name [am]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "step2-error [am]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "step3-contact [am]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "step3-error [am]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "step4-dob [am]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "step4-error [am]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "step5-identity [am]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "step5-error [am]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "step6-support [am]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "step7-review [am]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "finished [am]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "privacy dialog [am]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "help dialog [am]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "partner route [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "partner voucher confirmed [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "SMS resume link shown [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "Ethiopian date chosen [am]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/jobs.html",
+    "state": "job list, many results [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/jobs.html",
+    "state": "all filters ticked (0 results?) [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/jobs.html",
+    "state": "one filter ticked [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/jobs.html",
+    "state": "apply dialog [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/jobs.html",
+    "state": "application sent [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/jobs.html",
+    "state": "employer form error [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "voice answers used [en]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  {
+    "surface": "pages/signup.html",
+    "state": "read-aloud caption, no voice [am]",
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  }
+]

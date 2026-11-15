@@ -1,0 +1,30 @@
+G2 axe: 55 scans; critical 0, serious 0, moderate 0, minor 0
+G8 tasks:
+  T1 typed onboarding [en]: Y
+  T7 validation error + recovery on 5 steps [en]: Y
+  T1 typed onboarding [am]: Y
+  T7 validation error + recovery on 5 steps [am]: Y
+  T3 refer me through a partner -> finish: Y
+  T4 save & resume by SMS in a fresh context: N: fresh context did not restore (link http://127.0.0.1:12977/pages/signup.html?resume=mock-local-session-1-1794736760229, code , restored-msg 0)
+  T5 Amharic + Ethiopian date: Y (selects: ቀን/ወር/ዓመት; 13 months, last "ጳጉሜ"; 1 Meskerem 2000 shows "በግሪጎሪያን የቀን መቁጠሪያ፦ ሴፕቴምበር 12, 2007" (expected 2007-09-12))
+  T6 private filter + apply with voice: Y (filter network requests carrying selections: 0; requests during filtering: 10; zero-results message: yes; status "Showing 4 jobs matching your support preferences​"; voice text "I can support customers in Amharic and English"; apply requests: none (mock, local))
+  T2 voice on two fields with review + read-back: Y (First name: field empty before "Use this answer" = true, after = "Abebe"; Father's name: field empty before "Use this answer" = true, after = "Kebede"; read-back: spoke "Abebe" (en-US), spoke "Kebede" (en-US))
+G5 reflow:
+  pages/signup.html 640x800 (200%): hScroll=false (640/640) small=0 
+  pages/profile.html 640x800 (200%): hScroll=false (640/640) small=0 
+  pages/jobs.html 640x800 (200%): hScroll=false (640/640) small=0 
+  demo/blank.html 640x800 (200%): hScroll=false (640/640) small=0 
+  pages/homepage-v1-self-paced.html 640x800 (200%): hScroll=false (640/640) small=0 
+  pages/signup.html 320x640 (400%): hScroll=false (320/320) small=0 
+  pages/profile.html 320x640 (400%): hScroll=false (320/320) small=0 
+  pages/jobs.html 320x640 (400%): hScroll=false (320/320) small=0 
+  demo/blank.html 320x640 (400%): hScroll=false (320/320) small=0 
+  pages/homepage-v1-self-paced.html 320x640 (400%): hScroll=false (320/320) small=0 
+  pages/signup.html 360x640 (phone 360): hScroll=false (360/360) small=0 
+  pages/profile.html 360x640 (phone 360): hScroll=false (360/360) small=0 
+  pages/jobs.html 360x640 (phone 360): hScroll=false (360/360) small=0 
+  demo/blank.html 360x640 (phone 360): hScroll=false (360/360) small=0 
+  pages/homepage-v1-self-paced.html 360x640 (phone 360): hScroll=false (360/360) small=0 
+G6 sound: {"onLoad":{"audio":0,"speak":0},"afterReadAloud":{"audio":["http://127.0.0.1:12977/assets/audio/am/step0.mp3"],"speak":[]},"caption":"ደረጃ 1 ከ 7፦ እንኳን ደህና መጡ — ከመጀመራችን በፊት. ይህ 10 ደቂቃ ያህል ይወስዳል። እንዴት እንደሚሠራ ይኸውና። በአንድ ጊዜ አንድ ጥያቄ። የጊዜ ገደብ የለም። መልሶችዎ በዚህ መሣሪያ ላይ ይቀመጣሉ። ሁሉንም ጥያቄዎች በድምጽ መመለስ ይችላሉ።","audioRequests":["/assets/audio/am/step0.mp3"]}
+404s: /favicon.ico
+notes: none

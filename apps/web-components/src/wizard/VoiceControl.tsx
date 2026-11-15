@@ -2,7 +2,7 @@ import React, { useEffect, useId, useRef, useState } from 'react';
 import { AudioLines, Ear, EarOff } from 'lucide-react';
 import type { Lang } from '@db/shared-schemas';
 import { t as translate, type I18nKey } from '../i18n';
-import { matchCommand, type VoiceCommand } from '../voice/commands';
+import { matchCommand, matchNumber, type VoiceCommand } from '../voice/commands';
 import {
   getSpeechRecognition, isFieldListening, onFieldListening, playChime, speakText, speechLocale, stopSpeaking,
   type SpeechRecognitionLike,
@@ -46,6 +46,7 @@ export const VoiceControl: React.FC<VoiceControlProps> = ({ lang, rootRef, annou
   const engineRef = useRef(speechLocale(lang));
   const failuresRef = useRef(0);
   const restartRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const numbersRef = useRef(new Map<number, HTMLElement>());
   const langRef = useRef(lang);
   langRef.current = lang;
   const t = (key: string, vars?: Record<string, string | number>) => translate(langRef.current, key as I18nKey, vars);
@@ -69,7 +70,8 @@ export const VoiceControl: React.FC<VoiceControlProps> = ({ lang, rootRef, annou
     if (!Recognition) return;
     const rec = new Recognition();
     rec.lang = engineRef.current;
-    rec.continuous = true;
+    // Mobile Chrome drops long continuous sessions; on touch devices listen one phrase at a time and restart.
+    rec.continuous = !(typeof window.matchMedia === 'function' && window.matchMedia('(pointer: coarse)').matches);
     rec.interimResults = false;
     rec.maxAlternatives = 1;
     rec.onresult = (event) => {
@@ -197,8 +199,16 @@ export const VoiceControl: React.FC<VoiceControlProps> = ({ lang, rootRef, annou
       case 'stop':
         turnOff(t('vc.off'));
         return;
-      case 'help':
-        feedback([t('vc.cmd.next'), t('vc.cmd.back'), t('vc.cmd.repeat'), t('vc.cmd.move'), t('vc.cmd.choose'), t('vc.cmd.answer'), t('vc.cmd.stop')].join('. '));
+      case 'help': {
+        // Co-designer finding: "help" must open the portal's Need help, not repeat the instructions.
+        const helpButton = root.querySelector<HTMLButtonElement>('[data-db-help-button]');
+        if (!helpButton) return run('commands', heard);
+        helpButton.click();
+        setTimeout(() => feedback(clean(root.querySelector('dialog[open] h2')?.textContent)), 250);
+        return;
+      }
+      case 'commands':
+        feedback([t('vc.cmd.numbers'), t('vc.cmd.next'), t('vc.cmd.back'), t('vc.cmd.repeat'), t('vc.cmd.move'), t('vc.cmd.choose'), t('vc.cmd.answer'), t('vc.cmd.stop')].join('. '));
         return;
       case 'next': {
         // The visible Continue/Submit button (never one inside a closed dialog).
@@ -271,7 +281,36 @@ export const VoiceControl: React.FC<VoiceControlProps> = ({ lang, rootRef, annou
     }
   };
 
+  /** "3" / "three" / "ሶስት": go to the item wearing badge 3; press it if it is a button, link, checkbox or radio. */
+  const choose = (n: number, heard: string) => {
+    const el = numbersRef.current.get(n);
+    if (!el || !el.isConnected) {
+      feedback(t('vc.noNumber', { n }));
+      return;
+    }
+    playChime('next');
+    setStatus(t('vc.heard', { text: heard }));
+    el.focus();
+    const pressable = el instanceof HTMLButtonElement || el instanceof HTMLAnchorElement || el.tagName === 'SUMMARY' ||
+      (el instanceof HTMLInputElement && ['checkbox', 'radio'].includes(el.type));
+    if (!pressable) {
+      feedback(describe(el));
+      return;
+    }
+    el.click();
+    if (el.matches('button[type="submit"], [data-db-action="back"]')) {
+      afterNavigate();
+      return;
+    }
+    setTimeout(() => feedback(describe(activeInRoot() ?? el)), 250);
+  };
+
   const handle = (text: string) => {
+    const number = matchNumber(text);
+    if (number !== null) {
+      choose(number, text);
+      return;
+    }
     const command = matchCommand(text);
     if (!command) {
       feedback(t('vc.unknown', { text }));
@@ -288,6 +327,12 @@ export const VoiceControl: React.FC<VoiceControlProps> = ({ lang, rootRef, annou
       turnOff(t('vc.off'));
       return;
     }
+    if (window.isSecureContext === false) {
+      // Phones opening the demo over http://192.168… have no microphone access at all.
+      setStatus(t('vc.insecure'));
+      announce(t('vc.insecure'));
+      return;
+    }
     if (!getSpeechRecognition()) {
       setStatus(t('vc.unsupported'));
       announce(t('vc.unsupported'));
@@ -302,6 +347,46 @@ export const VoiceControl: React.FC<VoiceControlProps> = ({ lang, rootRef, annou
   };
   const toggleRefFn = useRef(toggle);
   toggleRefFn.current = toggle;
+
+  // Numbered badges: while voice control is on, every control on the current step (or in the open dialog) shows a
+  // number the learner can say. The number sits on the label for inputs, and is hidden from screen readers (CSS alt).
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const clear = () => {
+      root.querySelectorAll('[data-vc-num]').forEach((el) => el.removeAttribute('data-vc-num'));
+      numbersRef.current.clear();
+    };
+    if (!on) {
+      clear();
+      return;
+    }
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const renumber = () => {
+      clear();
+      const scope = root.querySelector<HTMLElement>('dialog[open]') ?? root;
+      const list = focusables(scope).filter((el) => el.dataset.dbAction !== 'voice-control');
+      list.forEach((el, index) => {
+        const n = index + 1;
+        const field = el instanceof HTMLInputElement || el instanceof HTMLSelectElement || el instanceof HTMLTextAreaElement;
+        const badgeOn = (field && (el as HTMLInputElement).labels?.[0]) || el;
+        badgeOn.setAttribute('data-vc-num', String(n));
+        numbersRef.current.set(n, el);
+      });
+    };
+    renumber();
+    const observer = new MutationObserver(() => {
+      clearTimeout(timer);
+      timer = setTimeout(renumber, 120);
+    });
+    observer.observe(root, { childList: true, subtree: true, attributes: true, attributeFilter: ['open', 'hidden', 'disabled'] });
+    return () => {
+      observer.disconnect();
+      clearTimeout(timer);
+      clear();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [on]);
 
   // Pause while a field dictates or records; resume afterwards.
   useEffect(
@@ -346,7 +431,7 @@ export const VoiceControl: React.FC<VoiceControlProps> = ({ lang, rootRef, annou
   }, []);
 
   const Icon = on ? EarOff : Ear;
-  const commands = ['vc.cmd.next', 'vc.cmd.back', 'vc.cmd.repeat', 'vc.cmd.move', 'vc.cmd.choose', 'vc.cmd.answer', 'vc.cmd.stop'];
+  const commands = ['vc.cmd.numbers', 'vc.cmd.next', 'vc.cmd.back', 'vc.cmd.repeat', 'vc.cmd.move', 'vc.cmd.choose', 'vc.cmd.answer', 'vc.cmd.stop'];
 
   return (
     <div className="mb-3">

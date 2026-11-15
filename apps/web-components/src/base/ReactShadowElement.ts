@@ -44,7 +44,6 @@ export abstract class ReactShadowElement extends HTMLElement {
   private mountPoint?: HTMLDivElement;
 
   connectedCallback(): void {
-    loadDocumentFonts();
     if (!this.shadowRoot) {
       const shadow = this.attachShadow({ mode: 'open' });
       const style = document.createElement('style');
@@ -123,18 +122,4 @@ export abstract class ReactShadowElement extends HTMLElement {
 
   protected abstract renderWidget(): void;
   protected abstract prepareRuntime(): Promise<void>;
-}
-
-let fontsRequested = false;
-
-/** Fonts are document-scoped, so load them once into document.head (CLAUDE.md §2.7), with system fallbacks. */
-function loadDocumentFonts(): void {
-  if (fontsRequested || typeof document === 'undefined') return;
-  fontsRequested = true;
-  if (document.querySelector('link[data-db-fonts]')) return;
-  const link = document.createElement('link');
-  link.rel = 'stylesheet';
-  link.href = 'https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;600;700&display=swap';
-  link.dataset.dbFonts = '';
-  document.head.append(link);
 }

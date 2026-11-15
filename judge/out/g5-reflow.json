@@ -1,0 +1,122 @@
+[
+  {
+    "page": "pages/signup.html",
+    "viewport": "640x800 (200%)",
+    "hScroll": false,
+    "scrollWidth": 640,
+    "clientWidth": 640,
+    "targetsUnder24": []
+  },
+  {
+    "page": "pages/profile.html",
+    "viewport": "640x800 (200%)",
+    "hScroll": false,
+    "scrollWidth": 640,
+    "clientWidth": 640,
+    "targetsUnder24": []
+  },
+  {
+    "page": "pages/jobs.html",
+    "viewport": "640x800 (200%)",
+    "hScroll": false,
+    "scrollWidth": 640,
+    "clientWidth": 640,
+    "targetsUnder24": []
+  },
+  {
+    "page": "demo/blank.html",
+    "viewport": "640x800 (200%)",
+    "hScroll": false,
+    "scrollWidth": 640,
+    "clientWidth": 640,
+    "targetsUnder24": []
+  },
+  {
+    "page": "pages/homepage-v1-self-paced.html",
+    "viewport": "640x800 (200%)",
+    "hScroll": false,
+    "scrollWidth": 640,
+    "clientWidth": 640,
+    "targetsUnder24": []
+  },
+  {
+    "page": "pages/signup.html",
+    "viewport": "320x640 (400%)",
+    "hScroll": false,
+    "scrollWidth": 320,
+    "clientWidth": 320,
+    "targetsUnder24": []
+  },
+  {
+    "page": "pages/profile.html",
+    "viewport": "320x640 (400%)",
+    "hScroll": false,
+    "scrollWidth": 320,
+    "clientWidth": 320,
+    "targetsUnder24": []
+  },
+  {
+    "page": "pages/jobs.html",
+    "viewport": "320x640 (400%)",
+    "hScroll": false,
+    "scrollWidth": 320,
+    "clientWidth": 320,
+    "targetsUnder24": []
+  },
+  {
+    "page": "demo/blank.html",
+    "viewport": "320x640 (400%)",
+    "hScroll": false,
+    "scrollWidth": 320,
+    "clientWidth": 320,
+    "targetsUnder24": []
+  },
+  {
+    "page": "pages/homepage-v1-self-paced.html",
+    "viewport": "320x640 (400%)",
+    "hScroll": false,
+    "scrollWidth": 320,
+    "clientWidth": 320,
+    "targetsUnder24": []
+  },
+  {
+    "page": "pages/signup.html",
+    "viewport": "360x640 (phone 360)",
+    "hScroll": false,
+    "scrollWidth": 360,
+    "clientWidth": 360,
+    "targetsUnder24": []
+  },
+  {
+    "page": "pages/profile.html",
+    "viewport": "360x640 (phone 360)",
+    "hScroll": false,
+    "scrollWidth": 360,
+    "clientWidth": 360,
+    "targetsUnder24": []
+  },
+  {
+    "page": "pages/jobs.html",
+    "viewport": "360x640 (phone 360)",
+    "hScroll": false,
+    "scrollWidth": 360,
+    "clientWidth": 360,
+    "targetsUnder24": []
+  },
+  {
+    "page": "demo/blank.html",
+    "viewport": "360x640 (phone 360)",
+    "hScroll": false,
+    "scrollWidth": 360,
+    "clientWidth": 360,
+    "targetsUnder24": []
+  },
+  {
+    "page": "pages/homepage-v1-self-paced.html",
+    "viewport": "360x640 (phone 360)",
+    "hScroll": false,
+    "scrollWidth": 360,
+    "clientWidth": 360,
+    "targetsUnder24": []
+  }
+]

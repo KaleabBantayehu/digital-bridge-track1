@@ -266,6 +266,108 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 320, height: 640 
   await page.close();
 }
 
+// 2c) JUDGE_REPORT D-01 / D-02 regressions: axe on the landing page, and on signup.html scrolled halfway down
+//     (a sticky top bar once covered the help buttons there), in both languages and at both sizes.
+for (const viewport of [{ width: 1280, height: 800 }, { width: 320, height: 640 }]) {
+  {
+    const page = await newPage(viewport);
+    await page.goto(`${BASE}/index.html`, { waitUntil: 'networkidle' });
+    await axe(page, `index.html ${viewport.width}px`);
+    await page.close();
+  }
+  for (const lang of ['en', 'am']) {
+    const page = await newPage(viewport);
+    await page.goto(`${BASE}/pages/signup.html${lang === 'am' ? '?lang=am' : ''}`, { waitUntil: 'networkidle' });
+    const w = page.locator('db-signup');
+    await w.locator('h2[tabindex]').first().waitFor();
+    const L = lang === 'am' ? am : en;
+    await w.getByLabel(L['consent.saveAnswers']).check();
+    await w.locator('form button[type=submit]').click();
+    await w.getByRole('heading', { level: 2, name: /2/ }).waitFor();
+    await page.evaluate(() => window.scrollTo({ top: (document.documentElement.scrollHeight - innerHeight) / 2, behavior: 'instant' }));
+    await page.waitForTimeout(300);
+    const scrolled = await page.evaluate(() => Math.round(scrollY));
+    check(scrolled > 0, `signup [${lang}] ${viewport.width}px scrolled halfway (scrollY ${scrolled})`);
+    await axe(page, `signup [${lang}] ${viewport.width}px scrolled halfway, step 2`);
+    const topbarPosition = await page.evaluate(() => getComputedStyle(document.querySelector('.db-savanna-topbar')).position);
+    check(topbarPosition === 'static', `top bar is not sticky (position: ${topbarPosition})`);
+    await page.close();
+  }
+}
+
+// 2d) Co-designer fixes: numbered voice-control badges, "help" opens Need help, numbers choose items,
+//     e-mail recognised in English inside the Amharic UI, live fill of the ID number, no third-party fonts.
+{
+  const page = await newPage({ width: 1280, height: 800 }, () => {
+    if (window.speechSynthesis) window.speechSynthesis.getVoices = () => [];
+    window.__langs = [];
+    class ScriptedRecognition extends EventTarget {
+      start() { window.__langs.push(this.lang); window.__activeRec = this; if (window.__next) { const t = window.__next; window.__next = null; setTimeout(() => this.onresult?.({ results: [[{ transcript: t, confidence: 1 }]] }), 60); } }
+      stop() { if (window.__activeRec === this) window.__activeRec = null; this.onend?.(); }
+      abort() { if (window.__activeRec === this) window.__activeRec = null; }
+    }
+    window.SpeechRecognition = ScriptedRecognition;
+    window.webkitSpeechRecognition = ScriptedRecognition;
+    window.__say = (text) => { const rec = window.__activeRec; if (!rec) return false; rec.onresult?.({ results: [[{ transcript: text, confidence: 1 }]] }); return true; };
+  });
+  const say = async (text) => {
+    for (let i = 0; i < 20 && !(await page.evaluate((t) => window.__say(t), text)); i++) await page.waitForTimeout(100);
+    await page.waitForTimeout(450);
+  };
+  await page.goto(`${BASE}/pages/signup.html?lang=am`, { waitUntil: 'networkidle' });
+  const w = page.locator('db-signup');
+  await w.locator('section[lang="am"] h2[tabindex]').first().waitFor();
+  const fontLinks = await page.evaluate(() => [...document.querySelectorAll('link[href*="fonts.googleapis"], link[data-db-fonts]')].length);
+  check(fontLinks === 0, `widget adds no third-party font link to the host page (${fontLinks})`);
+
+  await page.keyboard.press('Alt+KeyV');
+  await w.getByText(am['vc.listening']).waitFor();
+  await page.waitForTimeout(400);
+  const badges = await page.evaluate(() => document.querySelector('db-signup').shadowRoot.querySelectorAll('[data-vc-num]').length);
+  check(badges >= 5, `voice control shows numbered badges (${badges})`);
+  await axe(page, 'signup [am] voice control with numbered badges');
+  const consentNumber = await page.evaluate((label) => {
+    const root = document.querySelector('db-signup').shadowRoot;
+    const input = [...root.querySelectorAll('input[type=checkbox]')].find((i) => i.labels?.[0]?.textContent.includes(label));
+    return input?.labels?.[0]?.getAttribute('data-vc-num');
+  }, am['consent.saveAnswers']);
+  await say(consentNumber);
+  check(await w.getByLabel(am['consent.saveAnswers']).isChecked(), `saying the badge number (${consentNumber}) ticks the consent box`);
+  await say('እርዳታ');
+  check(await w.locator('dialog[open]').count() === 1, '"እርዳታ" (help) opens the Need help dialog');
+  check(await w.locator('dialog[open]').getByRole('heading', { name: am['help.signTitle'], exact: true }).count() === 1, 'Need help dialog has the Ethiopian Sign Language section');
+  check(await w.locator('dialog[open]').getByRole('heading', { name: am['help.blindTitle'], exact: true }).count() === 1, 'Need help dialog has the blind and keyboard guide');
+  await axe(page, 'signup [am] Need help dialog with guide + EthSL');
+  await page.keyboard.press('Escape');
+  await say('አቁም');
+
+  // E-mail in English inside the Amharic UI; ID number fills the visible field at once.
+  await w.locator('form button[type=submit]').click();
+  await w.getByRole('heading', { level: 2, name: /2/ }).waitFor();
+  await w.locator('input[autocomplete="given-name"]').fill('አበበ');
+  await w.locator('input[autocomplete="family-name"]').fill('ከበደ');
+  await w.locator('form button[type=submit]').click();
+  await w.getByRole('heading', { level: 2, name: /3/ }).waitFor();
+  await page.evaluate(() => { window.__next = 'a b e b e at gmail dot com'; });
+  await w.getByRole('button', { name: fill(am['voice.answer'], { field: am['field.email'] }) }).click();
+  const review = w.getByLabel(am['voice.reviewLabel']);
+  await review.waitFor();
+  const emailLang = await page.evaluate(() => window.__langs.at(-1));
+  check(emailLang === 'en-US', `e-mail is recognised in English inside the Amharic UI (${emailLang})`);
+  check(await review.inputValue() === 'abebe@gmail.com', `spelled e-mail becomes "abebe@gmail.com" (${await review.inputValue()})`);
+  await w.getByRole('button', { name: am['voice.use'] }).click();
+  // Codes (ID number, resume code) appear in the visible field straight away; Cancel restores the old value.
+  await page.evaluate(() => { window.__next = 'd b dash four f seven k two q'; });
+  await w.getByRole('button', { name: fill(am['voice.answer'], { field: am['field.resumeCode'] }) }).click();
+  await w.getByLabel(am['voice.reviewLabel']).waitFor();
+  const codeInput = w.locator('input[autocomplete="one-time-code"]');
+  check(await codeInput.inputValue() === 'DB-4F7K2Q', `spoken code shows in the visible field at once (${await codeInput.inputValue()})`);
+  await w.getByRole('button', { name: am['common.cancel'] }).click();
+  check(await codeInput.inputValue() === '', 'Cancel puts the previous (empty) value back');
+  check(page.__errors.length === 0, `no page errors in the co-designer checks ${page.__errors.slice(0, 1).join('')}`);
+  await page.close();
+}
+
 // 3) Profile edit mode opens on the summary.
 {
   const page = await newPage();

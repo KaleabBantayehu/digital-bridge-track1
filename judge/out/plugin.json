@@ -1,0 +1,59 @@
+{
+  "newGlobals": [],
+  "hostStyleChanges": [],
+  "headAdditions": [
+    "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;600;700&amp;display=sw"
+  ],
+  "hostileCss": {
+    "labelFontSize": "40px",
+    "labelColor": "rgb(28, 25, 23)",
+    "buttonDisplay": "flex"
+  },
+  "tokensInSavanna": {
+    "primary": "#7a2b18",
+    "font": "Poppins, sans-serif"
+  },
+  "tokensOnBlank": {
+    "primary": "#7a2b18",
+    "font": "system-ui, \"Noto Sans Ethiopic\", sans-serif"
+  },
+  "firstLoadBlank": {
+    "requests": 2,
+    "kb": 149.1,
+    "files": [
+      "/demo/blank.html",
+      "/db-signup.js"
+    ]
+  },
+  "thirdParty": [
+    "fonts.googleapis.com",
+    "fonts.gstatic.com"
+  ],
+  "apiRun": {
+    "error": "",
+    "calls": [
+      "POST /onboarding/sessions",
+      "PATCH /onboarding/sessions/7113b31a-4fb4-4c6d-91a6-5b4f5664e502",
+      "PATCH /onboarding/sessions/7113b31a-4fb4-4c6d-91a6-5b4f5664e502",
+      "PATCH /onboarding/sessions/7113b31a-4fb4-4c6d-91a6-5b4f5664e502"
+    ],
+    "events": [
+      "db-signup:step: {\"step\":1,\"of\":7}",
+      "db:onboarding-step-saved: {\"profileId\":\"local-session-1\",\"step\":0,\"stepId\":\"consent\"}",
+      "db-signup:step: {\"step\":2,\"of\":7}",
+      "db:onboarding-step-saved: {\"profileId\":\"local-session-1\",\"step\":1,\"stepId\":\"name\"}",
+      "db-signup:step: {\"step\":3,\"of\":7}",
+      "db:onboarding-step-saved: {\"profileId\":\"local-session-1\",\"step\":2,\"stepId\":\"contact\"}",
+      "db-signup:step: {\"step\":4,\"of\":7}",
+      "db:onboarding-step-saved: {\"profileId\":\"local-session-1\",\"step\":3,\"stepId\":\"dob\"}",
+      "db-signup:step: {\"step\":5,\"of\":7}",
+      "db:onboarding-step-saved: {\"profileId\":\"local-session-1\",\"step\":4,\"stepId\":\"identity\"}",
+      "db-signup:step: {\"step\":6,\"of\":7}",
+      "db:onboarding-step-saved: {\"profileId\":\"local-session-1\",\"step\":5,\"stepId\":\"support\"}",
+      "db-signup:step: {\"step\":7,\"of\":7}",
+      "db:onboarding-completed: {\"profileId\":\"local-session-1\",\"partnerId\":\"alx-savanna\",\"lang\":\"en\",\"completedAt\":\"2026-11-15T07:36:44.447Z\"}",
+      "db-signup:done: {\"profile\":{\"name\":\"Abebe Kebede\",\"phone\":\"+251911234567\",\"language\":\"en\",\"idRoute\":\"national_id_or_passport\"},\"voiceNotes\":{}}"
+    ],
+    "storageKeys": []
+  }
+}

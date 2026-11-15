@@ -7,8 +7,24 @@
     <link rel="stylesheet" href="assets/css/application_alx.css" media="all" />
     <link rel="stylesheet" href="assets/css/app.css" media="all" />
     <style>
-      body { padding: 2rem 1rem; }
+      body { padding: 2rem 1rem; color: #1c1917; }
       .page-card { max-width: 46rem; }
+      /* D-02: links meet contrast (#7a2b18 on white = 9.6:1) and are at least 44 px tall. */
+      main a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        padding: 0.5rem 0.875rem;
+        color: #7a2b18 !important;
+        font-weight: 700;
+        text-decoration: none;
+        border-radius: 0.5rem;
+      }
+      main a:hover { background: #f6e7e1; text-decoration: underline; }
+      main a:focus-visible { outline: 3px solid #7a2b18; outline-offset: 2px; }
+      .card-title a { padding-inline: 0; }
+      .text-body-secondary { color: #44403c !important; }
+      code { color: #7a2b18; background: #ffffff; padding: 0 0.25rem; border-radius: 0.25rem; }
     </style>
   </head>
   <body class="bg-body-tertiary">

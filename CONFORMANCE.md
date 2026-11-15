@@ -21,7 +21,9 @@ All browser runs use Playwright 1.65 driving installed Google Chrome (headless) 
 
 | What | How to re-run | Result |
 | :--- | :--- | :--- |
-| Judge audit of the **built** pages (`apps/web-components/dist`): signup, profile, jobs, blank host, both Savanna homepages; English and Amharic; 1280 × 800 and 320 × 640 | `pnpm -F @db/web-components build; node scripts/judge-audit.mjs` | **103 / 103 checks pass**, including **23 axe scans with 0 violations** |
+| Judge audit of the **built** pages (`apps/web-components/dist`): signup, profile, jobs, blank host, both Savanna homepages, **index.html**, and signup **scrolled halfway** (where JUDGE_REPORT D-01 was found); English and Amharic; 1280 × 800 and 320 × 640 | `pnpm -F @db/web-components build; node scripts/judge-audit.mjs` | **130 / 130 checks pass**, 0 axe violations of any impact |
+| Every wizard state, error state, dialog, partner route, SMS state, career filter (0 / 1 / many results), apply flow and employer form, both languages (55 axe scans) | `node judge/gate.mjs` | **0 critical, 0 serious, 0 moderate, 0 minor** (was 5 serious in JUDGE_REPORT; fixed: static top bar, index.html links, two button names) |
+| Co-designer fixes (15 Nov): numbered voice-control badges, "help" opens Need help, e-mail dictated in English inside Amharic UI, spelled names, live code fill, no third-party fonts | `node scripts/judge-audit.mjs` | Pass |
 | Header / sidebar overlap (`getBoundingClientRect`) against `<main>`, its `<h1>`, `<db-signup>`, `<db-career-gateway>`, `<db-employer-accommodations>` | same script | 0 px overlap on every page at both sizes; `.db-savanna-topbar` bottom ≤ `<main>` top |
 | Reflow at 320 CSS px (= 1280 px at 400 %) | same script | No horizontal scroll on any page, in either language |
 | Amharic voice fallback: speech-to-text missing, and speech-to-text failing with `language-not-supported` | same script (scripted recogniser + Chrome fake microphone) | Both automatically switch to recording a voice note with a plain explanation; focus moves to Stop recording; preview, keep, "Voice note saved" badge; the name step is completed with **nothing typed** |
@@ -37,6 +39,18 @@ All browser runs use Playwright 1.65 driving installed Google Chrome (headless) 
 | Unit tests (persistence, API client, audio manifest, Fidel, spoken input, voice commands) | `pnpm -F @db/web-components test` | **27 / 27** |
 | Bundle size | Vite build + `zlib.gzipSync` | `db-widgets.v1.0.0.js` 597 KB raw, **148.5 KB gzipped** (budget < 250 KB) |
 | Load on Chrome's "Slow 3G" profile (400 ms RTT, 400 kbit/s), served gzipped as in production | CDP network emulation | Widget usable in **4.2 s** on `demo/blank.html`; **8.5 s** on `pages/signup.html`, most of it Savanna's own 1.3 MB stylesheet |
+
+**Co-designer session (15 Nov 2026) — findings and what changed:**
+1. E-mail said in English inside the Amharic UI was not written → e-mail fields always listen in English (en-US); "at"/"dot" (or "አት"/"ዶት") become @ and .
+2. "Users can say their name spelling by spelling" → letters said one by one are joined ("a b e b e" → Abebe).
+3. ID number by voice was not visible in the field → codes appear in the field at once; Cancel restores the old value.
+4. "Message sent code need audio" → "Read aloud: the resume code" button spells the SMS code.
+5. "help" read the instructions instead of opening Need help → "help"/"እርዳታ" opens Need help; "repeat" reads the question; "commands" lists commands.
+6. "Give an ID to each feature" → numbered badges while voice control is on; say the number to choose.
+7. Mobile voice mode did not work → most likely the phone opened the demo over plain http (no microphone allowed); the widget now says so. Touch devices listen one phrase at a time. Still to re-test on the phone over https.
+8. Colour shades hard to tell apart → ✓ and thicker borders on selected items; High contrast button.
+
+Tester, device and screen reader for this session: *to be filled in by the session facilitator from `CO_DESIGNER_LOG.md`* (we do not record names or quotes here without the co-designer's consent).
 
 **Not yet tested (needs people and real devices):**
 - NVDA with Chrome and Firefox, and TalkBack in an Android WebView;
@@ -65,7 +79,7 @@ All browser runs use Playwright 1.65 driving installed Google Chrome (headless) 
 | 1.3.3 Sensory Characteristics (A) | Supports | No instruction depends on shape, colour or position. |
 | 1.3.4 Orientation (AA) | Supports | No orientation lock. One-column layout. |
 | 1.3.5 Identify Input Purpose (AA) | Supports | `given-name`, `family-name`, `tel`, `email`, `one-time-code`, `bday-*` for the Gregorian date. |
-| 1.4.1 Use of Color (A) | Supports | Errors use text, an icon, `aria-invalid` and the Error Summary. Toggles expose `aria-pressed`. The current read-aloud phrase is highlighted with a background **and** an outline. |
+| 1.4.1 Use of Color (A) | Supports | Errors use text, an icon, `aria-invalid` and the Error Summary. Pressed toggles show a ✓ and a 3 px border; ticked checkbox and radio rows get a 3 px dark border and white fill, so state never depends on shade (co-designer finding). A "High contrast" button in the host top bar switches the page and widgets. |
 | 1.4.2 Audio Control (A) | Supports | Nothing plays automatically. Read aloud has Pause and Stop; cues are under 2 seconds; voice notes use native `<audio controls>`. |
 | 1.4.3 Contrast (Minimum) (AA) | Supports | axe: 0 contrast failures in both languages. Computed: ink on parchment 16.4:1, terracotta `#9E3B24` on parchment 6.3:1, white on terracotta 6.8:1, lagoon badges 9.5:1. |
 | 1.4.4 Resize Text (AA) | Supports | Sizes in rem (`:host` is 16 px); fluid layout. Browser text-only zoom not tested separately. |
@@ -76,7 +90,7 @@ All browser runs use Playwright 1.65 driving installed Google Chrome (headless) 
 | 1.4.13 Content on Hover or Focus (AA) | Supports | No tooltips or hover pop-ups. |
 | 2.1.1 Keyboard (A) | Supports | Only native controls. Voice control is an extra way in, not a replacement. A manual unplugged-mouse run is still pending. |
 | 2.1.2 No Keyboard Trap (A) | Supports | Native `<dialog>`, Esc closes and focus returns to the opener. |
-| 2.1.4 Character Key Shortcuts (A) | Supports | The only shortcut is Alt + V (voice control on/off), which uses a modifier key. |
+| 2.1.4 Character Key Shortcuts (A) | Supports | The only shortcut is Alt + V (voice control on/off), which uses a modifier key. Spoken numbers only act while voice control is switched on. |
 | 2.2.1 Timing Adjustable (A) | Supports | No session expiry; the draft saves on every change. A single voice note stops itself after 1 minute; it is kept and can be re-recorded. |
 | 2.2.2 Pause, Stop, Hide (A) | Supports | The only moving content is the read-aloud highlight, which the learner starts and can Pause or Stop. No animations or transitions. |
 | 2.3.1 Three Flashes or Below (A) | Supports | Nothing flashes. |
@@ -87,20 +101,20 @@ All browser runs use Playwright 1.65 driving installed Google Chrome (headless) 
 | 2.4.5 Multiple Ways (AA) | Supports | Top bar links every Track 1 page; Savanna's sidebar links My Profile. |
 | 2.4.6 Headings and Labels (AA) | Supports | "Step N of 7: …"; edit mode "Edit my profile" / "የእኔን መገለጫ አስተካክል". |
 | 2.4.7 Focus Visible (AA) | Supports | 3 px solid outline, 2 px offset, inside the widgets and on the host pages. |
-| 2.4.11 Focus Not Obscured (Minimum) (AA) | Supports | The top bar is in normal flow (sticky only above 40 rem, 4 rem tall), and every focusable has 6 rem `scroll-margin`. On the Savanna homepages the fixed header no longer overlaps `<main>` on small screens (sidecar CSS fix). |
+| 2.4.11 Focus Not Obscured (Minimum) (AA) | Supports | The host top bar is `position: static` (it scrolls away). A sticky version covered the help buttons when scrolled (JUDGE_REPORT D-01, axe target-size); fixed and re-tested scrolled halfway in both languages. Every focusable has 6 rem `scroll-margin`. |
 | 2.5.1 Pointer Gestures (A) | Supports | Single taps only. |
 | 2.5.2 Pointer Cancellation (A) | Supports | Native click activation. |
 | 2.5.3 Label in Name (A) | Supports | Accessible names contain the visible text (e.g. Fidel vowel pills: "Change the last letter to ቡ"). Voice-control commands act on the visible names. |
 | 2.5.4 Motion Actuation (A) | Supports | No motion input. |
 | 2.5.7 Dragging Movements (AA) | Supports | No dragging. Dates use three native `<select>`s. |
-| 2.5.8 Target Size (Minimum) (AA) | Supports | Every target ≥ 44 × 44 CSS px, including top-bar links and the language switch. |
+| 2.5.8 Target Size (Minimum) (AA) | Supports | Every target ≥ 44 × 44 CSS px, including top-bar links (now bold, underline-free buttons), the language and contrast switches and the `index.html` links (fixed in D-02). 0 target-size findings in 55 state scans. |
 | 3.1.1 Language of Page (A) | Supports | Host pages are `<html lang="en">`; each widget root carries `lang="en"` or `lang="am"` and switches with the top-bar language buttons. |
 | 3.1.2 Language of Parts (AA) | Supports | `<span lang="am">አማርኛ</span>` in the English top bar; `<kbd lang="en">Alt + V</kbd>` and the Latin input of the Fidel helper inside Amharic UI. Scripted check: no untagged English in Amharic mode. Native-speaker review still pending. |
 | 3.2.1 On Focus (A) | Supports | Focus never changes context. |
 | 3.2.2 On Input (A) | Supports | Changing language or ticking "Prefer not to say" updates the same screen and is announced. |
 | 3.2.3 Consistent Navigation (AA) | Supports | The same top bar on signup, profile and jobs; Back / Continue always in the same place. |
 | 3.2.4 Consistent Identification (AA) | Supports | Same functions, same labels on every step. |
-| 3.2.6 Consistent Help (A) | Supports | Voice control, then the help cluster (Read aloud · Language · Simple words · Need help · My data), in the same order and place on every step. |
+| 3.2.6 Consistent Help (A) | Supports | Voice control, then the help cluster (Read aloud · Language · Simple words · Need help · My data), in the same order and place on every step. Need help now also holds a keyboard / voice guide you can listen to and an Ethiopian Sign Language interpreter request; saying "help" opens it. |
 | 3.3.1 Error Identification (A) | Supports | `aria-invalid`, inline message via `aria-describedby`, focused `role="alert"` Error Summary. Voice control reads the Error Summary aloud when "next" fails. |
 | 3.3.2 Labels or Instructions (A) | Supports | Visible labels, hints, "(required)" / "(optional)" in text. |
 | 3.3.3 Error Suggestion (AA) | Supports | Examples in both languages, e.g. "Enter 10 digits, for example 0911 234 567". |

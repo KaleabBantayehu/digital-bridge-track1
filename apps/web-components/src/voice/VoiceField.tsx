@@ -29,6 +29,13 @@ export interface VoiceFieldProps {
   fidelHelper?: boolean;
   /** What the field holds, so spoken numbers / "at" / "dot" become digits and symbols (default 'text'). */
   spokenKind?: SpokenKind;
+  /**
+   * Code / ID fields: write the recognised value into the visible field straight away (co-designer finding: "the code
+   * was not visible in the output field"). The review box still opens; Cancel puts the previous value back.
+   */
+  liveFill?: boolean;
+  /** Current value of the field (used to undo a live fill on Cancel). */
+  currentValue?: string;
 }
 
 type Phase = 'idle' | 'listening' | 'review' | 'recording' | 'preview';
@@ -44,7 +51,7 @@ const AM_FALLBACK_ERRORS = new Set(['no-speech', 'network', 'not-allowed', 'lang
  * Mic button + mandatory editable "Review what we heard" step with read-back (CLAUDE.md §3.8, Guide v2 §5),
  * plus a MediaRecorder voice-note fallback that works where speech-to-text does not.
  */
-export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse, targetRef, announce, voiceNoteKey, fidelHelper, spokenKind = 'text' }) => {
+export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse, targetRef, announce, voiceNoteKey, fidelHelper, spokenKind = 'text', liveFill = false, currentValue = '' }) => {
   const [phase, setPhase] = useState<Phase>('idle');
   const [heard, setHeard] = useState('');
   const [note, setNote] = useState('');
@@ -133,11 +140,21 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
     }
   };
 
+  // E-mail addresses are English whatever the UI language (co-designer finding), so they are always recognised in
+  // en-US and never trigger the Amharic voice-note fallback.
+  const recogniseAmharic = lang === 'am' && spokenKind !== 'email';
+  const beforeLiveFill = useRef<string | null>(null);
+
   const start = () => {
     setReviewNote('');
+    if (typeof window !== 'undefined' && window.isSecureContext === false) {
+      say(t(lang, 'vc.insecure')); // phones opening http://192.168… cannot use the microphone at all
+      targetRef.current?.focus();
+      return;
+    }
     const Recognition = getSpeechRecognition();
     if (!Recognition) {
-      if (lang === 'am') {
+      if (recogniseAmharic) {
         amharicFallback();
         return;
       }
@@ -147,7 +164,7 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
     }
     try {
       const recognition = new Recognition();
-      recognition.lang = speechLocale(lang);
+      recognition.lang = spokenKind === 'email' ? 'en-US' : speechLocale(lang);
       recognition.continuous = false;
       recognition.interimResults = false;
       recognition.maxAlternatives = 1;
@@ -160,12 +177,16 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
         clearTimeout(amTimerRef.current);
         gotResult.current = true;
         setHeard(transcript);
+        if (liveFill) {
+          if (beforeLiveFill.current === null) beforeLiveFill.current = currentValue;
+          onUse(transcript);
+        }
         setPhase('review');
         say(t(lang, 'voice.heard', { text: transcript }));
       };
       recognition.onerror = (event) => {
         if (recognitionRef.current !== recognition) return; // already switched to a voice note
-        if (lang === 'am' && AM_FALLBACK_ERRORS.has(event.error)) {
+        if (recogniseAmharic && AM_FALLBACK_ERRORS.has(event.error)) {
           amharicFallback();
           return;
         }
@@ -189,14 +210,14 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
       recognition.start();
       setPhase('listening');
       say(t(lang, 'voice.listening'));
-      if (lang === 'am') {
+      if (recogniseAmharic) {
         clearTimeout(amTimerRef.current);
         amTimerRef.current = setTimeout(() => {
           if (!gotResult.current && recognitionRef.current === recognition) amharicFallback();
         }, AM_EMPTY_TRANSCRIPT_MS);
       }
     } catch {
-      if (lang === 'am') {
+      if (recogniseAmharic) {
         amharicFallback();
         return;
       }
@@ -214,6 +235,7 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
   const useAnswer = () => {
     if (speakingRef.current) stopSpeaking();
     onUse(heard.trim());
+    beforeLiveFill.current = null;
     setPhase('idle');
     setHeard('');
     setReviewNote('');
@@ -223,7 +245,7 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
 
   /** Read the reviewed text back so a blind learner can check what speech recognition wrote. */
   const readBack = () => {
-    const ok = speakText(lang, spellOut(heard, spokenKind), () => {
+    const ok = speakText(spokenKind === 'email' ? 'en' : lang, spellOut(heard, spokenKind), () => {
       speakingRef.current = false;
     });
     speakingRef.current = ok;
@@ -234,6 +256,8 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
 
   const cancelReview = () => {
     if (speakingRef.current) stopSpeaking();
+    if (liveFill && beforeLiveFill.current !== null) onUse(beforeLiveFill.current);
+    beforeLiveFill.current = null;
     setPhase('idle');
     setHeard('');
     setNote('');

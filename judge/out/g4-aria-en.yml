@@ -1,0 +1,522 @@
+# step1-welcome
+- region "Digital Bridge onboarding":
+  - status
+  - paragraph: Digital Bridge onboarding
+  - paragraph: "Onboarding progress: Step 1 of 7"
+  - 'progressbar "Onboarding progress: Step 1 of 7"': Step 1 of 7
+  - button "Voice control"
+  - paragraph: "Move through this form by speaking. Keyboard shortcut: Alt + V"
+  - group "Help and settings":
+    - button "Read aloud"
+    - 'button "Change language: አማርኛ"'
+    - button "Simple words"
+    - button "Need help"
+    - button "My data"
+  - 'form "Step 1 of 7: Welcome — before we start"':
+    - 'heading "Step 1 of 7: Welcome — before we start" [level=2]'
+    - paragraph: One question at a time. There is no time limit. Your answers are saved on this device. You can answer every question by voice.
+    - paragraph: This takes about 10 minutes. Here is how it works.
+    - list:
+      - listitem: One question at a time.
+      - listitem: There is no time limit. Nothing is deleted if you stop.
+      - listitem: Your answers are saved on this device as you type.
+      - listitem: You can answer every question by voice, and check it before it is used.
+    - group "Your choices about your data":
+      - text: Your choices about your data
+      - checkbox "Save my answers so I can continue (required) Needed to continue. Your answers are saved on this device and with Digital Bridge."
+      - text: Save my answers so I can continue (required) Needed to continue. Your answers are saved on this device and with Digital Bridge.
+      - checkbox "Send me a text message (SMS) link so I can continue another day"
+      - text: Send me a text message (SMS) link so I can continue another day
+      - checkbox "Let employers I apply to see my name and contact details"
+      - text: Let employers I apply to see my name and contact details
+    - button "Read how we protect your data"
+    - button "Continue"
+
+# step1-error
+- region "Digital Bridge onboarding":
+  - status
+  - paragraph: Digital Bridge onboarding
+  - paragraph: "Onboarding progress: Step 1 of 7"
+  - 'progressbar "Onboarding progress: Step 1 of 7"': Step 1 of 7
+  - button "Voice control"
+  - paragraph: "Move through this form by speaking. Keyboard shortcut: Alt + V"
+  - group "Help and settings":
+    - button "Read aloud"
+    - 'button "Change language: አማርኛ"'
+    - button "Simple words"
+    - button "Need help"
+    - button "My data"
+  - 'form "Step 1 of 7: Welcome — before we start"':
+    - 'heading "Step 1 of 7: Welcome — before we start" [level=2]'
+    - alert:
+      - heading "There is a problem" [level=3]
+      - paragraph: Fix the following to continue. Select an item to go to that question.
+      - list:
+        - listitem:
+          - 'link "Save my answers so I can continue: Please confirm your consent to continue."':
+            - /url: "#db-_r_0_-saveAnswers"
+    - paragraph: One question at a time. There is no time limit. Your answers are saved on this device. You can answer every question by voice.
+    - paragraph: This takes about 10 minutes. Here is how it works.
+    - list:
+      - listitem: One question at a time.
+      - listitem: There is no time limit. Nothing is deleted if you stop.
+      - listitem: Your answers are saved on this device as you type.
+      - listitem: You can answer every question by voice, and check it before it is used.
+    - group "Your choices about your data":
+      - text: Your choices about your data
+      - paragraph: Please confirm your consent to continue.
+      - checkbox "Save my answers so I can continue (required) Needed to continue. Your answers are saved on this device and with Digital Bridge." [invalid]
+      - text: Save my answers so I can continue (required) Needed to continue. Your answers are saved on this device and with Digital Bridge.
+      - checkbox "Send me a text message (SMS) link so I can continue another day"
+      - text: Send me a text message (SMS) link so I can continue another day
+      - checkbox "Let employers I apply to see my name and contact details"
+      - text: Let employers I apply to see my name and contact details
+    - button "Read how we protect your data"
+    - button "Continue"
+
+# step2-name
+- region "Digital Bridge onboarding":
+  - status: Your answer is saved on this device.
+  - paragraph: Digital Bridge onboarding
+  - paragraph: "Onboarding progress: Step 2 of 7"
+  - 'progressbar "Onboarding progress: Step 2 of 7"': Step 2 of 7
+  - button "Voice control"
+  - paragraph: "Move through this form by speaking. Keyboard shortcut: Alt + V"
+  - group "Help and settings":
+    - button "Read aloud"
+    - 'button "Change language: አማርኛ"'
+    - button "Simple words"
+    - button "Need help"
+    - button "My data"
+  - 'form "Step 2 of 7: What is your name?"':
+    - 'heading "Step 2 of 7: What is your name?" [level=2]'
+    - paragraph: Write your name the way you want employers to see it.
+    - text: First name (required)
+    - paragraph: For example Abebe
+    - textbox "First name (required)"
+    - button "Answer First name by voice"
+    - button "Record a voice note for First name instead"
+    - text: Father's name (required)
+    - paragraph: For example Kebede
+    - textbox "Father's name (required)"
+    - button "Answer Father's name by voice"
+    - button "Record a voice note for Father's name instead"
+    - button "Back"
+    - button "Continue"
+
+# step3-contact
+- region "Digital Bridge onboarding":
+  - status: Your answer is saved on this device.
+  - paragraph: Digital Bridge onboarding
+  - paragraph: "Onboarding progress: Step 3 of 7"
+  - 'progressbar "Onboarding progress: Step 3 of 7"': Step 3 of 7
+  - button "Voice control"
+  - paragraph: "Move through this form by speaking. Keyboard shortcut: Alt + V"
+  - group "Help and settings":
+    - button "Read aloud"
+    - 'button "Change language: አማርኛ"'
+    - button "Simple words"
+    - button "Need help"
+    - button "My data"
+  - 'form "Step 3 of 7: How can we contact you?"':
+    - 'heading "Step 3 of 7: How can we contact you?" [level=2]'
+    - paragraph: We use this only to send you updates about your learning and jobs.
+    - text: Phone number (required)
+    - paragraph: 10 digits, for example 0911 234 567
+    - textbox "Phone number (required)"
+    - button "Answer Phone number by voice"
+    - checkbox "I share a phone — contact me through my partner organisation"
+    - text: I share a phone — contact me through my partner organisation Email address (optional)
+    - paragraph: For example name@example.com
+    - textbox "Email address (optional)"
+    - button "Answer Email address by voice"
+    - region "Continue later by SMS":
+      - heading "Continue later by SMS" [level=3]
+      - paragraph: We can send you a text message with a link. It works one time, for 24 hours.
+      - button "Save & send SMS resume link"
+    - region "Do you have a resume code?":
+      - heading "Do you have a resume code?" [level=3]
+      - text: Resume code
+      - paragraph: The code from your text message, for example DB-4F7K2Q
+      - textbox "Resume code"
+      - button "Restore my answers"
+    - button "Back"
+    - button "Continue"
+
+# step3-error
+- region "Digital Bridge onboarding":
+  - status: Your answer is saved on this device.
+  - paragraph: Digital Bridge onboarding
+  - paragraph: "Onboarding progress: Step 3 of 7"
+  - 'progressbar "Onboarding progress: Step 3 of 7"': Step 3 of 7
+  - button "Voice control"
+  - paragraph: "Move through this form by speaking. Keyboard shortcut: Alt + V"
+  - group "Help and settings":
+    - button "Read aloud"
+    - 'button "Change language: አማርኛ"'
+    - button "Simple words"
+    - button "Need help"
+    - button "My data"
+  - 'form "Step 3 of 7: How can we contact you?"':
+    - 'heading "Step 3 of 7: How can we contact you?" [level=2]'
+    - alert:
+      - heading "There is a problem" [level=3]
+      - paragraph: Fix the following to continue. Select an item to go to that question.
+      - list:
+        - listitem:
+          - 'link "Phone number: Enter 10 digits, for example 0911 234 567"':
+            - /url: "#db-_r_0_-phone"
+    - paragraph: We use this only to send you updates about your learning and jobs.
+    - text: Phone number (required)
+    - paragraph: 10 digits, for example 0911 234 567
+    - paragraph: Enter 10 digits, for example 0911 234 567
+    - textbox "Phone number (required)" [invalid]: "123"
+    - button "Answer Phone number by voice"
+    - checkbox "I share a phone — contact me through my partner organisation"
+    - text: I share a phone — contact me through my partner organisation Email address (optional)
+    - paragraph: For example name@example.com
+    - textbox "Email address (optional)"
+    - button "Answer Email address by voice"
+    - region "Continue later by SMS":
+      - heading "Continue later by SMS" [level=3]
+      - paragraph: We can send you a text message with a link. It works one time, for 24 hours.
+      - button "Save & send SMS resume link"
+    - region "Do you have a resume code?":
+      - heading "Do you have a resume code?" [level=3]
+      - text: Resume code
+      - paragraph: The code from your text message, for example DB-4F7K2Q
+      - textbox "Resume code"
+      - button "Restore my answers"
+    - button "Back"
+    - button "Continue"
+
+# step4-dob
+- region "Digital Bridge onboarding":
+  - status: Your answer is saved on this device.
+  - paragraph: Digital Bridge onboarding
+  - paragraph: "Onboarding progress: Step 4 of 7"
+  - 'progressbar "Onboarding progress: Step 4 of 7"': Step 4 of 7
+  - button "Voice control"
+  - paragraph: "Move through this form by speaking. Keyboard shortcut: Alt + V"
+  - group "Help and settings":
+    - button "Read aloud"
+    - 'button "Change language: አማርኛ"'
+    - button "Simple words"
+    - button "Need help"
+    - button "My data"
+  - 'form "Step 4 of 7: When were you born?"':
+    - 'heading "Step 4 of 7: When were you born?" [level=2]'
+    - paragraph: Choose the calendar you know best. We change it for you.
+    - group "Which calendar?":
+      - text: Which calendar?
+      - radio "Ethiopian calendar" [checked]
+      - text: Ethiopian calendar
+      - radio "Gregorian (European) calendar"
+      - text: Gregorian (European) calendar
+    - group "Date of birth (required)":
+      - text: Date of birth (required) Day
+      - combobox "Day":
+        - option "Choose…" [selected]
+        - option "1"
+        - option "2"
+        - option "3"
+        - option "4"
+        - option "5"
+        - option "6"
+        - option "7"
+        - option "8"
+        - option "9"
+        - option "10"
+        - option "11"
+        - option "12"
+        - option "13"
+        - option "14"
+        - option "15"
+        - option "16"
+        - option "17"
+        - option "18"
+        - option "19"
+        - option "20"
+        - option "21"
+        - option "22"
+        - option "23"
+        - option "24"
+        - option "25"
+        - option "26"
+        - option "27"
+        - option "28"
+        - option "29"
+        - option "30"
+      - text: Month
+      - combobox "Month":
+        - option "Choose…" [selected]
+        - option "Meskerem"
+        - option "Tikimt"
+        - option "Hidar"
+        - option "Tahsas"
+        - option "Tir"
+        - option "Yekatit"
+        - option "Megabit"
+        - option "Miazia"
+        - option "Ginbot"
+        - option "Sene"
+        - option "Hamle"
+        - option "Nehase"
+        - option "Pagume"
+      - text: Year
+      - combobox "Year":
+        - option "Choose…" [selected]
+        - option "2019"
+        - option "2018"
+        - option "2017"
+        - option "2016"
+        - option "2015"
+        - option "2014"
+        - option "2013"
+        - option "2012"
+        - option "2011"
+        - option "2010"
+        - option "2009"
+        - option "2008"
+        - option "2007"
+        - option "2006"
+        - option "2005"
+        - option "2004"
+        - option "2003"
+        - option "2002"
+        - option "2001"
+        - option "2000"
+        - option "1999"
+        - option "1998"
+        - option "1997"
+        - option "1996"
+        - option "1995"
+        - option "1994"
+        - option "1993"
+        - option "1992"
+        - option "1991"
+        - option "1990"
+        - option "1989"
+        - option "1988"
+        - option "1987"
+        - option "1986"
+        - option "1985"
+        - option "1984"
+        - option "1983"
+        - option "1982"
+        - option "1981"
+        - option "1980"
+        - option "1979"
+        - option "1978"
+        - option "1977"
+        - option "1976"
+        - option "1975"
+        - option "1974"
+        - option "1973"
+        - option "1972"
+        - option "1971"
+        - option "1970"
+        - option "1969"
+        - option "1968"
+        - option "1967"
+        - option "1966"
+        - option "1965"
+        - option "1964"
+        - option "1963"
+        - option "1962"
+        - option "1961"
+        - option "1960"
+        - option "1959"
+        - option "1958"
+        - option "1957"
+        - option "1956"
+        - option "1955"
+        - option "1954"
+        - option "1953"
+        - option "1952"
+        - option "1951"
+        - option "1950"
+        - option "1949"
+        - option "1948"
+        - option "1947"
+        - option "1946"
+        - option "1945"
+        - option "1944"
+        - option "1943"
+        - option "1942"
+        - option "1941"
+        - option "1940"
+        - option "1939"
+        - option "1938"
+        - option "1937"
+        - option "1936"
+        - option "1935"
+        - option "1934"
+        - option "1933"
+        - option "1932"
+        - option "1931"
+        - option "1930"
+        - option "1929"
+        - option "1928"
+        - option "1927"
+        - option "1926"
+        - option "1925"
+        - option "1924"
+        - option "1923"
+        - option "1922"
+        - option "1921"
+        - option "1920"
+        - option "1919"
+      - paragraph: Pagume has 5 days, or 6 days in a leap year.
+    - button "Back"
+    - button "Continue"
+
+# step5-identity
+- region "Digital Bridge onboarding":
+  - status: Your answer is saved on this device.
+  - paragraph: Digital Bridge onboarding
+  - paragraph: "Onboarding progress: Step 5 of 7"
+  - 'progressbar "Onboarding progress: Step 5 of 7"': Step 5 of 7
+  - button "Voice control"
+  - paragraph: "Move through this form by speaking. Keyboard shortcut: Alt + V"
+  - group "Help and settings":
+    - button "Read aloud"
+    - 'button "Change language: አማርኛ"'
+    - button "Simple words"
+    - button "Need help"
+    - button "My data"
+  - 'form "Step 5 of 7: How can we confirm who you are?"':
+    - 'heading "Step 5 of 7: How can we confirm who you are?" [level=2]'
+    - paragraph: Choose any one way. You do not need a Kebele ID or a passport.
+    - group "Choose one way (required)":
+      - text: Choose one way (required)
+      - radio "National ID, Kebele ID or passport Type the number on your card."
+      - text: National ID, Kebele ID or passport Type the number on your card.
+      - radio "Refugee or returnee ID (UNHCR / RRS) Type the number on your refugee or returnee card."
+      - text: Refugee or returnee ID (UNHCR / RRS) Type the number on your refugee or returnee card.
+      - radio "School certificate, birth record or community letter Any official paper with your name on it."
+      - text: School certificate, birth record or community letter Any official paper with your name on it.
+      - radio "Refer me through a partner organisation A partner organisation you know confirms who you are. No document needed."
+      - text: Refer me through a partner organisation A partner organisation you know confirms who you are. No document needed.
+    - button "Back"
+    - button "Continue"
+
+# step6-support
+- region "Digital Bridge onboarding":
+  - status: Your answer is saved on this device.
+  - paragraph: Digital Bridge onboarding
+  - paragraph: "Onboarding progress: Step 6 of 7"
+  - 'progressbar "Onboarding progress: Step 6 of 7"': Step 6 of 7
+  - button "Voice control"
+  - paragraph: "Move through this form by speaking. Keyboard shortcut: Alt + V"
+  - group "Help and settings":
+    - button "Read aloud"
+    - 'button "Change language: አማርኛ"'
+    - button "Simple words"
+    - button "Need help"
+    - button "My data"
+  - 'form "Step 6 of 7: What support helps you learn and work best?"':
+    - 'heading "Step 6 of 7: What support helps you learn and work best?" [level=2]'
+    - paragraph: Choose anything that helps you. You can skip this question.
+    - paragraph:
+      - strong: No medical proof required. This stays private and is never shared without your permission.
+    - group "Support that helps me (optional)":
+      - text: Support that helps me (optional)
+      - checkbox "Prefer not to say. I do not want to ask for support now."
+      - text: Prefer not to say. I do not want to ask for support now.
+      - checkbox "Captions or an Ethiopian Sign Language interpreter"
+      - text: Captions or an Ethiopian Sign Language interpreter
+      - checkbox "Screen reader support (materials that work with a screen reader)"
+      - text: Screen reader support (materials that work with a screen reader)
+      - checkbox "Large text or high contrast"
+      - text: Large text or high contrast
+      - checkbox "Extra time"
+      - text: Extra time
+      - checkbox "Instructions I can listen to"
+      - text: Instructions I can listen to
+      - checkbox "Written messages instead of phone calls"
+      - text: Written messages instead of phone calls
+      - checkbox "Step-free building (no stairs)"
+      - text: Step-free building (no stairs)
+      - checkbox "A quiet place to work"
+      - text: A quiet place to work
+      - checkbox "Something else"
+      - text: Something else
+    - button "Back"
+    - button "Continue"
+
+# step7-review
+- region "Digital Bridge onboarding":
+  - status: Your answer is saved on this device.
+  - paragraph: Digital Bridge onboarding
+  - paragraph: "Onboarding progress: Step 7 of 7"
+  - 'progressbar "Onboarding progress: Step 7 of 7"': Step 7 of 7
+  - button "Voice control"
+  - paragraph: "Move through this form by speaking. Keyboard shortcut: Alt + V"
+  - group "Help and settings":
+    - button "Read aloud"
+    - 'button "Change language: አማርኛ"'
+    - button "Simple words"
+    - button "Need help"
+    - button "My data"
+  - 'form "Step 7 of 7: Check your answers"':
+    - 'heading "Step 7 of 7: Check your answers" [level=2]'
+    - paragraph: Check everything is right. Choose "Edit" to change an answer.
+    - heading "Your choices" [level=3]
+    - button "Edit Your choices"
+    - term: Save my answers so I can continue
+    - definition: "Yes"
+    - term: Send me a text message (SMS) link so I can continue another day
+    - definition: "No"
+    - term: Let employers I apply to see my name and contact details
+    - definition: "No"
+    - heading "Name" [level=3]
+    - button "Edit Name"
+    - term: First name
+    - definition: Abebe
+    - term: Father's name
+    - definition: Kebede
+    - heading "Contact" [level=3]
+    - button "Edit Contact"
+    - term: Phone number
+    - definition: "+251911234567"
+    - term: Email address
+    - definition: Not given
+    - heading "Date of birth" [level=3]
+    - button "Edit Date of birth"
+    - term: Date of birth
+    - definition: Meskerem 1, 1999
+    - heading "Confirming who you are" [level=3]
+    - button "Edit Confirming who you are"
+    - term: Way to confirm who you are
+    - definition: National ID, Kebele ID or passport
+    - term: ID number
+    - definition: ET1234567
+    - heading "Support (private)" [level=3]
+    - button "Edit Support (private)"
+    - term: Support that helps me
+    - definition:
+      - list:
+        - listitem: Extra time
+        - listitem: Captions or an Ethiopian Sign Language interpreter
+    - button "My data"
+    - button "Back"
+    - button "Finish onboarding"
+
+# finished
+- region "Digital Bridge onboarding":
+  - status: You have finished onboarding
+  - paragraph: Digital Bridge onboarding
+  - paragraph: "Onboarding progress: Step 7 of 7"
+  - 'progressbar "Onboarding progress: Step 7 of 7"': Step 7 of 7
+  - button "Voice control"
+  - paragraph: "Move through this form by speaking. Keyboard shortcut: Alt + V"
+  - group "Help and settings":
+    - button "Read aloud"
+    - 'button "Change language: አማርኛ"'
+    - button "Simple words"
+    - button "Need help"
+    - button "My data"
+  - heading "You have finished onboarding" [level=2]
+  - paragraph: Thank you. Your profile is ready. You can now look for jobs in the Career Gateway.
+  - button "Check your answers"

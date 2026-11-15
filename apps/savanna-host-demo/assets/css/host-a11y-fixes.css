@@ -139,11 +139,12 @@ db-employer-accommodations:focus-visible {
 /* ---------------------------------------------------------------------------------------------
    Digital Bridge host pages (signup, profile, jobs): a dedicated top bar.
    Savanna's own .header is position: fixed and assumes the sidebar shell; these pages use their own
-   .db-savanna-topbar, which stays in normal flow (sticky), so it can never sit on top of <main>, the
+   .db-savanna-topbar, which stays in normal flow (static: it scrolls away), so it can never sit on top of <main>, the
    <h1> or the widgets at any width or zoom level. Sizes are in rem.
    --------------------------------------------------------------------------------------------- */
 .db-savanna-topbar {
-  position: sticky !important;
+  /* Static, never sticky: a sticky bar covered the widget's help buttons when scrolled (axe target-size, WCAG 2.4.11). */
+  position: static !important;
   top: 0 !important;
   left: 0 !important;
   right: 0 !important;
@@ -271,4 +272,95 @@ main.db-host-main db-employer-accommodations {
     position: static !important;
     padding: 0.5rem 1rem !important;
   }
+}
+
+/* Co-designer finding #6: header links read as bold buttons, no underline, and wrap cleanly at 125–200 % zoom. */
+body .db-savanna-topbar .db-topbar-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.5rem 0.9rem;
+  border-radius: 0.5rem;
+  font-size: 1.05rem !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+  color: #7a2b18 !important;
+}
+
+body .db-savanna-topbar .db-topbar-nav a:hover {
+  background-color: #f6e7e1;
+}
+
+body .db-savanna-topbar .db-topbar-nav a[aria-current='page'] {
+  color: #ffffff !important;
+  background-color: #7a2b18;
+}
+
+.db-topbar-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.db-topbar-contrast {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 0.875rem;
+  border: 2px solid #1c1917;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #1c1917;
+  font: inherit;
+  font-weight: 700;
+}
+
+/* Pressed state is shown by shape and a check mark, not by colour alone. */
+.db-topbar-contrast[aria-pressed='true'],
+.db-topbar-lang button[aria-pressed='true'] {
+  border: 3px solid #1c1917;
+}
+
+.db-topbar-contrast[aria-pressed='true']::before,
+.db-topbar-lang button[aria-pressed='true']::before {
+  content: '✓' / '';
+  font-weight: 700;
+  margin-inline-end: 0.25rem;
+}
+
+.db-topbar-contrast[aria-pressed='true'] {
+  background: #000000;
+  color: #ffffff;
+}
+
+/* Host-page high contrast (the widgets switch to theme="high-contrast" at the same time). */
+body.db-high-contrast,
+body.db-high-contrast .db-savanna-topbar {
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
+body.db-high-contrast a,
+body.db-high-contrast .db-savanna-topbar .db-topbar-nav a {
+  color: #000000 !important;
+  text-decoration: underline !important;
+}
+
+body.db-high-contrast .db-savanna-topbar .db-topbar-nav a[aria-current='page'] {
+  color: #ffffff !important;
+  background: #000000;
+}
+
+body.db-high-contrast .db-topbar-lang {
+  border-color: #000000;
+}
+
+body.db-high-contrast .db-topbar-lang button {
+  color: #000000;
+}
+
+body.db-high-contrast .db-topbar-lang button[aria-pressed='true'] {
+  color: #ffffff;
+  background: #000000;
 }

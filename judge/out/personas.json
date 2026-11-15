@@ -1,0 +1,68 @@
+{
+  "forcedColorsAxe": {
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "rules": []
+  },
+  "textResize200": {
+    "labelBefore": "14px",
+    "labelAfter": "32px",
+    "hScroll": false
+  },
+  "lowLiteracy": [
+    {
+      "step": 1,
+      "simpleChangesHint": true,
+      "choices": 3,
+      "withIcon": 0,
+      "listenButton": true
+    },
+    {
+      "step": 2,
+      "simpleChangesHint": true,
+      "choices": 0,
+      "withIcon": 0,
+      "listenButton": true
+    },
+    {
+      "step": 3,
+      "simpleChangesHint": true,
+      "choices": 1,
+      "withIcon": 0,
+      "listenButton": true
+    },
+    {
+      "step": 4,
+      "simpleChangesHint": true,
+      "choices": 2,
+      "withIcon": 0,
+      "listenButton": true
+    },
+    {
+      "step": 5,
+      "simpleChangesHint": true,
+      "choices": 4,
+      "withIcon": 4,
+      "listenButton": true
+    }
+  ],
+  "readingLevel": {
+    "longSentences": [
+      "help.dialogBody4: A staff member from a partner organisation (for example AAAPD or Tomorrow is Better) can s",
+      "privacy.body: You control your data. You can download a copy or delete it at any time. Your support choi",
+      "readAloud.visualNote: This device has no voice for this language, so we show the words one phrase at a time with",
+      "vc.noField: Move to a field first: say down until you hear a text box, then say answer.",
+      "voice.amFallback: Browser speech-to-text for Amharic is not available on this device, so we are recording yo"
+    ],
+    "jargon": [
+      "field.partnerConsent: Consent",
+      "filter.count: Showing {count} jobs matching your support preferences",
+      "support.noProof: No medical proof required. This stays private and is never shared with"
+    ]
+  },
+  "deaf": [
+    "need.sign_language_captions: Captions or an Ethiopian Sign Language interpreter"
+  ]
+}
