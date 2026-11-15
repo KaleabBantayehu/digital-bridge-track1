@@ -566,6 +566,17 @@
           },
           "data": {
             "type": "object"
+          },
+          "revision": {
+            "type": "number",
+            "description": "Client revision used for idempotent offline saves"
+          },
+          "clientUpdatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "voiceNotes": {
+            "type": "object"
           }
         }
       },

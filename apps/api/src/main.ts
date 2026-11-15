@@ -16,7 +16,10 @@ class AppModule {}
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix("api/v1");
-  app.enableCors();
+  app.enableCors({
+    origin: (process.env.CORS_ORIGINS ||
+      "http://localhost:5173,http://localhost:8080,http://localhost:3000,http://127.0.0.1:5173,http://127.0.0.1:8080").split(","),
+  });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
 
   const config = new DocumentBuilder()
@@ -25,6 +28,7 @@ async function bootstrap() {
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup("docs", app, document);
   SwaggerModule.setup("api/docs", app, document);
   const docsDir = path.join(process.cwd(), "docs");
   fs.mkdirSync(docsDir, { recursive: true });

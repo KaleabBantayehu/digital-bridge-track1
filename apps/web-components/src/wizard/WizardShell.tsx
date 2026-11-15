@@ -114,7 +114,12 @@ export const WizardShell: React.FC<WizardShellProps> = ({
         const { id: _id, partnerId: _partnerId, ...restored } = result.profile;
         updateProfile({ ...restored, lang: currentLang });
         setPartnerDraft(partnerDraftFrom(result.profile));
-        announce(translate(currentLang, 'sms.restored'));
+        const restoredValues = Object.values(restored).filter((value) => {
+          if (Array.isArray(value)) return value.length > 0;
+          if (value && typeof value === 'object') return Object.keys(value).length > 0;
+          return value !== undefined && value !== null && value !== '';
+        });
+        if (restoredValues.length > 0) announce(translate(currentLang, 'sms.restored'));
       } else {
         announce(errorText(currentLang, result.code));
       }

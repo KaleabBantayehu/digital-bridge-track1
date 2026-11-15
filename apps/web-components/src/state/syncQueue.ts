@@ -110,6 +110,14 @@ async function flushQueue(): Promise<void> {
       await activeClient.saveStep(item.profile, item.step, item.data, item.revision, item.clientUpdatedAt);
       await updateQueue((current) => current.filter((queued) => queued.id !== item.id));
     } catch (error) {
+      if (error instanceof Error && "status" in error) {
+        const status = Number((error as Error & { status?: unknown }).status);
+        if (status >= 400 && status < 500 && status !== 408 && status !== 429) {
+          await updateQueue((current) => current.filter((queued) => queued.id !== item.id));
+          console.warn("Dropping a permanently rejected onboarding patch from the offline queue.", error);
+          continue;
+        }
+      }
       const attempts = item.attempts + 1;
       const backoff = Math.min(60_000, 1_000 * 2 ** Math.min(attempts - 1, 6));
       await updateQueue((current) =>

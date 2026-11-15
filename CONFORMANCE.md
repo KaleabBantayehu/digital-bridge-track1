@@ -117,3 +117,18 @@ All browser runs use Playwright 1.65 driving installed Google Chrome (headless) 
 - Voice notes stay on the device under `db:{partnerId}:{profileId}:voiceNotes`; "My data" exports them, "Delete my data" removes them and their length metadata. Job applications carry only a reference (`audioRef`).
 - Voice control and dictation use the browser's Web Speech API. In Chrome that means audio goes to the browser vendor's speech service (Google), not to our API; we log no transcripts. This must be stated to learners before they turn the microphone on, and voice notes (MediaRecorder) are the on-device alternative.
 - A kept voice note answers a field without writing placeholder text into it, so no invented "name" or "phone" ever reaches the profile, the events or the API.
+## Human co-designer and manual testing record — 15 November 2026
+
+Track 1 Co-Designer and team accessibility testers (Kaleab, Ermias, Dev 2,
+and Kidus) tested on Windows 11 (keyboard-only, 125%–200% zoom, sound-off,
+and `Alt+V` voice navigation) and Android Mobile Chrome (touch and Voice
+Mode). They completed English and Amharic onboarding, the Ethiopian
+13-month calendar, partner referral voucher, private client-side job filter,
+and neural Amharic Read-Aloud with synchronized captions without assistance.
+
+The fix sprint addressed inaccurate English email dictation in Amharic mode
+(forced ASCII/en-US recognition and spelling), the voice “help” command and
+numbered shortcuts, immediate ID/SMS code visibility and audio, and Android
+continuous-recognition/header issues. The header is static and the controls
+remain visible at zoom; color-blind-safe indicators, Afaan Oromo and Tigrinya
+support, and Ethiopian Sign Language visual-support guidance were added.

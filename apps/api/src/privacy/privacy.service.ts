@@ -17,6 +17,7 @@ export class PrivacyService {
   ) {}
 
   async export(sessionId: string) {
+    this.assertSessionId(sessionId);
     const session = await this.sessions.findOne({ where: { id: sessionId } });
     if (!session) throwBilingualHttp(HttpStatus.NOT_FOUND, undefined, "NotFound");
     return {
@@ -27,11 +28,18 @@ export class PrivacyService {
   }
 
   async remove(sessionId: string) {
+    this.assertSessionId(sessionId);
     const session = await this.sessions.findOne({ where: { id: sessionId } });
     if (!session) throwBilingualHttp(HttpStatus.NOT_FOUND, undefined, "NotFound");
     await this.applications.delete({ applicantProfileId: sessionId });
     await this.tokens.delete({ sessionId });
     await this.support.delete({ sessionId });
     await this.sessions.delete({ id: sessionId });
+  }
+
+  private assertSessionId(sessionId: string): asserts sessionId is string {
+    if (!sessionId || sessionId.trim() === "" || sessionId === "undefined") {
+      throwBilingualHttp(HttpStatus.BAD_REQUEST, "REQUIRED", "ValidationError");
+    }
   }
 }

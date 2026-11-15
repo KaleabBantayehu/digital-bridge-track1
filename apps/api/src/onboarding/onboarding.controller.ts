@@ -1,6 +1,6 @@
 import { Controller, Post, Patch, Get, Param, Body, Query } from "@nestjs/common";
 import { ApiProperty, ApiPropertyOptional, ApiTags, ApiOperation } from "@nestjs/swagger";
-import { IsIn, IsObject, IsOptional, IsString } from "class-validator";
+import { IsIn, IsNumber, IsObject, IsOptional, IsString } from "class-validator";
 import { OnboardingService } from "./onboarding.service";
 import { Lang } from "@db/shared-schemas";
 
@@ -26,6 +26,21 @@ class PatchSessionDto {
   @IsOptional()
   @IsObject()
   data?: Record<string, unknown>;
+
+  @ApiPropertyOptional({ description: "Client revision used for idempotent offline saves" })
+  @IsOptional()
+  @IsNumber()
+  revision?: number;
+
+  @ApiPropertyOptional({ format: "date-time" })
+  @IsOptional()
+  @IsString()
+  clientUpdatedAt?: string;
+
+  @ApiPropertyOptional({ type: Object })
+  @IsOptional()
+  @IsObject()
+  voiceNotes?: Record<string, string>;
 }
 
 @ApiTags("Onboarding (/api/v1/onboarding)")

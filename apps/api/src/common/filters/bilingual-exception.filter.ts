@@ -59,6 +59,8 @@ function errorName(status: number, requested?: string): BilingualApiError["error
 }
 
 function codeFor(value: unknown): ErrorCode {
+  if (value === "UNKNOWN_FIELD") return "UNKNOWN_FIELD";
+  if (typeof value === "string" && value.toLowerCase().includes("should not exist")) return "UNKNOWN_FIELD";
   return value === "INVALID_ET_PHONE" ||
     value === "INVALID_EMAIL" ||
     value === "INVALID_ET_DATE" ||
@@ -108,7 +110,8 @@ export class BilingualExceptionFilter implements ExceptionFilter {
     if (Array.isArray(raw.message)) {
       for (const message of raw.message) {
         const [name, code] = String(message).split(":");
-        fields.push(field(name?.trim() || "form", codeFor(code?.trim())));
+        const text = String(message);
+        fields.push(field(name?.trim() || "form", codeFor(text.includes("should not exist") ? text : code?.trim())));
       }
       status = HttpStatus.UNPROCESSABLE_ENTITY;
     }

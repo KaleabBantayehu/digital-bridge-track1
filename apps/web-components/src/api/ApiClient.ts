@@ -137,7 +137,10 @@ export class ApiClient {
       },
     );
     if (!response) return this.mock.requestResumeSms(profile);
-    const token = response.token ?? new URL(response.devLink, window.location.href).searchParams.get('resumeToken');
+    const resumeUrl = new URL(response.devLink, window.location.href);
+    const token = response.token ??
+      resumeUrl.searchParams.get('resume') ??
+      resumeUrl.searchParams.get('resumeToken');
     if (!token) throw new TypeError('The resume SMS response did not contain a token.');
     return { ...response, token };
   }

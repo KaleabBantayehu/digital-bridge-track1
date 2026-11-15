@@ -1,0 +1,51 @@
+openapi: 3.0.3
+info:
+  title: Digital Bridge Accessible Onboarding & Career Gateway API
+  version: 1.0.0
+servers:
+  - url: /api/v1
+paths:
+  /onboarding/sessions:
+    post: { summary: Create onboarding session, responses: { '201': { description: Created } } }
+  /onboarding/sessions/{id}:
+    get: { summary: Get onboarding session, parameters: [{ $ref: '#/components/parameters/Id' }], responses: { '200': { description: OK } } }
+    patch: { summary: Save onboarding step, parameters: [{ $ref: '#/components/parameters/Id' }], responses: { '200': { description: OK } } }
+  /onboarding/sessions/{id}/resume-sms:
+    post: { summary: Request SMS resume link, parameters: [{ $ref: '#/components/parameters/Id' }], responses: { '201': { description: Created } } }
+  /onboarding/resume/{token}:
+    get: { summary: Consume resume token, responses: { '200': { description: OK } } }
+  /onboarding/partner-vouch:
+    post: { summary: Partner voucher verification, responses: { '201': { description: Created } } }
+  /learners/{id}:
+    patch: { summary: Update learner profile, parameters: [{ $ref: '#/components/parameters/Id' }], responses: { '200': { description: OK } } }
+  /career/jobs:
+    get: { summary: List jobs, responses: { '200': { description: OK } } }
+    post: { summary: Create job, responses: { '201': { description: Created } } }
+  /career/applications:
+    post: { summary: Submit job application, responses: { '201': { description: Created } } }
+  /privacy/export:
+    get: { summary: Export learner data, responses: { '200': { description: OK } } }
+  /privacy/data:
+    delete: { summary: Delete learner data, responses: { '204': { description: Deleted } } }
+  /lti/login:
+    get: { summary: Start LTI OIDC login, responses: { '302': { description: Redirect } } }
+    post: { summary: Start LTI OIDC login, responses: { '302': { description: Redirect } } }
+  /lti/launch:
+    post: { summary: Verify LTI launch, responses: { '200': { description: OK }, '401': { description: Rejected } } }
+  /lti/ags/sync:
+    post: { summary: Synchronize LTI score, responses: { '200': { description: OK } } }
+  /lti/nrps/roster:
+    get: { summary: Read completion-only roster, responses: { '200': { description: OK } } }
+  /lti/deep-link:
+    post: { summary: Create LTI deep link, responses: { '200': { description: OK } } }
+  /lti/jwks:
+    get: { summary: Public LTI keys, responses: { '200': { description: OK } } }
+  /auth/token:
+    post: { summary: Issue scoped partner token, responses: { '201': { description: Created }, '401': { description: Unauthorized } } }
+components:
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema: { type: string }

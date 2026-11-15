@@ -1,6 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { jwtVerify } from "jose";
 import { Request } from "express";
+import { isUUID } from "class-validator";
 import { REQUIRED_SCOPES } from "../decorators/require-scopes.decorator";
 import { throwBilingualHttp } from "../filters/bilingual-exception.filter";
 
@@ -14,9 +15,17 @@ export class ScopesGuard implements CanActivate {
     const required = this.requiredScopes(context);
     const request = context.switchToHttp().getRequest<Request>();
     const authorization = request.header("authorization");
-    const enforced = request.header("x-enforce-scopes")?.toLowerCase() === "true";
-
-    if (!authorization && !enforced) return true;
+    const isPrivacyRoute = request.path.endsWith("/privacy/export") || request.path.endsWith("/privacy/data");
+    if (!authorization && isPrivacyRoute) {
+      const sessionId = typeof request.query.sessionId === "string" ? request.query.sessionId : "";
+      const sessionToken = request.header("x-session-token");
+      if (!sessionId) return true;
+      if (isUUID(sessionId) && sessionToken === sessionId) return true;
+      throwBilingualHttp(401, undefined, "Unauthorized");
+    }
+    if (!authorization) {
+      throwBilingualHttp(401, undefined, "Unauthorized");
+    }
     if (!authorization?.match(/^Bearer\s+\S+$/i)) {
       throwBilingualHttp(401, undefined, "Unauthorized");
     }

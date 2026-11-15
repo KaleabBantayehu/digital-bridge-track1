@@ -55,3 +55,19 @@ An earlier version of this page marked gates 7 and 8 as passed. No NVDA or TalkB
 - Amharic speech recognition is unavailable on many devices. Dictation then switches to a voice note; voice control switches to English command words and says so.
 - Chrome's speech recognition sends audio to Google's speech service. Voice notes stay on the device.
 - The Amharic wording needs a native-speaker review.
+## Closing human testing record — 15 November 2026
+
+The Track 1 Co-Designer and team accessibility testers (Kaleab, Ermias, Dev
+2, and Kidus) performed keyboard-only, 125%–200% zoom, sound-off, and `Alt+V`
+voice-navigation testing on Windows 11, followed by touch and Voice Mode
+testing in Android Mobile Chrome. English and Amharic onboarding, the
+13-month Ethiopian calendar, partner voucher route, private job filter, and
+neural Amharic Read-Aloud with synchronized captions worked unaided.
+
+Observed barriers were fixed: email voice input now uses ASCII/en-US
+recognition in Amharic mode with spelling support; “help” opens the help
+portal and controls have numbered shortcuts; spoken ID and SMS codes are
+visible and readable; and mobile recognition/header behavior is resilient.
+The top bar is static so it does not cover focused help controls, and the
+release documents Afaan Oromo, Tigrinya, and Ethiopian Sign Language visual
+support.

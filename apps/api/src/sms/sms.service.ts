@@ -33,7 +33,7 @@ export class SmsService {
       used: false,
     });
 
-    const devLink = `http://localhost:5173/?resumeToken=${token}`;
+    const devLink = `${process.env.PUBLIC_RESUME_URL || "http://localhost:5173/pages/signup.html"}?resume=${token}`;
     return {
       sent: true,
       expiresAt,

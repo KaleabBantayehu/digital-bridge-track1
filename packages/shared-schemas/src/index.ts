@@ -76,7 +76,7 @@ export interface JobApplication {
 }
 
 export type ErrorCode =
-  | 'REQUIRED' | 'INVALID_ET_PHONE' | 'INVALID_EMAIL' | 'INVALID_ET_DATE' | 'CONSENT_REQUIRED'
+  | 'REQUIRED' | 'UNKNOWN_FIELD' | 'INVALID_ET_PHONE' | 'INVALID_EMAIL' | 'INVALID_ET_DATE' | 'CONSENT_REQUIRED'
   | 'TOKEN_EXPIRED' | 'TOKEN_USED' | 'LTI_BAD_SIGNATURE' | 'LTI_BAD_NONCE' | 'LTI_BAD_AUDIENCE' | 'LTI_EXPIRED' | 'RATE_LIMITED';
 
 export interface BilingualApiError {
@@ -149,6 +149,7 @@ export function normaliseEtPhone(raw: string): string | null {
 
 export const ERROR_MESSAGES: Record<ErrorCode, Localized> = {
   REQUIRED: { en: 'This field is required.', am: 'ይህ ቦታ መሞላት አለበት።' },
+  UNKNOWN_FIELD: { en: 'This field is not recognised.', am: 'ይህ መስክ አይታወቅም።' },
   INVALID_ET_PHONE: { en: 'Enter 10 digits, for example 0911 234 567', am: 'ባለ 10 ቁጥር ስልክ ያስገቡ፣ ለምሳሌ 0911 234 567' },
   INVALID_EMAIL: { en: 'Enter a valid email address, for example name@example.com', am: 'ትክክለኛ ኢሜይል ያስገቡ፣ ለምሳሌ name@example.com' },
   INVALID_ET_DATE: { en: 'Select a valid day, month, and year.', am: 'ትክክለኛ ቀን፣ ወር እና ዓመት ይምረጡ።' },
