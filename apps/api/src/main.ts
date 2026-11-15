@@ -34,6 +34,6 @@ async function bootstrap() {
   fs.mkdirSync(docsDir, { recursive: true });
   fs.writeFileSync(path.join(docsDir, "openapi.json"), JSON.stringify(document, null, 2), "utf8");
 
-  await app.listen(process.env.PORT || 3000);
+  await app.listen(Number(process.env.PORT) || 3000, "0.0.0.0");
 }
 bootstrap();
