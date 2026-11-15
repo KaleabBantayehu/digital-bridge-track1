@@ -128,7 +128,7 @@ export const CareerGateway: React.FC<CareerGatewayProps> = ({
     >
       <style>{ETHIOPIC_CSS}</style>
       <LiveRegion announcement={announcement} />
-      <VoiceControl lang={lang} rootRef={rootRef} announce={announce} />
+      <VoiceControl lang={lang} rootRef={rootRef} announce={announce} kind="career" />
 
       <h2 id={headingId} tabIndex={-1} className="flex items-center gap-2 text-2xl font-bold mb-1">
         <Briefcase aria-hidden="true" focusable="false" className="h-7 w-7 shrink-0 text-terracotta" />

@@ -61,7 +61,7 @@ export const FidelHelper: React.FC<FidelHelperProps> = ({ fieldLabel, value, onC
         <Keyboard aria-hidden="true" focusable="false" className="h-5 w-5 shrink-0" />
         {t('am', 'fidel.toggle')}
       </button>
-      <div id={panelId} hidden={!open} className="mt-2 rounded-xl border border-sand bg-white p-3 shadow-sm">
+      <div id={panelId} hidden={!open} className="mt-2 rounded-xl border border-sand bg-white p-3 shadow-sm" data-db-aux="">
         <label htmlFor={inputId} className={ui.label}>
           {t('am', 'fidel.label')}
         </label>

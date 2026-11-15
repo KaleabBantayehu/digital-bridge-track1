@@ -5,7 +5,7 @@ import type { Lang } from '@db/shared-schemas';
 import { t } from '../i18n';
 import { cleanId, ui } from '../wizard/ui';
 import {
-  blobToDataUrl, canRecordVoiceNote, setFieldListening, getSpeechRecognition, pickAudioMime, speakText, speechLocale, stopSpeaking,
+  blobToDataUrl, canRecordVoiceNote, setFieldListening, NOISY_ROOM_AUDIO, getSpeechRecognition, pickAudioMime, speakText, speechLocale, stopSpeaking,
   type SpeechRecognitionLike,
 } from './speech';
 import { hasVoiceNote, removeVoiceNote, setVoiceNote, useVoiceNotes } from './voiceNotes';
@@ -138,6 +138,7 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
     if (voiceNoteKey && canRecordVoiceNote()) {
       void startRecording(true);
     } else {
+      setFieldListening(false);
       setPhase('idle');
       say(t(lang, 'voice.amFallbackType'));
       targetRef.current?.focus();
@@ -211,6 +212,8 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
         if (!gotResult.current) say(t(lang, 'voice.nothing'));
       };
       recognitionRef.current = recognition;
+      recognition.onspeechend = () => setNote(t(lang, 'vc.state.processing'));
+      setFieldListening(true);
       recognition.start();
       setPhase('listening');
       say(t(lang, 'voice.listening'));
@@ -221,6 +224,7 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
         }, AM_EMPTY_TRANSCRIPT_MS);
       }
     } catch {
+      setFieldListening(false);
       if (recogniseAmharic) {
         amharicFallback();
         return;
@@ -279,7 +283,8 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
     setPreviewUrl('');
     blobRef.current = null;
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      setFieldListening(true); // pause voice control before the recording starts
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: NOISY_ROOM_AUDIO });
       streamRef.current = stream;
       const mimeType = pickAudioMime();
       const recorder = new MediaRecorder(stream, { ...(mimeType ? { mimeType } : {}), audioBitsPerSecond: 24_000 });
@@ -321,6 +326,7 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
         if (recorder.state === 'recording') recorder.stop();
       }, MAX_RECORDING_MS);
     } catch (error) {
+      setFieldListening(false);
       stopTracks();
       setPhase('idle');
       const name = (error as { name?: string })?.name;
@@ -439,7 +445,7 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
       {note && phase !== 'review' && <p className="mt-1 text-sm text-stone-800">{note}</p>}
 
       {phase === 'review' && (
-        <div className="mt-3 rounded-xl border-2 border-terracotta bg-white p-3 shadow-card">
+        <div className="mt-3 rounded-xl border-2 border-terracotta bg-white p-3 shadow-card" data-db-aux="">
           <label htmlFor={reviewId} className={ui.label}>
             {t(lang, 'voice.reviewLabel')}
           </label>
@@ -449,9 +455,10 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
             type="text"
             inputMode={spokenKind === 'tel' ? 'tel' : spokenKind === 'email' ? 'email' : undefined}
             dir={spokenKind === 'text' ? undefined : 'ltr'}
+            data-db-review=""
             value={heard} onChange={(e) => setHeard(e.target.value)} className={ui.input} />
           <div className="mt-3 flex flex-wrap gap-2">
-            <button type="button" onClick={useAnswer} disabled={!heard.trim()} className={ui.btnPrimary}>
+            <button type="button" onClick={useAnswer} disabled={!heard.trim()} className={ui.btnPrimary} data-db-action="voice-use">
               <Check aria-hidden="true" focusable="false" className="h-5 w-5 shrink-0" />
               {t(lang, 'voice.use')}
             </button>
@@ -459,11 +466,11 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
               <Volume2 aria-hidden="true" focusable="false" className="h-5 w-5 shrink-0" />
               {t(lang, 'voice.readBack')}
             </button>
-            <button type="button" onClick={start} className={ui.btnSecondary}>
+            <button type="button" onClick={start} className={ui.btnSecondary} data-db-action="voice-retry">
               <RotateCcw aria-hidden="true" focusable="false" className="h-5 w-5 shrink-0" />
               {t(lang, 'voice.retry')}
             </button>
-            <button type="button" onClick={cancelReview} className={ui.btnQuiet}>
+            <button type="button" onClick={cancelReview} className={ui.btnQuiet} data-db-action="voice-cancel">
               {t(lang, 'common.cancel')}
             </button>
           </div>
@@ -475,13 +482,13 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
       )}
 
       {phase === 'preview' && previewUrl && (
-        <div className="mt-3 rounded-xl border-2 border-terracotta bg-white p-3 shadow-card">
+        <div className="mt-3 rounded-xl border-2 border-terracotta bg-white p-3 shadow-card" data-db-aux="">
           <p id={previewLabelId} className={ui.label}>
             {t(lang, 'note.previewLabel', { field: fieldLabel })}
           </p>
           <audio controls src={previewUrl} aria-labelledby={previewLabelId} className="w-full max-w-[40rem]" />
           <div className="mt-3 flex flex-wrap gap-2">
-            <button type="button" onClick={() => void keepVoiceNote()} className={ui.btnPrimary}>
+            <button type="button" onClick={() => void keepVoiceNote()} className={ui.btnPrimary} data-db-action="note-keep">
               <Check aria-hidden="true" focusable="false" className="h-5 w-5 shrink-0" />
               {t(lang, 'note.keep')}
             </button>

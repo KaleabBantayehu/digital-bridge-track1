@@ -3,6 +3,7 @@ import { BookOpen, HelpCircle, Languages, ShieldCheck, X } from 'lucide-react';
 import { I18N, type Lang } from '@db/shared-schemas';
 import { otherLang, t } from '../i18n';
 import { ReadAloudButton } from '../tts/ReadAloudButton';
+import { buildStepScript } from './stepScript';
 import { setVisionMode, useVisionMode, VISION_LABEL_KEYS, VISION_MODES, type VisionMode } from './vision';
 import type { I18nKey } from '../i18n';
 import { cleanId, ui } from './ui';
@@ -63,8 +64,15 @@ export const HelpCluster: React.FC<HelpClusterProps> = ({
   const openHelp = () => dialogRef.current?.showModal();
   const closeHelp = () => dialogRef.current?.close();
 
+  const clusterRef = useRef<HTMLDivElement>(null);
+  // Read aloud says the whole step: question, hint, then each field and choice with its voice-control number.
+  const stepPhrases = () => {
+    const root = clusterRef.current?.closest('section');
+    return root ? buildStepScript(root, lang, readText) : [];
+  };
+
   return (
-    <div className="mb-6">
+    <div className="mb-6" ref={clusterRef}>
     <div role="group" aria-label={t(lang, 'help.groupLabel')} className="flex flex-wrap gap-2 rounded-2xl border border-sand bg-white/70 p-2">
       <ReadAloudButton
         lang={lang}
@@ -75,6 +83,7 @@ export const HelpCluster: React.FC<HelpClusterProps> = ({
         pill
         panelSlot={panelSlot}
         actionId="read"
+        getPhrases={stepPhrases}
       />
 
       <button type="button" onClick={() => onSwitchLang(target)} className={ui.btnPill} data-db-action="lang">

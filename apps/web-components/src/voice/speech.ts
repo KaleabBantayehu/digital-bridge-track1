@@ -13,6 +13,9 @@ export interface SpeechRecognitionLike extends EventTarget {
   onresult: ((e: SpeechRecognitionEventLike) => void) | null;
   onerror: ((e: SpeechRecognitionErrorEventLike) => void) | null;
   onend: (() => void) | null;
+  /** Optional engine events (Chrome): used to show "hearing you" / "processing" states. */
+  onspeechstart?: (() => void) | null;
+  onspeechend?: (() => void) | null;
   start(): void;
   stop(): void;
   abort(): void;
@@ -130,7 +133,12 @@ export function setFieldListening(busy: boolean): void {
   if (fieldBusy === busy) return;
   fieldBusy = busy;
   busyListeners.forEach((listener) => listener(busy));
+  // Round-2 finding: other widgets on the page (and hosts) can pause their own listening too.
+  if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('db-voice-field:active', { detail: { active: busy } }));
 }
+
+/** Microphone settings for voice notes: cleaner audio in noisy rooms (round-2 finding). */
+export const NOISY_ROOM_AUDIO: MediaTrackConstraints = { noiseSuppression: true, echoCancellation: true, autoGainControl: true };
 
 export const isFieldListening = () => fieldBusy;
 

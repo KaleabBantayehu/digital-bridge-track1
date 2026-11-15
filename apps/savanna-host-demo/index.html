@@ -3,90 +3,162 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Savanna static pages</title>
-    <link rel="stylesheet" href="assets/css/application_alx.css" media="all" />
-    <link rel="stylesheet" href="assets/css/app.css" media="all" />
+    <title>Digital Bridge Track 1 — demo pages</title>
     <style>
-      body { padding: 2rem 1rem; color: #1c1917; }
-      .page-card { max-width: 46rem; }
-      /* D-02: links meet contrast (#7a2b18 on white = 9.6:1) and are at least 44 px tall. */
-      main a {
-        display: inline-flex;
-        align-items: center;
-        min-height: 44px;
-        padding: 0.5rem 0.875rem;
-        color: #7a2b18 !important;
-        font-weight: 700;
-        text-decoration: none;
-        border-radius: 0.5rem;
+      /* Self-contained: no external fonts, CSS or scripts. Contrast checked with the WCAG formula. */
+      :root {
+        --ink: #1c1917;        /* on --paper 16.4:1 */
+        --muted: #44403c;      /* on --paper 9.6:1 */
+        --paper: #faf7f2;
+        --card: #ffffff;
+        --line: #d6cfc2;
+        --brand: #7a2b18;      /* on white 9.6:1; white on it 9.6:1 */
+        --brand-tint: #f6e7e1;
+        --lagoon: #0c4243;     /* on #e3efee 9.5:1 */
+        --lagoon-tint: #e3efee;
       }
-      main a:hover { background: #f6e7e1; text-decoration: underline; }
-      main a:focus-visible { outline: 3px solid #7a2b18; outline-offset: 2px; }
-      .card-title a { padding-inline: 0; }
-      .text-body-secondary { color: #44403c !important; }
-      code { color: #7a2b18; background: #ffffff; padding: 0 0.25rem; border-radius: 0.25rem; }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        color: var(--ink);
+        background: var(--paper);
+        font: 1rem/1.6 system-ui, 'Segoe UI', 'Noto Sans Ethiopic', 'Nyala', sans-serif;
+        border-top: 6px solid var(--brand);
+      }
+      .skip-link {
+        position: absolute; left: 0.5rem; top: -4rem; padding: 0.75rem 1rem;
+        background: var(--brand); color: #fff; font-weight: 700; border-radius: 0.5rem; z-index: 10;
+      }
+      .skip-link:focus { top: 0.5rem; }
+      main { max-width: 64rem; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+      :focus-visible { outline: 3px solid var(--brand); outline-offset: 2px; }
+      a { color: var(--brand); }
+      .hero {
+        background: var(--card); border: 1px solid var(--line); border-radius: 1.25rem; padding: 1.5rem;
+        box-shadow: 0 1px 2px rgba(28, 25, 23, 0.06), 0 4px 16px rgba(28, 25, 23, 0.06);
+      }
+      .eyebrow { margin: 0 0 0.25rem; font-weight: 700; color: var(--brand); text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.875rem; }
+      h1 { margin: 0 0 0.5rem; font-size: clamp(1.6rem, 4vw, 2.25rem); line-height: 1.2; }
+      .lede { margin: 0 0 1rem; color: var(--muted); max-width: 46rem; }
+      .actions, .links { display: flex; flex-wrap: wrap; gap: 0.75rem; padding: 0; margin: 0; list-style: none; }
+      .button {
+        display: inline-flex; align-items: center; gap: 0.5rem; min-height: 44px; padding: 0.5rem 1rem;
+        border: 2px solid var(--brand); border-radius: 999px; font-weight: 700; text-decoration: none;
+        color: var(--brand); background: var(--card);
+      }
+      .button.primary { background: var(--brand); color: #fff; }
+      .button:hover { border-style: dashed; background: var(--brand-tint); color: var(--brand); }
+      .button.primary:hover { background: #5b1d13; color: #fff; }
+      .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 0.75rem; padding: 0; margin: 1.25rem 0 0; list-style: none; }
+      .metric { border: 2px solid var(--lagoon); background: var(--lagoon-tint); color: var(--lagoon); border-radius: 0.875rem; padding: 0.75rem 1rem; }
+      .metric strong { display: block; font-size: 1.25rem; }
+      h2 { margin: 2rem 0 0.75rem; font-size: 1.35rem; }
+      .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: 1rem; padding: 0; margin: 0; list-style: none; }
+      .card { background: var(--card); border: 1px solid var(--line); border-radius: 1rem; padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: 0.5rem; }
+      .card h3 { margin: 0; font-size: 1.1rem; }
+      .card p { margin: 0; color: var(--muted); }
+      .card .button { align-self: flex-start; margin-top: auto; }
+      code { background: var(--card); color: var(--brand); padding: 0 0.25rem; border-radius: 0.25rem; overflow-wrap: anywhere; }
+      footer { margin-top: 2rem; color: var(--muted); }
+      @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
     </style>
   </head>
-  <body class="bg-body-tertiary">
-    <main class="container-lg">
-      <h1 class="mb-1">Savanna static pages</h1>
-      <p class="text-body-secondary mb-4">
-        Three learner pages frozen from the local dev app, for front-end and accessibility work.
-        No server, no application JavaScript, no network. The hamburger, the week strip, the score
-        details and programme modals, the module switcher and the courses dropdown still work;
-        every link is inert, and the language toggle and global search are removed.
-      </p>
-
-      <div class="vstack gap-3 page-card">
-        <div class="card">
-          <div class="card-body">
-            <h2 class="h5 card-title"><a href="pages/homepage-v1-paced.html">Learner homepage — v1 paced</a></h2>
-            <p class="card-text mb-0">
-              Björn Sibanda, week 10 of <strong>WR 100: Fundamentals of Effective Communication</strong>
-              (cohort F26-SEM-16W, 31&nbsp;Aug – 20&nbsp;Dec 2026). Courses dropdown, a week strip with all
-              16 weeks preloaded, “continue where you left off”, immediate deliverables, period
-              progress, overall score and upcoming events.
-            </p>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-body">
-            <h2 class="h5 card-title"><a href="pages/homepage-v1-self-paced.html">Learner homepage — v1 self-paced</a></h2>
-            <p class="card-text mb-0">
-              Amara Nwosu, module 1 of 3 complete on <strong>VA-1: VA Foundations &amp; Professional Identity</strong>.
-              Course-progression gauge against the 70% graduation threshold, a working module
-              switcher, the programme modal preloaded, pacing boost and upcoming events.
-            </p>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-body">
-            <h2 class="h5 card-title"><a href="pages/concept-with-navigation.html">Concept page with curriculum navigation</a></h2>
-            <p class="card-text mb-0">
-              “The Future of the VA Industry” — a module&nbsp;2 concept with the navigation panel beside it,
-              showing read, current and unread activities, plus the full set of authored content blocks
-              (callouts, card grids, comparison columns). The language toggle, the “Need a Fast Track?”
-              block and the Padlet embed are removed.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <p class="mt-4 text-body-secondary">
-        See <code>README.md</code> for what is real, what was substituted, and how to regenerate.
-      </p>
-      <nav aria-label="Demo pages" class="mt-4">
-        <ul>
-          <li><a href="standalone.html">Standalone Digital Bridge widgets</a></li>
-          <li><a href="external-partner-demo.html">External partner installation demo</a></li>
-          <li><a href="pages/signup.html">Learner signup</a></li>
-          <li><a href="pages/profile.html">Learner profile</a></li>
-          <li><a href="pages/jobs.html">Career Gateway and employer accommodations</a></li>
-          <li><a href="demo/blank.html">Blank external-host demo</a></li>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <main id="main">
+      <section class="hero" aria-labelledby="hero-title">
+        <p class="eyebrow">Digital Bridge · Track 1 · <span lang="am">ዲጂታል ብሪጅ</span></p>
+        <h1 id="hero-title">Accessible onboarding and Career Gateway</h1>
+        <p class="lede">
+          One plug-in for learners who cannot use a standard form: sign up by voice, keyboard, screen reader or sign
+          language video, in English or Amharic, then find and apply for jobs privately. These pages show it inside
+          ALX Savanna and on a plain page.
+        </p>
+        <ul class="actions">
+          <li><a class="button primary" href="pages/signup.html">Start sign-up (inside Savanna)</a></li>
+          <li><a class="button" href="pages/jobs.html">Career Gateway</a></li>
+          <li><a class="button" href="demo/blank.html">Plain page, no Savanna</a></li>
         </ul>
-      </nav>
+        <ul class="metrics" aria-label="Verified results">
+          <li class="metric"><strong>0 axe violations</strong>55 states, English and Amharic, 4 colour modes</li>
+          <li class="metric"><strong>166 KB</strong>gzipped plug-in, 2 requests on a plain page</li>
+          <li class="metric"><strong>5.5 s on Slow 3G</strong>until the first question works (plain page, slow phone CPU)</li>
+          <li class="metric"><strong>WCAG 2.2 AA</strong>report in CONFORMANCE.md, honest about what is untested</li>
+        </ul>
+      </section>
+
+      <h2 id="learner-pages">Learner pages inside Savanna</h2>
+      <ul class="grid" aria-labelledby="learner-pages">
+        <li class="card">
+          <h3>Sign up</h3>
+          <p>Seven short questions, voice on every field, private support needs, and a partner route for learners without an ID.</p>
+          <a class="button" href="pages/signup.html">Open sign-up</a>
+        </li>
+        <li class="card">
+          <h3>My profile (edit)</h3>
+          <p>The same plug-in in edit mode: review every answer, change it, download or delete your data.</p>
+          <a class="button" href="pages/profile.html">Open my profile</a>
+        </li>
+        <li class="card">
+          <h3>Jobs and employer form</h3>
+          <p>A private "support I need" filter that never leaves the browser, voice job applications, and the employer accommodations form.</p>
+          <a class="button" href="pages/jobs.html">Open jobs</a>
+        </li>
+      </ul>
+
+      <h2 id="plug-in-pages">Plug-in on other hosts</h2>
+      <ul class="grid" aria-labelledby="plug-in-pages">
+        <li class="card">
+          <h3>Plain page</h3>
+          <p>No Bootstrap and no Savanna CSS: one script and one tag, the way a judge or partner installs it.</p>
+          <a class="button" href="demo/blank.html">Open the plain page</a>
+        </li>
+        <li class="card">
+          <h3>Standalone widgets</h3>
+          <p>All three elements on one page: onboarding, Career Gateway and employer accommodations.</p>
+          <a class="button" href="standalone.html">Open standalone</a>
+        </li>
+        <li class="card">
+          <h3>External partner demo</h3>
+          <p>How a partner organisation adds the plug-in and listens to its events.</p>
+          <a class="button" href="external-partner-demo.html">Open partner demo</a>
+        </li>
+        <li class="card">
+          <h3>Mock LMS (LTI 1.3)</h3>
+          <p>
+            Signs real LTI launches. Start it first with <code>node apps/savanna-host-demo/mock-lms/server.cjs</code>,
+            then open <code>http://127.0.0.1:4001/mock-lms</code>.
+          </p>
+          <a class="button" href="mock-lms/index.html">Open the Mock LMS page</a>
+        </li>
+      </ul>
+
+      <h2 id="savanna-pages">Original Savanna pages (patched only by sidecar files)</h2>
+      <ul class="grid" aria-labelledby="savanna-pages">
+        <li class="card">
+          <h3>Learner homepage — self-paced</h3>
+          <p>Module switcher, progression gauge and the plug-in in the dashboard.</p>
+          <a class="button" href="pages/homepage-v1-self-paced.html">Open self-paced homepage</a>
+        </li>
+        <li class="card">
+          <h3>Learner homepage — paced</h3>
+          <p>Week strip, deliverables, scores and upcoming events.</p>
+          <a class="button" href="pages/homepage-v1-paced.html">Open paced homepage</a>
+        </li>
+        <li class="card">
+          <h3>Concept page with navigation</h3>
+          <p>A module concept page with the curriculum panel beside it.</p>
+          <a class="button" href="pages/concept-with-navigation.html">Open concept page</a>
+        </li>
+      </ul>
+
+      <footer>
+        <p>
+          Savanna's own <code>application_alx.css</code>, <code>app.css</code> and <code>static-page.js</code> are unchanged;
+          fixes live in <code>assets/css/host-a11y-fixes.css</code> and <code>assets/js/host-a11y-fixes.js</code>.
+          See <code>README.md</code> for what is real, what was substituted, and how to regenerate.
+        </p>
+      </footer>
     </main>
   </body>
 </html>

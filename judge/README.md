@@ -24,6 +24,7 @@ node judge/probe-sync.mjs  # why answers typed in the widget never reach the API
 node judge/probe-target.mjs    # axe target-size: which element covers the help buttons
 node judge/probe-scroll.mjs    # does keyboard focus scroll into view (wait for Bootstrap smooth scroll)
 node judge/probe-obscured.mjs  # elementFromPoint at the focused control's centre
+node judge/probe-r2.mjs        # round 2: does "Record a voice note" start (VC=1 with voice control on)
 ```
 
 Every script serves `apps/web-components/dist` with a tiny gzip static server (like any real host), drives headless

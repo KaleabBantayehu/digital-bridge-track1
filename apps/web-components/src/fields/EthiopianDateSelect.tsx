@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { AlertCircle } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { AlertCircle, Mic, MicOff } from 'lucide-react';
 import {
   ETHIOPIAN_MONTHS, GREGORIAN_MONTHS, daysInEthiopianMonth, ethiopianToGregorian, gregorianToEthiopian,
   type CalendarKind, type EthiopianDate, type Lang, type OnboardingProfile,
 } from '@db/shared-schemas';
 import { t } from '../i18n';
 import { cx, ui } from '../wizard/ui';
+import { getSpeechRecognition, setFieldListening, speechLocale, type SpeechRecognitionLike } from '../voice/speech';
+import { parseSpokenDate } from '../voice/spokenInput';
 
 export type DateOfBirth = NonNullable<OnboardingProfile['dateOfBirth']>;
 
@@ -16,6 +18,8 @@ export interface EthiopianDateSelectProps {
   value: DateOfBirth | undefined;
   onChange: (value: DateOfBirth | undefined) => void;
   error?: string;
+  /** Live-region announcer (spoken date results). */
+  announce?: (message: string) => void;
 }
 
 interface Parts { day: string; month: string; year: string }
@@ -75,7 +79,7 @@ export function formatDob(value: DateOfBirth, lang: Lang, calendar: CalendarKind
 }
 
 /** Calendar choice + three native selects (Day / Month / Year). No drag interactions (WCAG 2.5.7). */
-export const EthiopianDateSelect: React.FC<EthiopianDateSelectProps> = ({ id, lang, value, onChange, error }) => {
+export const EthiopianDateSelect: React.FC<EthiopianDateSelectProps> = ({ id, lang, value, onChange, error, announce }) => {
   const [calendar, setCalendar] = useState<CalendarKind>(value?.displayCalendar ?? 'ethiopian');
   const [parts, setParts] = useState<Parts>(() => partsFromValue(value, value?.displayCalendar ?? 'ethiopian'));
 
@@ -112,6 +116,94 @@ export const EthiopianDateSelect: React.FC<EthiopianDateSelectProps> = ({ id, la
     }
   };
 
+  // ---- Round-2 finding: say the date of birth ("15 Meskerem 1995", "መስከረም አስራ አምስት …") instead of three lists.
+  const [listening, setListening] = useState(false);
+  const [speakNote, setSpeakNote] = useState('');
+  const recRef = useRef<SpeechRecognitionLike | null>(null);
+  useEffect(() => () => {
+    if (!recRef.current) return;
+    recRef.current.abort();
+    setFieldListening(false);
+  }, []);
+
+  const say = (message: string) => {
+    setSpeakNote(message);
+    announce?.(message);
+  };
+
+  const applySpoken = (transcript: string) => {
+    const heard = parseSpokenDate(transcript, calendar);
+    const next: Parts = {
+      day: heard.day ? String(heard.day) : parts.day,
+      month: heard.month ? String(heard.month) : parts.month,
+      year: heard.year && heard.year >= maxYear - YEARS_BACK && heard.year <= maxYear ? String(heard.year) : parts.year,
+    };
+    if (!heard.day && !heard.month && !heard.year) {
+      say(t(lang, 'dob.notHeard'));
+      return;
+    }
+    update(next);
+    const done = toValue(next, calendar);
+    if (done) {
+      say(t(lang, 'dob.heard', { date: formatDob(done, lang, calendar) }));
+    } else {
+      const got = [
+        next.day && `${t(lang, 'dob.day')} ${next.day}`,
+        next.month && `${t(lang, 'dob.month')} ${months.find((m) => String(m.number) === next.month)?.[lang] ?? next.month}`,
+        next.year && `${t(lang, 'dob.year')} ${next.year}`,
+      ].filter(Boolean).join(', ');
+      say(t(lang, 'dob.partial', { parts: got }));
+    }
+  };
+
+  const speakDate = () => {
+    if (listening) {
+      recRef.current?.stop();
+      return;
+    }
+    const Recognition = getSpeechRecognition();
+    if (!Recognition || (typeof window !== 'undefined' && window.isSecureContext === false)) {
+      say(t(lang, Recognition ? 'vc.insecure' : 'voice.unsupported'));
+      return;
+    }
+    const rec = new Recognition();
+    rec.lang = speechLocale(lang);
+    rec.continuous = false;
+    rec.interimResults = false;
+    rec.maxAlternatives = 3;
+    let got = false;
+    rec.onspeechend = () => setSpeakNote(t(lang, 'vc.state.processing'));
+    rec.onresult = (event) => {
+      const alternatives = Array.from({ length: event.results[0]?.length ?? 0 }, (_, i) => event.results[0][i]?.transcript ?? '');
+      // Prefer the guess that contains the most date parts (noisy rooms, round-2 finding).
+      const best = alternatives
+        .map((text) => ({ text, score: Object.keys(parseSpokenDate(text, calendar)).length }))
+        .sort((a, b) => b.score - a.score)[0];
+      got = true;
+      applySpoken(best?.text ?? '');
+    };
+    rec.onerror = (event) => {
+      got = true;
+      say(t(lang, event.error === 'not-allowed' ? 'voice.denied' : 'dob.notHeard'));
+    };
+    rec.onend = () => {
+      recRef.current = null;
+      setListening(false);
+      setFieldListening(false);
+      if (!got) say(t(lang, 'dob.notHeard'));
+    };
+    recRef.current = rec;
+    setFieldListening(true); // voice control pauses while the date is being said
+    try {
+      rec.start();
+      setListening(true);
+      say(t(lang, 'voice.listening'));
+    } catch {
+      setFieldListening(false);
+      say(t(lang, 'voice.error'));
+    }
+  };
+
   const isEth = calendar === 'ethiopian';
   const months = isEth ? ETHIOPIAN_MONTHS : GREGORIAN_MONTHS;
   const maxYear = isEth ? CURRENT_ETH_YEAR : CURRENT_GREG_YEAR;
@@ -143,7 +235,7 @@ export const EthiopianDateSelect: React.FC<EthiopianDateSelectProps> = ({ id, la
         ))}
       </fieldset>
 
-      <fieldset className={ui.fieldset} aria-describedby={errorId}>
+      <fieldset className={ui.fieldset} aria-describedby={errorId} data-db-dob="">
         <legend className={ui.legend}>
           {t(lang, 'dob.legend')} <span className="font-normal">{t(lang, 'wizard.required')}</span>
         </legend>
@@ -206,6 +298,21 @@ export const EthiopianDateSelect: React.FC<EthiopianDateSelectProps> = ({ id, la
           </div>
         </div>
         {isEth && <p className="mt-2 text-sm text-stone-700">{t(lang, 'dob.pagumeNote')}</p>}
+        <div className="mt-3">
+          <button
+            type="button"
+            onClick={speakDate}
+            aria-pressed={listening}
+            aria-describedby={`${id}-speak-hint`}
+            data-db-action="dob-speak"
+            className={ui.btnToggle(listening)}
+          >
+            {listening ? <MicOff aria-hidden="true" focusable="false" className="h-5 w-5 shrink-0" /> : <Mic aria-hidden="true" focusable="false" className="h-5 w-5 shrink-0" />}
+            {listening ? t(lang, 'voice.stop') : t(lang, 'dob.speak')}
+          </button>
+          <p id={`${id}-speak-hint`} className={cx(ui.hint, 'mt-1')}>{t(lang, 'dob.speakHint')}</p>
+          {speakNote && <p className="mt-1 text-sm font-semibold" data-db-dob-status="">{speakNote}</p>}
+        </div>
       </fieldset>
 
       {complete && (

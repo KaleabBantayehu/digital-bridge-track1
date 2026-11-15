@@ -9,7 +9,7 @@ PASS 8 Native homepage hamburger and named logo links
 PASS 9 Skip links, main headings, hierarchy and widget embedding
 PASS 10 Focus scroll margin and visible focus ring
 PASS 11 No duplicate IDs on required host and demo pages
-  gzipped bundle: 157.93 KB
+  gzipped bundle: 165.86 KB
 PASS 12 Production bundle, copied pages, audio and gzip budget
   axe PASS /pages/signup.html (1 mounted widget(s))
   axe PASS /pages/profile.html (1 mounted widget(s))

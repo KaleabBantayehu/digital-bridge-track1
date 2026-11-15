@@ -6,6 +6,7 @@ import { t } from '../i18n';
 import { cx, ui } from '../wizard/ui';
 import { findSynthVoice, playChime, splitPhrases } from '../voice/speech';
 import { resolvePromptClip } from './promptAudio';
+import type { ScriptPhrase } from '../wizard/stepScript';
 
 export interface ReadAloudButtonProps {
   lang: Lang;
@@ -27,6 +28,11 @@ export interface ReadAloudButtonProps {
   panelSlot?: HTMLElement | null;
   /** Hook for voice control ("repeat" presses the step's Read aloud button). */
   actionId?: string;
+  /**
+   * The whole step as phrases, each with the control it describes (round-2 finding: read every field with its item
+   * number, and highlight it on the page while it is read). Used instead of `text` when given.
+   */
+  getPhrases?: () => ScriptPhrase[];
 }
 
 /** 'tts': an installed voice speaks phrase by phrase. 'visual': a bundled cue or chime, then timed phrases. */
@@ -43,8 +49,10 @@ const phraseMs = (phrase: string) => Math.max(2200, Array.from(phrase).length * 
  *    or a soft synthesised chime, while the highlight moves through the phrases on a reading-pace timer.
  */
 export const ReadAloudButton: React.FC<ReadAloudButtonProps> = ({
-  lang, text, promptKey, label, announce, audioBaseUrl, className, pill, panelSlot, actionId,
+  lang, text, promptKey, label, announce, audioBaseUrl, className, pill, panelSlot, actionId, getPhrases,
 }) => {
+  const elementsRef = useRef<(HTMLElement | null | undefined)[]>([]);
+  const [clipPlaying, setClipPlaying] = useState(false);
   const [mode, setMode] = useState<Mode>('idle');
   const [phrases, setPhrases] = useState<string[]>([]);
   const [index, setIndex] = useState(0);
@@ -61,12 +69,26 @@ export const ReadAloudButton: React.FC<ReadAloudButtonProps> = ({
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) window.speechSynthesis.cancel();
     audioRef.current?.pause();
     audioRef.current = null;
+    setClipPlaying(false);
     setMode('idle');
     setPaused(false);
   };
 
   // Stop on unmount, step change or language change.
   useEffect(() => stop, [text, lang]);
+
+  // Highlight the control whose phrase is being read; clear it when reading stops.
+  useEffect(() => {
+    const elements = elementsRef.current;
+    elements.forEach((el) => el?.removeAttribute('data-vc-reading'));
+    if (mode === 'idle') return;
+    const current = elements[index];
+    if (current?.isConnected) {
+      current.setAttribute('data-vc-reading', 'true');
+      current.scrollIntoView?.({ block: 'nearest', behavior: 'instant' as ScrollBehavior });
+    }
+  }, [mode, index]);
+  useEffect(() => () => elementsRef.current.forEach((el) => el?.removeAttribute('data-vc-reading')), []);
 
   // No voice: advance one phrase at a time unless paused.
   useEffect(() => {
@@ -93,7 +115,9 @@ export const ReadAloudButton: React.FC<ReadAloudButtonProps> = ({
 
   const start = async () => {
     const run = ++runRef.current;
-    const parts = splitPhrases(text);
+    const script = getPhrases?.() ?? [];
+    const parts = script.length ? script.map((p) => p.text) : splitPhrases(text);
+    elementsRef.current = script.map((p) => p.el);
     const shown = parts.length ? parts : [text];
     const voice = findSynthVoice(lang);
     if (voice) {
@@ -120,7 +144,12 @@ export const ReadAloudButton: React.FC<ReadAloudButtonProps> = ({
     if (clip) {
       const audio = new Audio(clip);
       audioRef.current = audio;
-      audio.play().catch(() => playChime('start')); // autoplay/codec refused: the chime still confirms
+      audio.onended = () => setClipPlaying(false);
+      setClipPlaying(true);
+      audio.play().catch(() => {
+        setClipPlaying(false);
+        playChime('start'); // autoplay/codec refused: the chime still confirms
+      });
     } else {
       playChime('start');
     }
@@ -194,6 +223,7 @@ export const ReadAloudButton: React.FC<ReadAloudButtonProps> = ({
         onClick={toggle}
         aria-pressed={active}
         data-db-action={actionId}
+        data-db-audible={String(mode === 'tts' || clipPlaying)}
         aria-label={label && !active ? label : undefined}
         className={cx(toggleClass, className)}
       >

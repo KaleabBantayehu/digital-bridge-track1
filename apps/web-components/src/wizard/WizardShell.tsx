@@ -342,7 +342,7 @@ export const WizardShell: React.FC<WizardShellProps> = ({
 
       <ProgressBar currentStep={finished ? TOTAL_STEPS - 1 : step} totalSteps={TOTAL_STEPS} t={t} />
 
-      <VoiceControl lang={lang} rootRef={rootRef} announce={announce} />
+      <VoiceControl lang={lang} rootRef={rootRef} announce={announce} kind="onboarding" />
 
       <HelpCluster
         lang={lang}
@@ -388,7 +388,7 @@ export const WizardShell: React.FC<WizardShellProps> = ({
           <ErrorSummary items={errorItems} focusKey={summaryKey} t={t} />
 
           {step === 0 && <p className="mb-3 font-semibold">{t('banner.intro')}</p>}
-          <p className="mb-6 flex items-start gap-3">
+          <p className="mb-6 flex items-start gap-3" data-db-step-hint="">
             {simple && <def.Icon aria-hidden="true" focusable="false" className="h-8 w-8 shrink-0 text-terracotta" />}
             <span>{shownHint}</span>
           </p>

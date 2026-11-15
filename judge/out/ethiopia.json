@@ -1,7 +1,7 @@
 {
   "i18n": {
-    "enKeys": 308,
-    "amKeys": 308,
+    "enKeys": 399,
+    "amKeys": 399,
     "missingInAm": [],
     "missingInEn": [],
     "identicalToEnglish": [],
@@ -42,23 +42,17 @@
   },
   "slow3g": {
     "demo/blank.html": {
-      "secondsToFirstQuestion": 5.4,
-      "thirdPartyHosts": [
-        "fonts.googleapis.com",
-        "fonts.gstatic.com"
-      ]
+      "secondsToFirstQuestion": 5.5,
+      "thirdPartyHosts": []
     },
     "pages/signup.html": {
-      "secondsToFirstQuestion": 7.7,
-      "thirdPartyHosts": [
-        "fonts.googleapis.com",
-        "fonts.gstatic.com"
-      ]
+      "secondsToFirstQuestion": 8.4,
+      "thirdPartyHosts": []
     }
   },
   "bundleBytesGzipOnWire": [
-    "/db-signup.js: 148.1 KB",
-    "/assets/js/db-widgets.v1.0.0.js: 148.1 KB"
+    "/db-signup.js: 165.9 KB",
+    "/assets/js/db-widgets.v1.0.0.js: 165.9 KB"
   ],
   "offline": {
     "offlineMessageShown": true,
@@ -79,8 +73,5 @@
     "textTransform": "none",
     "letterSpacing": "normal"
   },
-  "thirdPartyOnLoad": [
-    "fonts.googleapis.com",
-    "fonts.gstatic.com"
-  ]
+  "thirdPartyOnLoad": []
 }

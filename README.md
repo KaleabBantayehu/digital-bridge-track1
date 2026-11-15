@@ -114,6 +114,20 @@ symbol conversion (`zero nine one one` or `ዜሮ ዘጠኝ አንድ አንድ`
 Ethiopic numerals, and spoken email forms such as “at gmail dot com”. The
 Fidel helper converts `abebe` to `አበበ` and `addis ababa` to `አዲስ አበባ`.
 
+### Voice control for blind and voice-only learners
+Turn it on with **Alt + V** or the first button in the widget, then say:
+- **a number** (or "item 3", "ቁጥር 3") to jump to that numbered item; top-bar links are numbered from 91;
+  in a noisy room, press the number keys instead;
+- **down / up** to move between items ("down" starts at the first field of the step), **scroll down / scroll up**;
+- **answer** to dictate into the current field, **guide** ("ምራኝ") to be walked through the fields one by one with
+  each answer read back for yes / no;
+- **repeat** to hear the whole step with every field and its number; **next**, **back**, **help**, **jobs** /
+  **sign up** to move voice control between the Career Gateway and onboarding, **stop**.
+
+Voice control pauses by itself while any field records or dictates, shows whether it is listening or still processing,
+and only one widget on the page has it on at a time. On the date step, "Say your date of birth" fills the three lists
+("15 Meskerem 1995" or in Amharic words).
+
 ### Sign language, colours and other ways in
 - **Sign language (Ethiopian Sign Language):** every voice field has "Answer … in sign language". It records a short
   video of the learner signing (camera, `MediaRecorder`, up to 20 s), kept on the device like a voice note so the
@@ -134,13 +148,12 @@ control is hands-free: press the first control or `Alt + V`, then say
 *ቀጥል / ተመለስ / ድገም / ታች / ላይ / ምረጥ / መልስ / እርዳታ / አቁም*.
 Each command has a visible confirmation and screen-reader announcement.
 
-Measured Slow 3G load (time until the first question can be used, gzip as served by any web host,
-`db-signup.js` = **158 KB gzipped**, 2 requests on the blank page):
+Measured Slow 3G load on 15 Nov (time until the first question can be used, gzip as served by any web host,
+`db-signup.js` = **166 KB gzipped**, 2 requests on the blank page, 0 requests to other websites):
 
 | Profile | `demo/blank.html` | `pages/signup.html` (Savanna) |
 | --- | --- | --- |
-| Chrome "Slow 3G" (400 kbit/s, 400 ms) | 4.2 s | 8.5 s (Savanna's own CSS is about 1.3 MB) |
-| Judge profile (500 kbit/s, 400 ms, CPU 4× slower) | 5.4 s | 7.7 s |
+| Slow 3G (500 kbit/s, 400 ms, CPU 4× slower) | 5.5 s | 8.4 s (Savanna's own CSS is about 1.3 MB) |
 
 No fonts or scripts are loaded from other websites; Ethiopic text uses the device's own Noto Sans Ethiopic / Nyala
 fonts.
@@ -152,7 +165,7 @@ Support preferences are stored separately and are never sent to employers or ana
 For 3,000 learners the target monthly cost is **$0–$5**: a static Web
 Component bundle, SQLite/Docker backend, zero-cost build-time neural TTS
 generation, and browser `MediaRecorder` / `SpeechRecognition`, with no paid AI
-or cloud lock-in. The bundle is **147.5 KB gzipped**, below the 250 KB target.
+or cloud lock-in. The bundle is **166 KB gzipped**, below the 250 KB target.
 
 ## Finished and not finished
 The API, compatibility routes, accessibility checks, offline behavior, i18n

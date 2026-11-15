@@ -4,7 +4,7 @@
   "T1 typed onboarding [am]": "Y",
   "T7 validation error + recovery on 5 steps [am]": "Y",
   "T3 refer me through a partner -> finish": "Y",
-  "T4 save & resume by SMS in a fresh context": "N: fresh context did not restore (link http://127.0.0.1:6855/pages/signup.html?resume=mock-local-session-1-1794744753787, code , restored-msg 0)",
+  "T4 save & resume by SMS in a fresh context": "N: fresh context did not restore (link http://127.0.0.1:12380/pages/signup.html?resume=mock-local-session-1-1794749977195, code , restored-msg 0)",
   "T5 Amharic + Ethiopian date": "Y (selects: ቀን/ወር/ዓመት; 13 months, last \"ጳጉሜ\"; 1 Meskerem 2000 shows \"በግሪጎሪያን የቀን መቁጠሪያ፦ ሴፕቴምበር 12, 2007\" (expected 2007-09-12))",
   "T6 private filter + apply with voice": "Y (filter network requests carrying selections: 0; requests during filtering: 10; zero-results message: yes; status \"Showing 4 jobs matching your support preferences​\"; voice text \"I can support customers in Amharic and English\"; apply requests: none (mock, local))",
   "T2 voice on two fields with review + read-back": "Y (First name: field empty before \"Use this answer\" = true, after = \"Abebe\"; Father's name: field empty before \"Use this answer\" = true, after = \"Kebede\"; read-back: spoke \"Abebe\" (en-US), spoke \"Kebede\" (en-US))"

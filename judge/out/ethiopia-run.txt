@@ -1,0 +1,77 @@
+{
+ "i18n": {
+  "enKeys": 399,
+  "amKeys": 399,
+  "missingInAm": [],
+  "missingInEn": [],
+  "identicalToEnglish": [],
+  "amWithoutEthiopic": []
+ },
+ "hardcoded": [],
+ "physicalCss": [],
+ "calendar": {
+  "tested": 412,
+  "mismatches": [],
+  "mismatchCount": 0,
+  "pagumeDays": [
+   "2014:5",
+   "2015:6",
+   "2016:5",
+   "2017:5",
+   "2018:5",
+   "2019:6"
+  ],
+  "anchors": [
+   "2026-09-11 = 1/1/2019",
+   "2026-11-14 = 5/3/2019"
+  ]
+ },
+ "phones": {
+  "0911234567": "+251911234567",
+  "0911 234 567": "+251911234567",
+  "091-123-4567": "+251911234567",
+  "+251911234567": "+251911234567",
+  "251911234567": "+251911234567",
+  "0711234567": "+251711234567",
+  "+251711234567": "+251711234567",
+  "091123456": null,
+  "09112345678": null,
+  "0811234567": null,
+  "abcdefghij": null,
+  "0፱፩፩234567": "+251911234567"
+ },
+ "slow3g": {
+  "demo/blank.html": {
+   "secondsToFirstQuestion": 5.5,
+   "thirdPartyHosts": []
+  },
+  "pages/signup.html": {
+   "secondsToFirstQuestion": 8.4,
+   "thirdPartyHosts": []
+  }
+ },
+ "bundleBytesGzipOnWire": [
+  "/db-signup.js: 165.9 KB",
+  "/assets/js/db-widgets.v1.0.0.js: 165.9 KB"
+ ],
+ "offline": {
+  "offlineMessageShown": true,
+  "pageReloadWhileOffline": "page itself does not load offline (no service worker)",
+  "afterReconnectStep": 3,
+  "answerKept": "Yonas"
+ },
+ "noTimeouts": {
+  "stepAfter3h": 2,
+  "valueAfter3h": "Tigist"
+ },
+ "rtl": {
+  "hScroll": false
+ },
+ "amTypography": {
+  "fontFamily": "\"Noto Sans Ethiopic\", Nyala, Poppins, sans-serif, sans-serif",
+  "lineHeightRatio": 1.7,
+  "textTransform": "none",
+  "letterSpacing": "normal"
+ },
+ "thirdPartyOnLoad": []
+}

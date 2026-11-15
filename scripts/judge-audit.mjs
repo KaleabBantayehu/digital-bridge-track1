@@ -225,7 +225,7 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 320, height: 640 
   await w.locator('section[lang="am"] h2[tabindex]').first().waitFor();
 
   await page.keyboard.press('Alt+KeyV');
-  await w.getByText(am['vc.listening']).waitFor();
+  await w.locator('[data-vc-state]').waitFor();
   check(await w.getByRole('button', { name: am['vc.toggle'] }).getAttribute('aria-pressed') === 'true', 'voice control: Alt+V turns it on (aria-pressed)');
   await axe(page, 'signup [am] voice control on');
 
@@ -327,7 +327,7 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 320, height: 640 
   check(fontLinks === 0, `widget adds no third-party font link to the host page (${fontLinks})`);
 
   await page.keyboard.press('Alt+KeyV');
-  await w.getByText(am['vc.listening']).waitFor();
+  await w.locator('[data-vc-state]').waitFor();
   await page.waitForTimeout(400);
   const badges = await page.evaluate(() => document.querySelector('db-signup').shadowRoot.querySelectorAll('[data-vc-num]').length);
   check(badges >= 5, `voice control shows numbered badges (${badges})`);
@@ -437,6 +437,133 @@ for (const mode of ['colorblind-safe', 'high-contrast', 'dark']) {
   check(true, 'step completed with a sign-language video instead of typing');
   check(page.__errors.length === 0, `no page errors in the sign-language checks ${page.__errors.slice(0, 1).join('')}`);
   await page.close();
+}
+
+// 2g) Round-2 manual blind / voice testing fixes.
+{
+  const scripted = () => {
+    if (window.speechSynthesis) window.speechSynthesis.getVoices = () => [];
+    window.__queue = [];
+    class ScriptedRecognition extends EventTarget {
+      start() {
+        window.__activeRec = this;
+        if (window.__queue.length) {
+          const text = window.__queue.shift();
+          setTimeout(() => this.onresult?.({ results: [[{ transcript: text, confidence: 1 }]] }), 60);
+        }
+      }
+      stop() { if (window.__activeRec === this) window.__activeRec = null; this.onend?.(); }
+      abort() { if (window.__activeRec === this) window.__activeRec = null; }
+    }
+    window.SpeechRecognition = ScriptedRecognition;
+    window.webkitSpeechRecognition = ScriptedRecognition;
+    window.__say = (text) => {
+      const rec = window.__activeRec;
+      if (!rec) return false;
+      rec.onresult?.({ results: [[{ transcript: text, confidence: 1 }]] });
+      return true;
+    };
+  };
+  const page = await newPage({ width: 1280, height: 800 }, scripted);
+  const say = async (text) => {
+    for (let i = 0; i < 20 && !(await page.evaluate((t) => window.__say(t), text)); i++) await page.waitForTimeout(100);
+    await page.waitForTimeout(500);
+  };
+  const vcPanel = () => page.locator('db-signup [data-vc-paused]');
+  await page.goto(`${BASE}/pages/signup.html`, { waitUntil: 'networkidle' });
+  const w = page.locator('db-signup');
+  await w.locator('h2[tabindex]').first().waitFor();
+  await w.getByLabel(en['consent.saveAnswers']).check();
+  await w.locator('form button[type=submit]').click();
+  await w.getByRole('heading', { level: 2, name: /2/ }).waitFor();
+  await page.keyboard.press('Alt+KeyV');
+  await w.locator('[data-vc-state]').waitFor();
+
+  // "down" from the voice-control button goes straight to the first field of the step, not the help bar.
+  await say('down');
+  check(await page.evaluate(() => !!document.querySelector('db-signup').shadowRoot.activeElement?.matches('input[autocomplete="given-name"]')),
+    'round 2: "down" from activation focuses the first field in the step (First name), not the help bar');
+  check(/item \d+/i.test((await w.locator('[data-db-active-item]').textContent()) ?? ''),'round 2: active item callout shows "Active: item N"');
+  check(await page.evaluate(() => document.querySelector('db-signup').shadowRoot.querySelectorAll('[data-vc-active="true"]').length === 1),
+    'round 2: the active item carries data-vc-active');
+
+  // Header links are numbered from 91.
+  const headerNums = await page.evaluate(() => [...document.querySelectorAll('.db-savanna-topbar [data-vc-num]')].map((e) => Number(e.getAttribute('data-vc-num'))));
+  check(headerNums.length >= 5 && headerNums[0] === 91, `round 2: top-bar links numbered from 91 (${headerNums.slice(0, 3).join(', ')}…)`);
+
+  // Scroll by voice.
+  const before = await page.evaluate(() => scrollY);
+  await say('scroll down');
+  check((await page.evaluate(() => scrollY)) > before, 'round 2: "scroll down" scrolls the page');
+  await say('scroll up');
+
+  // Read aloud says every field with its item number.
+  await say('repeat');
+  const caption = w.locator('[data-db-caption]');
+  await caption.waitFor();
+  const captionText = (await caption.textContent()) ?? '';
+  check(/Item \d+: First name/.test(captionText) && /Item \d+: Father/.test(captionText),
+    `round 2: read-aloud script lists the fields with their item numbers ("${captionText.slice(0, 80)}…")`);
+  await axe(page, 'round 2: signup with voice control, badges and full read-aloud caption');
+  await w.getByRole('button', { name: en['help.stopReading'] }).first().click();
+  await page.waitForTimeout(300);
+
+  // Recording a voice note or dictating pauses voice control, and it resumes afterwards.
+  await w.getByRole('button', { name: fill(en['note.record'], { field: en['field.givenName'] }) }).click();
+  await page.waitForTimeout(500);
+  check(await vcPanel().getAttribute('data-vc-paused') === 'true', 'round 2: recording a voice note pauses voice control (data-vc-paused="true")');
+  check(await w.getByText(en['vc.paused']).count() >= 1, 'round 2: "Voice navigation paused while you record your answer" is shown');
+  await w.getByRole('button', { name: en['note.stop'] }).click();
+  await w.getByRole('button', { name: en['note.keep'] }).click();
+  await page.waitForTimeout(600);
+  check(await vcPanel().getAttribute('data-vc-paused') === 'false', 'round 2: voice control resumes after the voice note');
+  await w.getByRole('button', { name: fill(en['voice.answer'], { field: en['field.familyName'] }), exact: true }).click();
+  await page.waitForTimeout(300);
+  check(await vcPanel().getAttribute('data-vc-paused') === 'true', 'round 2: dictating into a field pauses voice control');
+  await w.getByRole('button', { name: en['voice.stop'] }).click();
+  await page.waitForTimeout(600);
+  check(await vcPanel().getAttribute('data-vc-paused') === 'false', 'round 2: voice control resumes after dictation');
+
+  // Number keys choose numbered items in a noisy room.
+  const familyNumber = await page.evaluate(() => document.querySelector('db-signup').shadowRoot.querySelector('input[autocomplete="family-name"]').labels[0].getAttribute('data-vc-num'));
+  await page.locator('body').click({ position: { x: 5, y: 5 } });
+  for (const digit of familyNumber) await page.keyboard.press(digit);
+  await page.waitForTimeout(1000);
+  check(await page.evaluate(() => !!document.querySelector('db-signup').shadowRoot.activeElement?.matches('input[autocomplete="family-name"]')),
+    `round 2: pressing number key(s) ${familyNumber} jumps to that item`);
+
+  // Spoken date of birth fills the three lists.
+  await w.locator('input[autocomplete="family-name"]').fill('Kebede');
+  await say('next');
+  await w.getByRole('heading', { level: 2, name: /3/ }).waitFor();
+  await w.locator('input[autocomplete="tel"]').fill('0911234567');
+  await say('next');
+  await w.getByRole('heading', { level: 2, name: /4/ }).waitFor();
+  await page.evaluate(() => window.__queue.push('15 Meskerem 1995'));
+  await w.getByRole('button', { name: en['dob.speak'] }).click();
+  await page.waitForTimeout(800);
+  const dob = await page.evaluate(() => [...document.querySelector('db-signup').shadowRoot.querySelectorAll('[data-db-dob] select')].map((s) => s.value).join('/'));
+  check(dob === '15/1/1995', `round 2: "15 Meskerem 1995" spoken fills Day / Month / Year (${dob})`);
+  await axe(page, 'round 2: date of birth after speaking it');
+  check(page.__errors.length === 0, `no page errors in the round-2 checks ${page.__errors.slice(0, 1).join('')}`);
+  await page.close();
+
+  // One voice-control owner per page: turning it on in the Career Gateway turns it off in onboarding.
+  const page2 = await newPage({ width: 1280, height: 800 }, scripted);
+  await page2.goto(`${BASE}/demo/blank.html`, { waitUntil: 'networkidle' });
+  await page2.locator('db-signup h2[tabindex]').first().waitFor();
+  await page2.locator('db-career-gateway').getByRole('button', { name: en['vc.toggle'] }).waitFor();
+  await page2.locator('db-signup').getByRole('button', { name: en['vc.toggle'] }).click();
+  await page2.waitForTimeout(400);
+  await page2.locator('db-career-gateway').getByRole('button', { name: en['vc.toggle'] }).click();
+  await page2.waitForTimeout(400);
+  const owners = await page2.evaluate(() => ['db-signup', 'db-career-gateway'].map((tag) =>
+    document.querySelector(tag).shadowRoot.querySelector('[data-db-action="voice-control"]').getAttribute('aria-pressed')));
+  const badges = await page2.evaluate(() => ['db-signup', 'db-career-gateway'].map((tag) =>
+    document.querySelector(tag).shadowRoot.querySelectorAll('[data-vc-num]').length));
+  check(owners[0] === 'false' && owners[1] === 'true', `round 2: only one widget has voice control on (signup ${owners[0]}, career ${owners[1]})`);
+  check(badges[0] === 0 && badges[1] > 0, `round 2: numbers only in the active widget (signup ${badges[0]}, career ${badges[1]})`);
+  await page2.close();
 }
 
 // 3) Profile edit mode opens on the summary.

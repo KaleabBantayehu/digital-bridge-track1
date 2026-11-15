@@ -3,7 +3,7 @@ import { Check, Circle, Delete, Hand, RotateCcw, Square, Video, VideoOff, X } fr
 import type { Lang } from '@db/shared-schemas';
 import { t as translate, type I18nKey } from '../i18n';
 import { cleanId, cx, ui } from '../wizard/ui';
-import { blobToDataUrl } from './speech';
+import { blobToDataUrl, setFieldListening } from './speech';
 import { setVoiceNote } from './voiceNotes';
 import type { SpokenKind } from './spokenInput';
 
@@ -79,6 +79,7 @@ export const SignPanel: React.FC<SignPanelProps> = ({ lang, fieldLabel, voiceNot
     if (recorder && recorder.state !== 'inactive') {
       recorder.onstop = null;
       recorder.stop();
+      setFieldListening(false); // the recording ended here, so voice control may listen again
     }
     recorderRef.current = null;
     streamRef.current?.getTracks().forEach((track) => track.stop());
@@ -128,6 +129,7 @@ export const SignPanel: React.FC<SignPanelProps> = ({ lang, fieldLabel, voiceNot
     };
     recorder.onstop = () => {
       clearTimeout(limitRef.current);
+      setFieldListening(false);
       secondsRef.current = (Date.now() - startedAtRef.current) / 1000;
       setRecording(false);
       const blob = new Blob(chunksRef.current, { type: recorder.mimeType || mimeType || 'video/webm' });
@@ -140,6 +142,7 @@ export const SignPanel: React.FC<SignPanelProps> = ({ lang, fieldLabel, voiceNot
       say(t('sign.recorded'));
     };
     recorderRef.current = recorder;
+    setFieldListening(true);
     recorder.start();
     startedAtRef.current = Date.now();
     setRecording(true);
@@ -259,7 +262,7 @@ export const SignPanel: React.FC<SignPanelProps> = ({ lang, fieldLabel, voiceNot
   );
 
   return (
-    <div role="group" aria-labelledby={titleId} className="mt-3 rounded-xl border-2 border-terracotta bg-white p-3 shadow-card">
+    <div role="group" aria-labelledby={titleId} className="mt-3 rounded-xl border-2 border-terracotta bg-white p-3 shadow-card" data-db-aux="">
       <div className="flex items-start justify-between gap-2">
         <h3 id={titleId} className="flex items-center gap-2 text-lg font-bold">
           <Hand aria-hidden="true" focusable="false" className="h-5 w-5 shrink-0" />

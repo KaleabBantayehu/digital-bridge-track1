@@ -4,15 +4,25 @@
  * often unavailable and the engine may fall back to English.
  */
 export type VoiceCommand =
-  | 'next' | 'back' | 'repeat' | 'down' | 'up' | 'choose' | 'answer' | 'help' | 'commands' | 'stop' | 'english' | 'amharic';
+  | 'next' | 'back' | 'repeat' | 'down' | 'up' | 'choose' | 'answer' | 'help' | 'commands' | 'stop' | 'english' | 'amharic'
+  | 'scrollDown' | 'scrollUp' | 'guide' | 'retry' | 'skip' | 'career' | 'onboarding';
 
 const PHRASES: Record<VoiceCommand, string[]> = {
   next: ['next', 'continue', 'forward', 'go forward', 'save', 'ቀጥል', 'ቀጥይ', 'ቀጣይ', 'ወደፊት', 'ወደ ፊት'],
   back: ['back', 'go back', 'previous', 'previous question', 'ተመለስ', 'ተመለሺ', 'ወደኋላ', 'ወደ ኋላ'],
   repeat: ['repeat', 'again', 'read', 'read aloud', 'say again', 'read again', 'ድገም', 'ደግም', 'አንብብ', 'እንደገና'],
-  down: ['down', 'next item', 'next field', 'tab', 'ታች', 'ወደ ታች', 'ወደታች'],
-  up: ['up', 'previous item', 'previous field', 'ላይ', 'ወደ ላይ', 'ወደላይ'],
-  choose: ['choose', 'select', 'ok', 'okay', 'press', 'click', 'tick', 'enter', 'yes', 'ምረጥ', 'ምረጪ', 'እሺ', 'አዎ', 'ተጫን'],
+  down: ['down', 'next item', 'next field', 'tab', 'ታች', 'ቀጣይ ንጥል'],
+  up: ['up', 'previous item', 'previous field', 'ላይ', 'ቀዳሚ ንጥል'],
+  // Round-2 finding: "scroll down/up" moves the page itself.
+  scrollDown: ['scroll down', 'page down', 'scroll', 'ወደ ታች', 'ወደታች', 'ገጹን ወደ ታች'],
+  scrollUp: ['scroll up', 'page up', 'ወደ ላይ', 'ወደላይ', 'ገጹን ወደ ላይ'],
+  choose: ['choose', 'select', 'ok', 'okay', 'press', 'click', 'tick', 'enter', 'yes', 'keep', 'ምረጥ', 'ምረጪ', 'እሺ', 'አዎ', 'ተጫን', 'አቆይ'],
+  // Guided fill: walks through the text fields of the step one by one.
+  guide: ['guide', 'guide me', 'fill', 'fill step by step', 'guided fill', 'ምራኝ', 'ተራ በተራ ሙላ'],
+  retry: ['no', 'try again', 'retry', 'አይ', 'አይደለም', 'እንደገና ሞክር'],
+  skip: ['skip', 'ዝለል'],
+  career: ['career', 'jobs', 'job', 'career gateway', 'find jobs', 'ስራ', 'ሥራ', 'ስራዎች', 'ሥራዎች'],
+  onboarding: ['onboarding', 'sign up', 'signup', 'registration', 'ምዝገባ'],
   answer: ['answer', 'dictate', 'speak', 'መልስ', 'ተናገር'],
   // "help" opens the widget's Need help dialog (co-designer finding); "commands" reads the command list.
   help: ['help', 'need help', 'help me', 'እርዳታ', 'እገዛ', 'እርዱኝ'],
@@ -54,7 +64,7 @@ const NUMBER_WORDS: Record<string, number> = {
   'አስር': 10, 'አሥር': 10,
 };
 /** Words people put before the number ("number 3", "item 3", "ቁጥር 3"). */
-const NUMBER_PREFIX = new Set(['number', 'item', 'no', 'ቁጥር']);
+const NUMBER_PREFIX = new Set(['number', 'item', 'option', 'no', 'ቁጥር', 'ንጥል', 'ምርጫ']);
 
 /**
  * "3", "three", "number three", "ሶስት", "ቁጥር ፫" -> 3. Only when the whole utterance is a number (optionally with a

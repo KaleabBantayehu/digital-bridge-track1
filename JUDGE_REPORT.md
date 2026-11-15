@@ -16,6 +16,11 @@ Tags: **VERIFIED** (ran it, output quoted), **INFERRED** (read the code, `file:l
 > warnings. Also fixed on the way: Amharic text in `scripts/judge-audit.mjs` had been saved in the wrong encoding on
 > main (the Amharic voice-command checks could not match), and voice control "down" no longer gets stuck on a list.
 
+> **Status update (15 Nov evening, round-2 fixes):** 12 blind / voice-only findings fixed (see CO_DESIGNER_LOG.md);
+> `node scripts/judge-audit.mjs` **172/172**, `node judge/gate.mjs` 0 violations in 55 states, unit tests 38/38,
+> `node scripts/test-dev1.mjs` 13/13 (166 KB gz), **LTI 8/8** (`scripts/test-lti.mjs`), 0 third-party requests,
+> Slow 3G 5.5 s on the plain page. `index.html` rebuilt as the demo hub (0 violations at 1280 and 320 px).
+
 ---
 
 ## 1. Verdict

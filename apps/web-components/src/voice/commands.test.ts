@@ -6,7 +6,7 @@ describe('matchCommand', () => {
     expect(matchCommand('ቀጥል')).toBe('next');
     expect(matchCommand('ወደ ኋላ')).toBe('back');
     expect(matchCommand('ድገም።')).toBe('repeat');
-    expect(matchCommand('ወደ ታች')).toBe('down');
+    expect(matchCommand('ታች')).toBe('down');
     expect(matchCommand('ምረጥ')).toBe('choose');
     expect(matchCommand('አቁም')).toBe('stop');
   });
@@ -45,5 +45,34 @@ describe('matchNumber', () => {
   it('ignores numbers inside a sentence', () => {
     expect(matchNumber('I am 25 years old')).toBeNull();
     expect(matchNumber('next')).toBeNull();
+  });
+});
+
+describe('round-2 commands (manual blind / voice testing)', () => {
+  it('scrolls the page', () => {
+    expect(matchCommand('scroll down')).toBe('scrollDown');
+    expect(matchCommand('page up')).toBe('scrollUp');
+    expect(matchCommand('ወደ ታች')).toBe('scrollDown');
+    expect(matchCommand('ወደ ላይ')).toBe('scrollUp');
+    expect(matchCommand('down')).toBe('down');
+  });
+
+  it('guided fill, confirmation and switching widgets', () => {
+    expect(matchCommand('guide me')).toBe('guide');
+    expect(matchCommand('ምራኝ')).toBe('guide');
+    expect(matchCommand('try again')).toBe('retry');
+    expect(matchCommand('no')).toBe('retry');
+    expect(matchCommand('yes')).toBe('choose');
+    expect(matchCommand('jobs')).toBe('career');
+    expect(matchCommand('ስራ')).toBe('career');
+    expect(matchCommand('sign up')).toBe('onboarding');
+  });
+
+  it('item numbers with any prefix', () => {
+    expect(matchNumber('item 3')).toBe(3);
+    expect(matchNumber('option 3')).toBe(3);
+    expect(matchNumber('ቁጥር 3')).toBe(3);
+    expect(matchNumber('ንጥል ሶስት')).toBe(3);
+    expect(matchNumber('no')).toBeNull();
   });
 });

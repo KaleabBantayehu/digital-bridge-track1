@@ -21,7 +21,9 @@ All browser runs use Playwright 1.65 driving installed Google Chrome (headless) 
 
 | What | How to re-run | Result |
 | :--- | :--- | :--- |
-| Judge audit of the **built** pages (`apps/web-components/dist`): signup, profile, jobs, blank host, both Savanna homepages, **index.html**, and signup **scrolled halfway** (where JUDGE_REPORT D-01 was found); English and Amharic; 1280 × 800 and 320 × 640 | `pnpm -F @db/web-components build; node scripts/judge-audit.mjs` | **154 / 154 checks pass**, 0 axe violations of any impact |
+| Judge audit of the **built** pages (`apps/web-components/dist`): signup, profile, jobs, blank host, both Savanna homepages, **index.html**, and signup **scrolled halfway** (where JUDGE_REPORT D-01 was found); English and Amharic; 1280 × 800 and 320 × 640 | `pnpm -F @db/web-components build; node scripts/judge-audit.mjs` | **172 / 172 checks pass**, 0 axe violations of any impact |
+| Round-2 blind / voice fixes: voice control pauses for dictation and voice notes; "down" goes to the first field; "scroll down" scrolls; Read aloud lists every field with its item number; active-item callout; top-bar links numbered from 91; number keys choose items; one voice-control owner per page; "15 Meskerem 1995" fills the three date lists | `node scripts/judge-audit.mjs` + unit tests (38) | Pass, 0 axe violations with badges, callout and full caption showing |
+| LTI 1.3 (Dev 4): JWKS, login state/nonce, valid launch, replay rejected, tampered signature rejected (bilingual 401), AGS 1/1, NRPS without support data, signed Deep Linking | `LTI_TEST_TIMEOUT_MS=300000 node scripts/test-lti.mjs` | **8 / 8** (the timeout variable is only needed on slow laptops: the API cold start took about 3 minutes here) |
 | Colour modes: Colour-blind safe, High contrast and Dark on the wizard (with a ticked row and a pressed toggle) and the Career Gateway | `node scripts/judge-audit.mjs` | 0 axe violations in each mode; ticked rows show a 3 px border and inner ring in every mode |
 | Sign-language panel: cards build "Abebe" into the field; a sign-language video (Chrome fake camera) is kept and answers a required field without typing | same | Pass, 0 axe violations with the camera on |
 | Every wizard state, error state, dialog, partner route, SMS state, career filter (0 / 1 / many results), apply flow and employer form, both languages (55 axe scans) | `node judge/gate.mjs` | **0 critical, 0 serious, 0 moderate, 0 minor** (was 5 serious in JUDGE_REPORT; fixed: static top bar, index.html links, two button names) |
@@ -39,8 +41,8 @@ All browser runs use Playwright 1.65 driving installed Google Chrome (headless) 
 | Dev 1 13-point audit (build, bundle budget, built-page axe) | `node scripts/test-dev1.mjs` | **13 / 13** |
 | Dev 3 API judge checks (unchanged backend; shared phone normaliser now also accepts Ethiopic numerals) | `scripts/test-api.ps1` against `node apps/api/dist/main` | **13 / 13** |
 | Unit tests (persistence, API client, audio manifest, Fidel, spoken input, voice commands) | `pnpm -F @db/web-components test` | **27 / 27** |
-| Bundle size | Vite build + `zlib.gzipSync` | `db-widgets.v1.0.0.js` 597 KB raw, **148.5 KB gzipped** (budget < 250 KB) |
-| Load on Chrome's "Slow 3G" profile (400 ms RTT, 400 kbit/s), served gzipped as in production | CDP network emulation | Widget usable in **4.2 s** on `demo/blank.html`; **8.5 s** on `pages/signup.html`, most of it Savanna's own 1.3 MB stylesheet |
+| Bundle size | Vite build + `zlib.gzipSync` | `db-widgets.v1.0.0.js` **166 KB gzipped** (budget < 250 KB) |
+| Load on a Slow 3G profile (500 kbit/s, 400 ms, CPU 4× slower), served gzipped as in production, 15 Nov | `node judge/ethiopia.mjs` | First question usable in **5.5 s** on `demo/blank.html` and **8.4 s** on `pages/signup.html`; 0 third-party requests |
 
 **Co-designer session (15 Nov 2026) — findings and what changed:**
 1. E-mail said in English inside the Amharic UI was not written → e-mail fields always listen in English (en-US); "at"/"dot" (or "አት"/"ዶት") become @ and .
@@ -94,7 +96,7 @@ Tester, device and screen reader for this session: *to be filled in by the sessi
 | 1.4.13 Content on Hover or Focus (AA) | Supports | No tooltips or hover pop-ups. |
 | 2.1.1 Keyboard (A) | Supports | Only native controls. Voice control is an extra way in, not a replacement. A manual unplugged-mouse run is still pending. |
 | 2.1.2 No Keyboard Trap (A) | Supports | Native `<dialog>`, Esc closes and focus returns to the opener. |
-| 2.1.4 Character Key Shortcuts (A) | Supports | The only shortcut is Alt + V (voice control on/off), which uses a modifier key. Spoken numbers only act while voice control is switched on. |
+| 2.1.4 Character Key Shortcuts (A) | Supports | Alt + V uses a modifier key. Number keys 1–9 choose numbered items only while voice control is switched on, and never while the learner is typing in a field; voice control can be turned off with Alt + V or its button. |
 | 2.2.1 Timing Adjustable (A) | Supports | No session expiry; the draft saves on every change. A single voice note stops itself after 1 minute; it is kept and can be re-recorded. |
 | 2.2.2 Pause, Stop, Hide (A) | Supports | The only moving content is the read-aloud highlight, which the learner starts and can Pause or Stop. No animations or transitions. |
 | 2.3.1 Three Flashes or Below (A) | Supports | Nothing flashes. |
@@ -108,7 +110,7 @@ Tester, device and screen reader for this session: *to be filled in by the sessi
 | 2.4.11 Focus Not Obscured (Minimum) (AA) | Supports | The host top bar is `position: static` (it scrolls away). A sticky version covered the help buttons when scrolled (JUDGE_REPORT D-01, axe target-size); fixed and re-tested scrolled halfway in both languages. Every focusable has 6 rem `scroll-margin`. |
 | 2.5.1 Pointer Gestures (A) | Supports | Single taps only. |
 | 2.5.2 Pointer Cancellation (A) | Supports | Native click activation. |
-| 2.5.3 Label in Name (A) | Supports | Accessible names contain the visible text (e.g. Fidel vowel pills: "Change the last letter to ቡ"). Voice-control commands act on the visible names. |
+| 2.5.3 Label in Name (A) | Supports | Accessible names contain the visible text. Voice control acts on visible names and on the visible item numbers; spoken commands work in English and Amharic. |
 | 2.5.4 Motion Actuation (A) | Supports | No motion input. |
 | 2.5.7 Dragging Movements (AA) | Supports | No dragging. Dates use three native `<select>`s. |
 | 2.5.8 Target Size (Minimum) (AA) | Supports | Every target ≥ 44 × 44 CSS px, including top-bar links (now bold, underline-free buttons), the language and contrast switches and the `index.html` links (fixed in D-02). 0 target-size findings in 55 state scans. |
@@ -126,7 +128,7 @@ Tester, device and screen reader for this session: *to be filled in by the sessi
 | 3.3.7 Redundant Entry (A) | Supports | The apply form pre-fills from onboarding, and a name voice note kept in onboarding also answers the apply form. |
 | 3.3.8 Accessible Authentication (Minimum) (AA) | Supports | No passwords, CAPTCHA or puzzles; paste allowed everywhere. |
 | 4.1.2 Name, Role, Value (A) | Supports | Native controls; `aria-pressed` on toggles (voice control, mic, recording, read aloud, Simple words, language). axe clean; NVDA and TalkBack pending. |
-| 4.1.3 Status Messages (AA) | Supports | One always-mounted `role="status"` region per widget announces saves, offline state ("Saved on this phone. It will send when you are online."), job counts, voice states and voice-control confirmations. |
+| 4.1.3 Status Messages (AA) | Supports | One always-mounted `role="status"` region per widget announces saves, offline state, job counts, voice states, voice-control confirmations ("Item 3 selected: …"), scrolling and the spoken date. The listening / processing pill is visual only, so the screen reader is not flooded. |
 
 ## Privacy notes relevant to Track 1 (not WCAG, but part of the gate)
 

@@ -1,0 +1,9 @@
+PASS 1/8 tool and mock-platform JWKS publish RS256 public keys
+PASS 2/8 POST login returns cookie-bound state, nonce, and auth URL
+PASS 3/8 valid signed launch returns a verified learner
+PASS 4/8 replaying a consumed launch is rejected bilingually
+PASS 5/8 tampered launch signature is rejected bilingually
+PASS 6/8 AGS sync records a 1/1 FullyGraded receipt
+PASS 7/8 NRPS roster exposes role and progress but no support fields
+PASS 8/8 Deep Linking response is signed and contains the activity
+All 8 LTI checks passed.

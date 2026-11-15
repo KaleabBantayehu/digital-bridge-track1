@@ -260,16 +260,18 @@
 /* Redundant, non-colour cues in every mode (co-designer finding):
    hover  -> dashed 3px border, so the hovered control is visible by pattern even in monochrome;
    chosen -> inverted fill, 3px border, inner ring and a check mark (pressed buttons and ticked rows). */
+/* Hover never changes the border width (that moved buttons under the pointer and caused missed clicks); the extra
+   thickness is an inset shadow, which does not affect layout. */
 :host button:not(:disabled):hover {
   border-style: dashed !important;
-  border-width: 3px !important;
+  box-shadow: inset 0 0 0 1px currentColor;
 }
 
 :host div:has(> input[type='checkbox']):hover,
 :host div:has(> input[type='radio']):hover {
   border-style: dashed !important;
-  border-width: 3px !important;
   border-color: currentColor !important;
+  box-shadow: inset 0 0 0 1px currentColor;
 }
 
 :host button[aria-pressed='true'] {
@@ -296,4 +298,20 @@
   content: '✓ ';
   content: '✓ ' / '';
   font-weight: 700;
+}
+
+/* Round-2 findings: the item voice control is on (data-vc-active) and the item being read aloud (data-vc-reading)
+   are marked by shape as well as colour: a thick solid outline for "active", a dashed one plus a highlight for
+   "being read". */
+:host [data-vc-active='true'] {
+  outline: 4px solid var(--db-focus-ring) !important;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 7px #fce9a8;
+}
+
+:host [data-vc-reading='true'] {
+  outline: 4px dashed var(--db-focus-ring) !important;
+  outline-offset: 3px;
+  background-color: #fce9a8 !important;
+  color: #1c1917 !important;
 }

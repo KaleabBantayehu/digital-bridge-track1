@@ -109,7 +109,7 @@ PASS  axe index.html 320px: 0 violations
 PASS  signup [en] 320px scrolled halfway (scrollY 599)
 PASS  axe signup [en] 320px scrolled halfway, step 2: 0 violations
 PASS  top bar is not sticky (position: static)
-PASS  signup [am] 320px scrolled halfway (scrollY 648)
+PASS  signup [am] 320px scrolled halfway (scrollY 647)
 PASS  axe signup [am] 320px scrolled halfway, step 2: 0 violations
 PASS  top bar is not sticky (position: static)
 PASS  widget adds no third-party font link to the host page (0)
@@ -149,8 +149,26 @@ PASS  sign-language video kept, "Sign language video saved" badge shown
 PASS  father's name field left empty (answered by video)
 PASS  step completed with a sign-language video instead of typing
 PASS  no page errors in the sign-language checks 
+PASS  round 2: "down" from activation focuses the first field in the step (First name), not the help bar
+PASS  round 2: active item callout shows "Active: item N"
+PASS  round 2: the active item carries data-vc-active
+PASS  round 2: top-bar links numbered from 91 (91, 92, 93…)
+PASS  round 2: "scroll down" scrolls the page
+PASS  round 2: read-aloud script lists the fields with their item numbers ("Step 2 of 7: What is your name?. Write your name the way you want employers to s…")
+PASS  axe round 2: signup with voice control, badges and full read-aloud caption: 0 violations
+PASS  round 2: recording a voice note pauses voice control (data-vc-paused="true")
+PASS  round 2: "Voice navigation paused while you record your answer" is shown
+PASS  round 2: voice control resumes after the voice note
+PASS  round 2: dictating into a field pauses voice control
+PASS  round 2: voice control resumes after dictation
+PASS  round 2: pressing number key(s) 12 jumps to that item
+PASS  round 2: "15 Meskerem 1995" spoken fills Day / Month / Year (15/1/1995)
+PASS  axe round 2: date of birth after speaking it: 0 violations
+PASS  no page errors in the round-2 checks 
+PASS  round 2: only one widget has voice control on (signup false, career true)
+PASS  round 2: numbers only in the active widget (signup 0, career 30)
 PASS  profile.html (mode="edit") opens on "Edit my profile"
 PASS  page load does not move focus into the widget
 PASS  no 404s ()
 
-ALL 154 JUDGE CHECKS PASSED
+ALL 172 JUDGE CHECKS PASSED

@@ -17,7 +17,9 @@ const mockLms = createMockLmsServer({
 let apiProcess;
 let apiOutput = "";
 let checkCount = 0;
-const deadline = Date.now() + 90_000;
+// Slow laptops can need minutes for the API cold start: LTI_TEST_TIMEOUT_MS raises both limits (defaults unchanged).
+const EXTRA_MS = Number(process.env.LTI_TEST_TIMEOUT_MS) || 0;
+const deadline = Date.now() + Math.max(90_000, EXTRA_MS + 30_000);
 
 function assertTimeRemaining() {
   const remaining = deadline - Date.now();
@@ -160,7 +162,7 @@ async function launchWithApiMockPlatform(options = {}) {
 }
 
 async function waitForApi() {
-  const readyBy = Math.min(deadline, Date.now() + 60_000);
+  const readyBy = Math.min(deadline, Date.now() + Math.max(60_000, EXTRA_MS));
   const entrypoint = path.join(root, "apps", "api", "dist", "main.js");
   while (Date.now() < readyBy) {
     if (apiProcess.exitCode !== null) {
