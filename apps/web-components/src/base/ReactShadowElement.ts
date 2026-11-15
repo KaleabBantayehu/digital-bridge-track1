@@ -2,6 +2,7 @@ import React, { type ReactNode } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { DB_EVENTS, type OnboardingProfile } from '@db/shared-schemas';
 import styles from '../styles/index.css?inline';
+import { isVisionMode, setVisionMode } from '../wizard/vision';
 
 const privateSupportKeys = /^(support|supportPreferences|accommodations|adjustmentRequest|filters|needs)$/i;
 
@@ -37,7 +38,7 @@ function redactPrivateSupportData(value: unknown, visited = new WeakMap<object, 
 export abstract class ReactShadowElement extends HTMLElement {
   static version = '1.0.0';
   static get observedAttributes(): string[] {
-    return ['api', 'api-url', 'partner-id', 'lang', 'theme', 'mode', 'lti-token', 'session-id', 'audio-base-url'];
+    return ['api', 'api-url', 'partner-id', 'lang', 'theme', 'mode', 'lti-token', 'session-id', 'audio-base-url', 'vision'];
   }
 
   private reactRoot?: Root;
@@ -60,12 +61,14 @@ export abstract class ReactShadowElement extends HTMLElement {
     }
 
     this.mountPoint.lang = this.currentLang;
+    this.applyVisionAttribute();
     this.reactRoot ??= createRoot(this.mountPoint);
     this.renderWidget();
     void this.prepareRuntime();
   }
 
   attributeChangedCallback(): void {
+    this.applyVisionAttribute();
     if (this.mountPoint && this.reactRoot) {
       this.mountPoint.lang = this.currentLang;
       this.renderWidget();
@@ -77,6 +80,12 @@ export abstract class ReactShadowElement extends HTMLElement {
     this.reactRoot?.unmount();
     this.reactRoot = undefined;
     this.mountPoint = undefined;
+  }
+
+  /** vision="colorblind-safe" | "high-contrast" | "dark" | "terracotta": colour mode for every widget on the page. */
+  private applyVisionAttribute(): void {
+    const vision = this.getAttribute('vision');
+    if (isVisionMode(vision)) setVisionMode(vision);
   }
 
   protected get currentLang(): 'en' | 'am' {

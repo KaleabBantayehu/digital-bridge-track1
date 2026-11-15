@@ -5,7 +5,7 @@
   },
   "afterReadAloud": {
     "audio": [
-      "http://127.0.0.1:12977/assets/audio/am/step0.mp3"
+      "http://127.0.0.1:6855/assets/audio/am/step0.mp3"
     ],
     "speak": []
   },

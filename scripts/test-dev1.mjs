@@ -208,8 +208,12 @@ check('11 No duplicate IDs on required host and demo pages', () => {
 });
 
 check('12 Production bundle, copied pages, audio and gzip budget', () => {
-  const build = spawnSync('pnpm', ['-F', '@db/web-components', 'build'], {
-    shell: false, // pnpm is pnpm.cmd on Windows
+  // pnpm is pnpm.cmd on Windows: run it through cmd.exe instead of `shell: true` with an args array
+  // (that combination triggers Node 24's DEP0190 warning).
+  const [buildCmd, buildArgs] = process.platform === 'win32'
+    ? ['cmd.exe', ['/d', '/s', '/c', 'pnpm -F @db/web-components build']]
+    : ['pnpm', ['-F', '@db/web-components', 'build']];
+  const build = spawnSync(buildCmd, buildArgs, {
     cwd: root,
     encoding: 'utf8',
     timeout: 180_000,

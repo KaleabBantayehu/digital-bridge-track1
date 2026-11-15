@@ -238,13 +238,6 @@ export const VoiceControl: React.FC<VoiceControlProps> = ({ lang, rootRef, annou
       case 'down':
       case 'up': {
         const step = command === 'down' ? 1 : -1;
-        if (active instanceof HTMLSelectElement) {
-          const index = Math.min(Math.max(active.selectedIndex + step, 0), active.options.length - 1);
-          const setter = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value')?.set;
-          setter?.call(active, active.options[index].value);
-          active.dispatchEvent(new Event('change', { bubbles: true }));
-          return feedback(describe(active));
-        }
         const list = focusables(root);
         if (!list.length) return;
         const at = active ? list.indexOf(active) : -1;
@@ -254,7 +247,17 @@ export const VoiceControl: React.FC<VoiceControlProps> = ({ lang, rootRef, annou
       }
       case 'choose': {
         if (!active) return feedback(t('vc.start'));
-        if (active instanceof HTMLSelectElement) return run('down', heard);
+        if (active instanceof HTMLSelectElement) {
+          // "down"/"up" always move between items (so a list can never trap the learner); "choose" steps the list
+          // to its next option and says it.
+          const options = [...active.options].filter((option) => !option.disabled);
+          const at = options.indexOf(active.selectedOptions[0]);
+          const next = options[(at + 1) % options.length];
+          const setter = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value')?.set;
+          setter?.call(active, next.value);
+          active.dispatchEvent(new Event('change', { bubbles: true }));
+          return feedback(describe(active));
+        }
         if ((active instanceof HTMLInputElement && !['checkbox', 'radio', 'button', 'submit'].includes(active.type)) || active instanceof HTMLTextAreaElement) {
           return run('answer', heard);
         }

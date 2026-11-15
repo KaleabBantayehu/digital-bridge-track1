@@ -54,6 +54,7 @@ export const TextField: React.FC<TextFieldProps> = ({
   const notes = useVoiceNotes();
   const hasNote = !!noteKey && hasVoiceNote(notes, noteKey);
   const seconds = hasNote && noteKey ? getVoiceNoteSeconds(noteKey) : undefined;
+  const noteIsVideo = hasNote && !!noteKey && notes[noteKey].startsWith('data:video');
   const hintId = hint ? `${id}-hint` : undefined;
   const errorId = error ? `${id}-error` : undefined;
   const badgeId = hasNote ? `${id}-voicenote` : undefined;
@@ -113,7 +114,9 @@ export const TextField: React.FC<TextFieldProps> = ({
       {hasNote && (
         <p id={badgeId} className={`${ui.badge} mt-2`}>
           <AudioLines aria-hidden="true" focusable="false" className="h-4 w-4 shrink-0" />
-          {seconds ? t(lang, 'note.savedBadge', { seconds }) : t(lang, 'note.savedBadgeShort')}
+          {noteIsVideo
+            ? seconds ? t(lang, 'sign.savedBadge', { seconds }) : t(lang, 'sign.savedBadgeShort')
+            : seconds ? t(lang, 'note.savedBadge', { seconds }) : t(lang, 'note.savedBadgeShort')}
         </p>
       )}
       {showFidel && (

@@ -9,6 +9,7 @@ import { emitEvent } from '../wizard/emit';
 import { localServices, type Dev2Services } from '../wizard/services';
 import { cleanId, cx, ui } from '../wizard/ui';
 import { VoiceControl } from '../wizard/VoiceControl';
+import { useVisionMode } from '../wizard/vision';
 import { ApplyDialog } from './ApplyDialog';
 import { EmployerForm } from './EmployerForm';
 import { JobCard } from './JobCard';
@@ -40,6 +41,7 @@ export const CareerGateway: React.FC<CareerGatewayProps> = ({
   const { announcement, announce } = useAnnouncer();
 
   const rootRef = useRef<HTMLElement>(null);
+  const vision = useVisionMode();
   const openerRef = useRef<HTMLButtonElement | null>(null);
   const idBase = `career-${cleanId(useId())}`;
   const headingId = `${idBase}-heading`;
@@ -114,6 +116,7 @@ export const CareerGateway: React.FC<CareerGatewayProps> = ({
   return (
     <section
       ref={rootRef}
+      data-vision-mode={vision}
       lang={lang}
       aria-labelledby={headingId}
       data-theme={theme}

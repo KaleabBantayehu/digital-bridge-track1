@@ -71,36 +71,47 @@
     if (initial === 'en' || initial === 'am') apply(initial);
   }
 
-  /** Top-bar "High contrast" toggle: host page + every widget (theme="high-contrast"), remembered on this device. */
-  function setupContrastToggle() {
-    const button = document.querySelector('[data-db-contrast]');
-    if (!button) return;
+  /**
+   * Top-bar "Colours" menu: Warm / Colour-blind safe / High contrast / Dark. Sets vision="…" on every widget and a
+   * class on <body>; remembered on this device (same key the widgets use, so both menus stay in step).
+   */
+  function setupVisionSelect() {
+    const select = document.querySelector('[data-db-vision]');
+    if (!select) return;
+    const modes = ['terracotta', 'colorblind-safe', 'high-contrast', 'dark'];
     const widgets = () =>
       document.querySelectorAll('db-signup, db-onboarding-wizard, db-career-gateway, db-employer-accommodations');
-    const apply = (on) => {
-      document.body.classList.toggle('db-high-contrast', on);
-      widgets().forEach((widget) => widget.setAttribute('theme', on ? 'high-contrast' : 'terracotta'));
-      button.setAttribute('aria-pressed', String(on));
+    const apply = (mode, fromWidget) => {
+      if (!modes.includes(mode)) return;
+      select.value = mode;
+      document.body.classList.toggle('db-high-contrast', mode === 'high-contrast');
+      document.body.classList.toggle('db-dark', mode === 'dark');
+      document.body.classList.toggle('db-colorblind-safe', mode === 'colorblind-safe');
+      if (!fromWidget) widgets().forEach((widget) => widget.setAttribute('vision', mode));
       try {
-        localStorage.setItem('db-host-contrast', on ? '1' : '0');
+        localStorage.setItem('db-vision-mode', mode);
       } catch (error) {
         // Storage blocked: the choice still applies to this page.
       }
     };
-    button.addEventListener('click', () => apply(button.getAttribute('aria-pressed') !== 'true'));
-    let saved = null;
-    try {
-      saved = localStorage.getItem('db-host-contrast');
-    } catch (error) {
-      saved = null;
+    select.addEventListener('change', () => apply(select.value, false));
+    window.addEventListener('db-vision-mode', (event) => apply(event.detail && event.detail.mode, true));
+    let initial = new URLSearchParams(location.search).get('vision');
+    if (new URLSearchParams(location.search).get('contrast') === 'high') initial = 'high-contrast';
+    if (!modes.includes(initial)) {
+      try {
+        initial = localStorage.getItem('db-vision-mode');
+      } catch (error) {
+        initial = null;
+      }
     }
-    if (saved === '1' || new URLSearchParams(location.search).get('contrast') === 'high') apply(true);
+    if (modes.includes(initial)) apply(initial, false);
   }
 
   function setupAll() {
     setupHostAccessibility();
     setupWidgetLanguage();
-    setupContrastToggle();
+    setupVisionSelect();
   }
 
   if (document.readyState === 'loading') {

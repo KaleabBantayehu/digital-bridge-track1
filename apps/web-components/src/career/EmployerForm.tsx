@@ -11,6 +11,7 @@ import { localServices, type Dev2Services } from '../wizard/services';
 import { EMAIL_RE } from '../wizard/validation';
 import { cleanId, ui, cx } from '../wizard/ui';
 import { ETHIOPIC_CSS, scriptClass } from '../i18n/script';
+import { useVisionMode } from '../wizard/vision';
 import { CAREER_FILTERS } from './jobText';
 import { LOCATION_KEYS } from './seedJobs';
 
@@ -87,10 +88,12 @@ export const EmployerForm: React.FC<EmployerFormProps> = ({ lang = 'en', service
     message: errorText(lang, errors[field]!),
   }));
 
+  const vision = useVisionMode();
   return (
     <section
       aria-labelledby={headingId}
       lang={lang}
+      data-vision-mode={announce ? undefined : vision}
       className={cx(
         'font-sans text-ink break-words',
         scriptClass(lang),

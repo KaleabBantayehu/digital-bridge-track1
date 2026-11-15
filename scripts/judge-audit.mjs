@@ -28,7 +28,13 @@ const server = createServer((req, res) => {
   if (!existsSync(file)) { missing.push(path); res.writeHead(404).end(); return; }
   res.writeHead(200, { 'Content-Type': mime[extname(file)] ?? 'application/octet-stream' }).end(readFileSync(file));
 });
-await new Promise((r) => server.listen(0, '127.0.0.1', r));
+// Chrome refuses some ports (ERR_UNSAFE_PORT, e.g. 6000, 6665-6669, 10080); keep asking the OS until it gives a safe one.
+const UNSAFE_PORTS = new Set([1, 7, 9, 11, 13, 15, 17, 19, 20, 21, 22, 23, 25, 37, 42, 43, 53, 69, 77, 79, 87, 95, 101, 102, 103, 104, 109, 110, 111, 113, 115, 117, 119, 123, 135, 137, 139, 143, 161, 179, 389, 427, 465, 512, 513, 514, 515, 526, 530, 531, 532, 540, 548, 554, 556, 563, 587, 601, 636, 989, 990, 993, 995, 1719, 1720, 1723, 2049, 3659, 4045, 4190, 5060, 5061, 6000, 6566, 6665, 6666, 6667, 6668, 6669, 6679, 6697, 10080]);
+for (;;) {
+  await new Promise((r) => server.listen(0, '127.0.0.1', r));
+  if (!UNSAFE_PORTS.has(server.address().port)) break;
+  await new Promise((r) => server.close(r));
+}
 const BASE = `http://127.0.0.1:${server.address().port}`;
 
 const out = [];
@@ -161,7 +167,7 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 320, height: 640 
   // Fidel helper on the first-name field.
   await w.getByRole('button', { name: am['fidel.toggle'] }).first().click();
   await w.getByLabel(am['fidel.label']).first().fill('abebe');
-  check((await w.locator('output').first().textContent()).includes('ßèáßëáßëá'), 'am: Fidel helper turns "abebe" into ßèáßëáßëá');
+  check((await w.locator('output').first().textContent()).includes('አበበ'), 'am: Fidel helper turns "abebe" into አበበ');
   await axe(page, 'signup [am] Fidel helper open');
   await w.getByRole('button', { name: am['fidel.toggle'] }).first().click();
 
@@ -211,7 +217,7 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 320, height: 640 
   };
   const activeIs = (selector) => page.evaluate((sel) => !!document.querySelector('db-signup').shadowRoot.activeElement?.matches(sel), selector);
   const downUntil = async (selector) => {
-    for (let i = 0; i < 25 && !(await activeIs(selector)); i++) await say('ßë│ßë╜');
+    for (let i = 0; i < 25 && !(await activeIs(selector)); i++) await say('ታች');
     return activeIs(selector);
   };
   await page.goto(`${BASE}/pages/signup.html?lang=am`, { waitUntil: 'networkidle' });
@@ -223,45 +229,45 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 320, height: 640 
   check(await w.getByRole('button', { name: am['vc.toggle'] }).getAttribute('aria-pressed') === 'true', 'voice control: Alt+V turns it on (aria-pressed)');
   await axe(page, 'signup [am] voice control on');
 
-  check(await downUntil('input[type="checkbox"]'), 'voice control: "ßë│ßë╜" (down) moves focus to the consent checkbox');
-  await say('ßê¥ßê¿ßîÑ');
-  check(await w.getByLabel(am['consent.saveAnswers']).isChecked(), 'voice control: "ßê¥ßê¿ßîÑ" (choose) ticks the focused checkbox');
+  check(await downUntil('input[type="checkbox"]'), 'voice control: "ታች" (down) moves focus to the consent checkbox');
+  await say('ምረጥ');
+  check(await w.getByLabel(am['consent.saveAnswers']).isChecked(), 'voice control: "ምረጥ" (choose) ticks the focused checkbox');
   check((await w.locator('[data-db-voice-status]').textContent()).includes(am['vc.checked']), 'voice control: spoken/visible confirmation says it is ticked');
-  await say('ßëÇßîÑßêì');
+  await say('ቀጥል');
   await w.getByRole('heading', { level: 2, name: /2/ }).waitFor();
-  check(true, 'voice control: "ßëÇßîÑßêì" (next) saves and moves to step 2');
-  await say('ßë░ßêÿßêêßê╡');
+  check(true, 'voice control: "ቀጥል" (next) saves and moves to step 2');
+  await say('ተመለስ');
   await w.getByRole('heading', { level: 2, name: /1/ }).waitFor();
-  check(true, 'voice control: "ßë░ßêÿßêêßê╡" (back) returns to step 1');
+  check(true, 'voice control: "ተመለስ" (back) returns to step 1');
   await say('next');
   await w.getByRole('heading', { level: 2, name: /2/ }).waitFor();
   check(true, 'voice control: English "next" also works in the Amharic UI');
 
   check(await downUntil('input[autocomplete="given-name"]'), 'voice control: reaches the first-name text box');
-  await say('ßêÿßêìßê╡');
+  await say('መልስ');
   await page.waitForTimeout(300);
-  await page.evaluate(() => window.__say('ßèáßëáßëá'));
+  await page.evaluate(() => window.__say('አበበ'));
   const review = w.getByLabel(am['voice.reviewLabel']);
   await review.waitFor();
-  check(await review.inputValue() === 'ßèáßëáßëá', 'voice control: "ßêÿßêìßê╡" (answer) dictates into the focused field, shown for review');
+  check(await review.inputValue() === 'አበበ', 'voice control: "መልስ" (answer) dictates into the focused field, shown for review');
   await page.waitForTimeout(500);
   check(await downUntil('button.bg-terracotta'), 'voice control: moves to "Use this answer"');
-  await say('ßê¥ßê¿ßîÑ');
-  check(await w.locator('input[autocomplete="given-name"]').inputValue() === 'ßèáßëáßëá', 'voice control: "ßê¥ßê¿ßîÑ" uses the reviewed answer');
+  await say('ምረጥ');
+  check(await w.locator('input[autocomplete="given-name"]').inputValue() === 'አበበ', 'voice control: "ምረጥ" uses the reviewed answer');
 
-  await w.locator('input[autocomplete="family-name"]').fill('ßè¿ßëáßï░');
-  await say('ßëÇßîÑßêì');
+  await w.locator('input[autocomplete="family-name"]').fill('ከበደ');
+  await say('ቀጥል');
   await w.getByRole('heading', { level: 2, name: /3/ }).waitFor();
   await w.locator('input[autocomplete="tel"]').focus();
-  await say('ßêÿßêìßê╡');
+  await say('መልስ');
   await page.waitForTimeout(300);
-  await page.evaluate(() => window.__say('ßï£ßê« ßïÿßîáßè¥ ßèáßèòßï╡ ßèáßèòßï╡ ßêüßêêßë╡ ßê╢ßê╡ßë╡ ßèáßê½ßë╡ ßèáßê¥ßê╡ßë╡ ßê╡ßï╡ßê╡ßë╡ ßê░ßëúßë╡'));
+  await page.evaluate(() => window.__say('ዜሮ ዘጠኝ አንድ አንድ ሁለት ሶስት አራት አምስት ስድስት ሰባት'));
   await review.waitFor();
   check(await review.inputValue() === '0911234567', 'spoken Amharic number words become a phone number (0911234567)');
 
   await page.waitForTimeout(500);
-  await say('ßèáßëüßê¥');
-  check(await w.getByRole('button', { name: am['vc.toggle'] }).getAttribute('aria-pressed') === 'false', 'voice control: "ßèáßëüßê¥" (stop) turns it off');
+  await say('አቁም');
+  check(await w.getByRole('button', { name: am['vc.toggle'] }).getAttribute('aria-pressed') === 'false', 'voice control: "አቁም" (stop) turns it off');
   check(page.__errors.length === 0, `no page errors in the voice-control journey ${page.__errors.slice(0, 1).join('')}`);
   await page.close();
 }
@@ -333,19 +339,19 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 320, height: 640 
   }, am['consent.saveAnswers']);
   await say(consentNumber);
   check(await w.getByLabel(am['consent.saveAnswers']).isChecked(), `saying the badge number (${consentNumber}) ticks the consent box`);
-  await say('ßèÑßê¡ßï│ßë│');
-  check(await w.locator('dialog[open]').count() === 1, '"ßèÑßê¡ßï│ßë│" (help) opens the Need help dialog');
+  await say('እርዳታ');
+  check(await w.locator('dialog[open]').count() === 1, '"እርዳታ" (help) opens the Need help dialog');
   check(await w.locator('dialog[open]').getByRole('heading', { name: am['help.signTitle'], exact: true }).count() === 1, 'Need help dialog has the Ethiopian Sign Language section');
   check(await w.locator('dialog[open]').getByRole('heading', { name: am['help.blindTitle'], exact: true }).count() === 1, 'Need help dialog has the blind and keyboard guide');
   await axe(page, 'signup [am] Need help dialog with guide + EthSL');
   await page.keyboard.press('Escape');
-  await say('ßèáßëüßê¥');
+  await say('አቁም');
 
   // E-mail in English inside the Amharic UI; ID number fills the visible field at once.
   await w.locator('form button[type=submit]').click();
   await w.getByRole('heading', { level: 2, name: /2/ }).waitFor();
-  await w.locator('input[autocomplete="given-name"]').fill('ßèáßëáßëá');
-  await w.locator('input[autocomplete="family-name"]').fill('ßè¿ßëáßï░');
+  await w.locator('input[autocomplete="given-name"]').fill('አበበ');
+  await w.locator('input[autocomplete="family-name"]').fill('ከበደ');
   await w.locator('form button[type=submit]').click();
   await w.getByRole('heading', { level: 2, name: /3/ }).waitFor();
   await page.evaluate(() => { window.__next = 'a b e b e at gmail dot com'; });
@@ -365,6 +371,71 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 320, height: 640 
   await w.getByRole('button', { name: am['common.cancel'] }).click();
   check(await codeInput.inputValue() === '', 'Cancel puts the previous (empty) value back');
   check(page.__errors.length === 0, `no page errors in the co-designer checks ${page.__errors.slice(0, 1).join('')}`);
+  await page.close();
+}
+
+// 2e) Vision / colour modes: every non-default palette passes axe on the wizard (with a ticked row and a pressed
+//     toggle) and on the Career Gateway, chosen from the host "Colours" menu (?vision=…).
+for (const mode of ['colorblind-safe', 'high-contrast', 'dark']) {
+  const page = await newPage();
+  await page.goto(`${BASE}/pages/signup.html?vision=${mode}`, { waitUntil: 'networkidle' });
+  const w = page.locator('db-signup');
+  await w.locator('h2[tabindex]').first().waitFor();
+  const applied = await page.evaluate(() => document.querySelector('db-signup').shadowRoot.querySelector('[data-vision-mode]')?.getAttribute('data-vision-mode'));
+  check(applied === mode, `colour mode "${mode}" applied to the widget (${applied})`);
+  await w.getByLabel(en['consent.saveAnswers']).check();
+  await w.getByRole('button', { name: en['help.simpleWords'] }).click();
+  await axe(page, `signup in "${mode}" mode (ticked row + pressed toggle)`);
+  const selectedLooksDifferent = await page.evaluate(() => {
+    const root = document.querySelector('db-signup').shadowRoot;
+    const row = [...root.querySelectorAll('input[type=checkbox]')].find((i) => i.checked)?.parentElement;
+    const cs = row && getComputedStyle(row);
+    return cs ? `${cs.borderTopWidth} ${cs.boxShadow !== 'none'}` : 'none';
+  });
+  check(/^3px true$/.test(selectedLooksDifferent), `"${mode}": ticked row shown by a 3px border and inner ring, not colour alone (${selectedLooksDifferent})`);
+  await page.goto(`${BASE}/pages/jobs.html?vision=${mode}`, { waitUntil: 'networkidle' });
+  await page.locator('db-career-gateway h2').first().waitFor();
+  await page.waitForTimeout(300);
+  await axe(page, `jobs in "${mode}" mode`);
+  check(page.__errors.length === 0, `no page errors in "${mode}" mode ${page.__errors.slice(0, 1).join('')}`);
+  await page.close();
+}
+
+// 2f) Sign language (EthSL) panel: build a word from the cards into the field, and keep a sign-language video that
+//     answers a required field without typing (Chrome's fake camera). Nothing claims to recognise signs.
+{
+  const page = await newPage();
+  await page.goto(`${BASE}/pages/signup.html`, { waitUntil: 'networkidle' });
+  const w = page.locator('db-signup');
+  await w.locator('h2[tabindex]').first().waitFor();
+  await w.getByLabel(en['consent.saveAnswers']).check();
+  await w.locator('form button[type=submit]').click();
+  await w.getByRole('heading', { level: 2, name: /2/ }).waitFor();
+  await w.getByRole('button', { name: fill(en['sign.button'], { field: en['field.givenName'] }), exact: true }).click();
+  const panel = w.getByRole('group', { name: en['sign.title'] });
+  await panel.waitFor();
+  check(await panel.getByText(en['sign.honest']).count() === 1, 'sign panel says plainly that it does not read signs by itself');
+  for (const letter of ['A', 'B', 'E', 'B', 'E']) await panel.getByRole('button', { name: letter, exact: true }).click();
+  check(await panel.getByLabel(en['sign.result']).inputValue() === 'ABEBE', 'sign cards build the word "ABEBE"');
+  await axe(page, 'sign language panel (cards)');
+  await panel.getByRole('button', { name: en['voice.use'] }).click();
+  check(await w.locator('input[autocomplete="given-name"]').inputValue() === 'Abebe', 'cards answer is written into the field as "Abebe"');
+
+  await w.getByRole('button', { name: fill(en['sign.button'], { field: en['field.familyName'] }), exact: true }).click();
+  const panel2 = w.getByRole('group', { name: en['sign.title'] }).last();
+  await panel2.getByRole('button', { name: en['sign.record'] }).click();
+  await panel2.locator('video[aria-label]').waitFor({ timeout: 8000 }).catch(() => {});
+  await page.waitForTimeout(1500);
+  await axe(page, 'sign language panel (camera on, recording)');
+  await panel2.getByRole('button', { name: en['note.stop'] }).click();
+  await panel2.getByRole('button', { name: en['sign.keep'] }).click({ timeout: 8000 });
+  await w.getByText(fill(en['sign.savedBadge'], { seconds: '' }).split('(')[0].trim()).first().waitFor({ timeout: 8000 });
+  check(true, 'sign-language video kept, "Sign language video saved" badge shown');
+  check(await w.locator('input[autocomplete="family-name"]').inputValue() === '', 'father\'s name field left empty (answered by video)');
+  await w.locator('form button[type=submit]').click();
+  await w.getByRole('heading', { level: 2, name: /3/ }).waitFor({ timeout: 6000 });
+  check(true, 'step completed with a sign-language video instead of typing');
+  check(page.__errors.length === 0, `no page errors in the sign-language checks ${page.__errors.slice(0, 1).join('')}`);
   await page.close();
 }
 

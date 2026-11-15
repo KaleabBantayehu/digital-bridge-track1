@@ -21,7 +21,9 @@ All browser runs use Playwright 1.65 driving installed Google Chrome (headless) 
 
 | What | How to re-run | Result |
 | :--- | :--- | :--- |
-| Judge audit of the **built** pages (`apps/web-components/dist`): signup, profile, jobs, blank host, both Savanna homepages, **index.html**, and signup **scrolled halfway** (where JUDGE_REPORT D-01 was found); English and Amharic; 1280 × 800 and 320 × 640 | `pnpm -F @db/web-components build; node scripts/judge-audit.mjs` | **130 / 130 checks pass**, 0 axe violations of any impact |
+| Judge audit of the **built** pages (`apps/web-components/dist`): signup, profile, jobs, blank host, both Savanna homepages, **index.html**, and signup **scrolled halfway** (where JUDGE_REPORT D-01 was found); English and Amharic; 1280 × 800 and 320 × 640 | `pnpm -F @db/web-components build; node scripts/judge-audit.mjs` | **154 / 154 checks pass**, 0 axe violations of any impact |
+| Colour modes: Colour-blind safe, High contrast and Dark on the wizard (with a ticked row and a pressed toggle) and the Career Gateway | `node scripts/judge-audit.mjs` | 0 axe violations in each mode; ticked rows show a 3 px border and inner ring in every mode |
+| Sign-language panel: cards build "Abebe" into the field; a sign-language video (Chrome fake camera) is kept and answers a required field without typing | same | Pass, 0 axe violations with the camera on |
 | Every wizard state, error state, dialog, partner route, SMS state, career filter (0 / 1 / many results), apply flow and employer form, both languages (55 axe scans) | `node judge/gate.mjs` | **0 critical, 0 serious, 0 moderate, 0 minor** (was 5 serious in JUDGE_REPORT; fixed: static top bar, index.html links, two button names) |
 | Co-designer fixes (15 Nov): numbered voice-control badges, "help" opens Need help, e-mail dictated in English inside Amharic UI, spelled names, live code fill, no third-party fonts | `node scripts/judge-audit.mjs` | Pass |
 | Header / sidebar overlap (`getBoundingClientRect`) against `<main>`, its `<h1>`, `<db-signup>`, `<db-career-gateway>`, `<db-employer-accommodations>` | same script | 0 px overlap on every page at both sizes; `.db-savanna-topbar` bottom ≤ `<main>` top |
@@ -60,7 +62,9 @@ Tester, device and screen reader for this session: *to be filled in by the sessi
 - text-spacing override testing.
 
 **Known limits, stated honestly:**
-- The bundled read-aloud files are **tone cues** (a chime and one soft pip per step number), not recorded speech. The words are always shown in the caption box. Native-speaker recordings can replace the cues by editing `assets/audio/am/manifest.json`.
+- Read-aloud clips are generated at build time with neural voices (`am-ET-MekdesNeural`, `en-US-AriaNeural`, `scripts/generate-tts-audio.mjs`); the words are always shown in the caption box. A native speaker should review the Amharic clips.
+- **Sign language:** the widget does **not** recognise or translate signs. It records a short sign-language video for a person who knows Ethiopian Sign Language to read (kept on the device, like a voice note), offers number / letter / word cards, and an optional "camera wave control" that reacts to hand movement in the left, middle or right of the picture (a switch-style input, not sign recognition). Everything runs in the browser; no video is uploaded. Pictures of EthSL hand shapes still need to be added with Deaf co-designers.
+- Afaan Oromo and Tigrinya are not included yet (they need native translators).
 - Amharic voice commands need `am-ET` speech recognition. Where the device does not have it, voice control says so and listens for the English command words instead.
 - The Amharic wording needs a native-speaker review.
 
@@ -79,9 +83,9 @@ Tester, device and screen reader for this session: *to be filled in by the sessi
 | 1.3.3 Sensory Characteristics (A) | Supports | No instruction depends on shape, colour or position. |
 | 1.3.4 Orientation (AA) | Supports | No orientation lock. One-column layout. |
 | 1.3.5 Identify Input Purpose (AA) | Supports | `given-name`, `family-name`, `tel`, `email`, `one-time-code`, `bday-*` for the Gregorian date. |
-| 1.4.1 Use of Color (A) | Supports | Errors use text, an icon, `aria-invalid` and the Error Summary. Pressed toggles show a ✓ and a 3 px border; ticked checkbox and radio rows get a 3 px dark border and white fill, so state never depends on shade (co-designer finding). A "High contrast" button in the host top bar switches the page and widgets. |
+| 1.4.1 Use of Color (A) | Supports | Errors use text, an icon, `aria-invalid` and the Error Summary. Hovered buttons and choices get a dashed 3 px border; chosen ones are inverted (dark fill, light text), get a 3 px border, an inner ring and a ✓. A Colours menu (in the help bar and the host top bar) offers Warm, Colour-blind safe (blue and gold), High contrast and Dark; shapes are identical in every mode (co-designer finding). |
 | 1.4.2 Audio Control (A) | Supports | Nothing plays automatically. Read aloud has Pause and Stop; cues are under 2 seconds; voice notes use native `<audio controls>`. |
-| 1.4.3 Contrast (Minimum) (AA) | Supports | axe: 0 contrast failures in both languages. Computed: ink on parchment 16.4:1, terracotta `#9E3B24` on parchment 6.3:1, white on terracotta 6.8:1, lagoon badges 9.5:1. |
+| 1.4.3 Contrast (Minimum) (AA) | Supports | axe: 0 contrast failures in both languages and in all four colour modes. Default: ink on parchment 16.4:1, terracotta `#9E3B24` 6.3:1, white on terracotta 6.8:1. Colour-blind safe: `#004488` on white 9.7:1. High contrast: 21:1. Dark: `#f59e0b` on `#09090b` 9.9:1. |
 | 1.4.4 Resize Text (AA) | Supports | Sizes in rem (`:host` is 16 px); fluid layout. Browser text-only zoom not tested separately. |
 | 1.4.5 Images of Text (AA) | Supports | No images of text (the Savanna logo is a logo). |
 | 1.4.10 Reflow (AA) | Supports | 320 CSS px: no horizontal scroll on any page in either language (scripted). The top bar wraps and stops being sticky below 40 rem. |
@@ -114,7 +118,7 @@ Tester, device and screen reader for this session: *to be filled in by the sessi
 | 3.2.2 On Input (A) | Supports | Changing language or ticking "Prefer not to say" updates the same screen and is announced. |
 | 3.2.3 Consistent Navigation (AA) | Supports | The same top bar on signup, profile and jobs; Back / Continue always in the same place. |
 | 3.2.4 Consistent Identification (AA) | Supports | Same functions, same labels on every step. |
-| 3.2.6 Consistent Help (A) | Supports | Voice control, then the help cluster (Read aloud · Language · Simple words · Need help · My data), in the same order and place on every step. Need help now also holds a keyboard / voice guide you can listen to and an Ethiopian Sign Language interpreter request; saying "help" opens it. |
+| 3.2.6 Consistent Help (A) | Supports | Voice control, then the help cluster (Read aloud · Language · Simple words · Need help · My data · Colours), in the same order and place on every step. Need help holds a keyboard / voice guide you can listen to and an Ethiopian Sign Language interpreter request; saying "help" opens it. |
 | 3.3.1 Error Identification (A) | Supports | `aria-invalid`, inline message via `aria-describedby`, focused `role="alert"` Error Summary. Voice control reads the Error Summary aloud when "next" fails. |
 | 3.3.2 Labels or Instructions (A) | Supports | Visible labels, hints, "(required)" / "(optional)" in text. |
 | 3.3.3 Error Suggestion (AA) | Supports | Examples in both languages, e.g. "Enter 10 digits, for example 0911 234 567". |
@@ -144,12 +148,13 @@ The fix sprint addressed inaccurate English email dictation in Amharic mode
 (forced ASCII/en-US recognition and spelling), the voice “help” command and
 numbered shortcuts, immediate ID/SMS code visibility and audio, and Android
 continuous-recognition/header issues. The header is static and the controls
-remain visible at zoom; color-blind-safe indicators, Afaan Oromo and Tigrinya
-support, and Ethiopian Sign Language visual-support guidance were added.
+remain visible at zoom; color-blind-safe indicators and Ethiopian Sign Language visual-support guidance were
+added. Afaan Oromo and Tigrinya are **not** included yet: they need native translators (the language files are
+ready for them).
 
 
 ## Testing & Co-Designer Verification Summary
 - **Who tested:** Track 1 Co-Designer & Accessibility Testing Team (Kaleab, Ermias, Dev 2, Kidus) on 15 November 2026.
-- **Devices & Assistive Technology:** Windows 11 laptop (Keyboard-only navigation, 125%�200% browser zoom, Sound-Off mode, Hands-Free Voice Control Alt+V, High-Contrast mode) and Android smartphone in Chrome over HTTPS (touch + voice mode).
+- **Devices & Assistive Technology:** Windows 11 laptop (Keyboard-only navigation, 125%–200% browser zoom, Sound-Off mode, Hands-Free Voice Control Alt+V, High-Contrast mode) and Android smartphone in Chrome over HTTPS (touch + voice mode).
 - **What they completed unaided:** Full 7-step onboarding in English and Amharic, Ethiopian 13-month calendar (including Pagume), Partner Referral voucher route (VOUCH-...), Read-Aloud neural Amharic audio with synchronized captions, and Career Gateway private accommodation filtering.
-- **What they could not do initially (and how we fixed it):** (1) Speaking an English email while in Amharic UI transcribed Ethiopic characters -> fixed by forcing en-US ASCII recognition on email fields and supporting letter-by-letter spelling; (2) Sticky top bar overlapped top buttons on scroll at >125% zoom -> made top bar static (  axe violations across 55 scans); (3) Voice command 'help' repeated text instead of opening 'Need help' -> fixed 'help' command and added [1]..[9] numbered voice badges; (4) Added color-blind safe checkmarks/border thickness and High-Contrast toggle.
+- **What they could not do initially (and how we fixed it):** (1) Speaking an English email while in Amharic UI transcribed Ethiopic characters -> fixed by forcing en-US ASCII recognition on email fields and supporting letter-by-letter spelling; (2) Sticky top bar overlapped top buttons on scroll at >125% zoom -> made top bar static (0 axe violations across 55 scans); (3) Voice command 'help' repeated text instead of opening 'Need help' -> fixed 'help' command and added [1]..[9] numbered voice badges; (4) Added color-blind safe checkmarks/border thickness and a four-mode Colours menu (Warm, Colour-blind safe blue/gold, High contrast, Dark), with dashed hover borders and inverted selected states; (5) asked for sign language support -> added a sign-language panel (video answer for an interpreter, number/letter/word cards, optional camera wave control). It does not convert signs to words automatically.

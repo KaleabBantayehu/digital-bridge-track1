@@ -1,5 +1,6 @@
 import React, { useEffect, useId, useRef, useState } from 'react';
-import { Check, Circle, Mic, MicOff, RotateCcw, Square, Trash2, Volume2, X } from 'lucide-react';
+import { Check, Circle, Hand, Mic, MicOff, RotateCcw, Square, Trash2, Volume2, X } from 'lucide-react';
+import { SignPanel } from './SignPanel';
 import type { Lang } from '@db/shared-schemas';
 import { t } from '../i18n';
 import { cleanId, ui } from '../wizard/ui';
@@ -53,6 +54,8 @@ const AM_FALLBACK_ERRORS = new Set(['no-speech', 'network', 'not-allowed', 'lang
  */
 export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse, targetRef, announce, voiceNoteKey, fidelHelper, spokenKind = 'text', liveFill = false, currentValue = '' }) => {
   const [phase, setPhase] = useState<Phase>('idle');
+  const [signOpen, setSignOpen] = useState(false);
+  const signBtnRef = useRef<HTMLButtonElement>(null);
   const [heard, setHeard] = useState('');
   const [note, setNote] = useState('');
   const [reviewNote, setReviewNote] = useState('');
@@ -78,6 +81,7 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
 
   const notes = useVoiceNotes();
   const savedNote = voiceNoteKey && hasVoiceNote(notes, voiceNoteKey) ? notes[voiceNoteKey] : '';
+  const savedIsVideo = savedNote.startsWith('data:video');
 
   useEffect(() => setRecordSupported(!!voiceNoteKey && canRecordVoiceNote()), [voiceNoteKey]);
 
@@ -399,7 +403,38 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
             <span>{recording ? t(lang, 'note.stop') : t(lang, 'note.record', { field: fieldLabel })}</span>
           </button>
         )}
+
+        <button
+          ref={signBtnRef}
+          type="button"
+          onClick={() => setSignOpen((open) => !open)}
+          aria-expanded={signOpen}
+          data-db-action="sign-language"
+          disabled={listening || recording}
+          className={ui.btnSecondary}
+        >
+          <Hand aria-hidden="true" focusable="false" className="h-5 w-5 shrink-0" />
+          <span>{t(lang, 'sign.button', { field: fieldLabel })}</span>
+        </button>
       </div>
+
+      {signOpen && (
+        <SignPanel
+          lang={lang}
+          fieldLabel={fieldLabel}
+          voiceNoteKey={voiceNoteKey}
+          spokenKind={spokenKind}
+          announce={announce}
+          onUse={(text) => {
+            onUse(text);
+            targetRef.current?.focus();
+          }}
+          onClose={() => {
+            setSignOpen(false);
+            signBtnRef.current?.focus();
+          }}
+        />
+      )}
 
       {note && phase !== 'review' && <p className="mt-1 text-sm text-stone-800">{note}</p>}
 
@@ -465,12 +500,16 @@ export const VoiceField: React.FC<VoiceFieldProps> = ({ lang, fieldLabel, onUse,
       {savedNote && phase !== 'preview' && (
         <div className="mt-3 rounded-xl border border-sand bg-white p-3 shadow-card">
           <p id={savedLabelId} className={ui.label}>
-            {t(lang, 'note.savedLabel', { field: fieldLabel })}
+            {t(lang, savedIsVideo ? 'sign.savedLabel' : 'note.savedLabel', { field: fieldLabel })}
           </p>
-          <audio controls src={savedNote} aria-labelledby={savedLabelId} className="w-full max-w-[40rem]" />
+          {savedIsVideo ? (
+            <video controls src={savedNote} aria-labelledby={savedLabelId} className="w-full max-w-[20rem] rounded-lg" />
+          ) : (
+            <audio controls src={savedNote} aria-labelledby={savedLabelId} className="w-full max-w-[40rem]" />
+          )}
           <button type="button" onClick={deleteVoiceNote} className={`${ui.btnQuiet} mt-2`}>
             <Trash2 aria-hidden="true" focusable="false" className="h-5 w-5 shrink-0" />
-            {t(lang, 'note.remove', { field: fieldLabel })}
+            {t(lang, savedIsVideo ? 'sign.remove' : 'note.remove', { field: fieldLabel })}
           </button>
         </div>
       )}

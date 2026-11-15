@@ -19,6 +19,7 @@ import { FIELD_LABELS, fieldId, type FieldErrors, type StepDefinition, type Step
 import { normaliseStep, partnerDraftFrom, validateStep, type PartnerDraft } from './validation';
 import { cleanId, cx, ui } from './ui';
 import { VoiceControl } from './VoiceControl';
+import { useVisionMode } from './vision';
 import { ETHIOPIC_CSS, scriptClass } from '../i18n/script';
 import { clearVoiceNotes, getVoiceNotes, profileVoiceNotes } from '../voice/voiceNotes';
 import { WelcomeConsentStep } from './steps/WelcomeConsentStep';
@@ -303,6 +304,7 @@ export const WizardShell: React.FC<WizardShellProps> = ({
   };
 
   const highContrast = theme === 'high-contrast';
+  const vision = useVisionMode();
 
   return (
     <section
@@ -310,6 +312,7 @@ export const WizardShell: React.FC<WizardShellProps> = ({
       lang={lang}
       aria-label={t('app.name')}
       data-theme={theme}
+      data-vision-mode={vision}
       className={cx(
         'w-full max-w-[48rem] mx-auto p-4 sm:p-8 rounded-2xl font-sans text-base leading-relaxed break-words',
         scriptClass(lang),

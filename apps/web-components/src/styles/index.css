@@ -157,3 +157,143 @@
   content: '✓' / '';
   font-weight: 700;
 }
+
+/* ---------------------------------------------------------------------------------------------------------------
+   Vision / colour modes (data-vision-mode on each widget root). "terracotta" is the default palette above and is
+   left untouched; the other three remap the Tailwind colour utilities through variables. Shapes and borders are the
+   same in every mode, so state never depends on colour alone. Contrast (WCAG formula):
+     colorblind-safe  #0f172a on #f4f7fb 16.7:1 · #004488 on #ffffff 9.7:1 · #334155 on #f4f7fb 9.6:1
+     high-contrast    #000000 on #ffffff 21:1 · selected #ffff00 on #000000 19.6:1 · focus #b45309 on #ffffff 5.0:1
+     dark             #fafafa on #09090b 19.1:1 · #f59e0b on #09090b 9.9:1 · button text #09090b on #f59e0b 9.9:1
+   --------------------------------------------------------------------------------------------------------------- */
+:host {
+  --v-selected-bg: #1c1917;
+  --v-selected-text: #ffffff;
+  --v-ring: #ffffff;
+}
+
+:host [data-vision-mode='colorblind-safe'] {
+  --v-surface: #f4f7fb; --v-card: #ffffff; --v-text: #0f172a; --v-muted: #334155;
+  --v-primary: #004488; --v-primary-hover: #002244; --v-on-primary: #ffffff; --v-mark: #e69f00;
+  --v-selected-bg: #002244; --v-selected-text: #ffffff; --v-ring: #e69f00;
+  --v-border: #475569; --v-soft-border: #94a3b8; --v-hover: #e6eef8;
+  --v-badge-bg: #fff4dc; --v-badge-text: #5c3d00; --v-error: #9f1239; --v-success: #004488; --v-focus: #004488;
+}
+
+:host [data-vision-mode='high-contrast'] {
+  --v-surface: #ffffff; --v-card: #ffffff; --v-text: #000000; --v-muted: #000000;
+  --v-primary: #000000; --v-primary-hover: #333333; --v-on-primary: #ffffff; --v-mark: #ffff00;
+  --v-selected-bg: #000000; --v-selected-text: #ffff00; --v-ring: #ffffff;
+  --v-border: #000000; --v-soft-border: #000000; --v-hover: #f0f0f0;
+  --v-badge-bg: #ffffff; --v-badge-text: #000000; --v-error: #8b0000; --v-success: #000000; --v-focus: #b45309;
+}
+
+:host [data-vision-mode='dark'] {
+  --v-surface: #18181b; --v-card: #09090b; --v-text: #fafafa; --v-muted: #d4d4d8;
+  --v-primary: #f59e0b; --v-primary-hover: #fbbf24; --v-on-primary: #09090b; --v-mark: #f59e0b;
+  --v-selected-bg: #fafafa; --v-selected-text: #09090b; --v-ring: #09090b;
+  --v-border: #a1a1aa; --v-soft-border: #52525b; --v-hover: #27272a;
+  --v-badge-bg: #27272a; --v-badge-text: #fafafa; --v-error: #fca5a5; --v-success: #86efac; --v-focus: #fbbf24;
+}
+
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) {
+  --db-primary: var(--v-primary);
+  --db-focus-ring: var(--v-focus);
+}
+
+:host [data-vision-mode]:not([data-vision-mode='terracotta']),
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) .bg-parchment {
+  background-color: var(--v-surface) !important;
+  color: var(--v-text) !important;
+}
+
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) .bg-white,
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) .bg-white\/60,
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) .bg-white\/70,
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) .bg-sand-light,
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) .bg-transparent {
+  background-color: var(--v-card) !important;
+}
+
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) .text-ink { color: var(--v-text) !important; }
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) .text-stone-700,
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) .text-stone-800 { color: var(--v-muted) !important; }
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) .text-terracotta,
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) .text-terracotta-dark { color: var(--v-primary) !important; }
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) .border-terracotta { border-color: var(--v-primary) !important; }
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) .border-sand,
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) .border-stone-200,
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) .border-stone-300 { border-color: var(--v-soft-border) !important; }
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) .border-stone-500,
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) .border-stone-600,
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) .border-ink { border-color: var(--v-border) !important; }
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) .bg-terracotta {
+  background-color: var(--v-primary) !important;
+  border-color: var(--v-primary) !important;
+  color: var(--v-on-primary) !important;
+}
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) .bg-ink {
+  background-color: var(--v-selected-bg) !important;
+  border-color: var(--v-selected-bg) !important;
+  color: var(--v-selected-text) !important;
+}
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) .bg-lagoon-light { background-color: var(--v-badge-bg) !important; }
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) .text-lagoon { color: var(--v-badge-text) !important; }
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) .border-lagoon { border-color: var(--v-badge-text) !important; }
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) .text-red-800 { color: var(--v-error) !important; }
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) .border-red-800 { border-color: var(--v-error) !important; }
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) .text-green-800 { color: var(--v-success) !important; }
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) input[type='checkbox'],
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) input[type='radio'] { accent-color: var(--v-primary); }
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) *:focus-visible { outline-color: var(--v-focus) !important; }
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) progress,
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) progress::-webkit-progress-bar { background-color: var(--v-soft-border); }
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) mark.db-phrase-current {
+  background-color: var(--v-mark);
+  color: #000000;
+  box-shadow: 0 0 0 2px var(--v-text);
+}
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) button:not(:disabled):hover { background-color: var(--v-hover) !important; }
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) .bg-terracotta:not(:disabled):hover { background-color: var(--v-primary-hover) !important; }
+:host [data-vision-mode]:not([data-vision-mode='terracotta']) .bg-ink:not(:disabled):hover { background-color: var(--v-selected-bg) !important; }
+
+/* Redundant, non-colour cues in every mode (co-designer finding):
+   hover  -> dashed 3px border, so the hovered control is visible by pattern even in monochrome;
+   chosen -> inverted fill, 3px border, inner ring and a check mark (pressed buttons and ticked rows). */
+:host button:not(:disabled):hover {
+  border-style: dashed !important;
+  border-width: 3px !important;
+}
+
+:host div:has(> input[type='checkbox']):hover,
+:host div:has(> input[type='radio']):hover {
+  border-style: dashed !important;
+  border-width: 3px !important;
+  border-color: currentColor !important;
+}
+
+:host button[aria-pressed='true'] {
+  box-shadow: inset 0 0 0 2px var(--v-ring);
+}
+
+:host div:has(> input[type='checkbox']:checked),
+:host div:has(> input[type='radio']:checked) {
+  background-color: var(--v-selected-bg) !important;
+  color: var(--v-selected-text) !important;
+  border-color: var(--v-selected-bg) !important;
+  box-shadow: inset 0 0 0 2px var(--v-ring);
+}
+
+:host div:has(> input[type='checkbox']:checked) *,
+:host div:has(> input[type='radio']:checked) *,
+:host [data-vision-mode] div:has(> input[type='checkbox']:checked) *,
+:host [data-vision-mode] div:has(> input[type='radio']:checked) * {
+  color: inherit !important;
+}
+
+:host div:has(> input[type='checkbox']:checked) > label::before,
+:host div:has(> input[type='radio']:checked) > label::before {
+  content: '✓ ';
+  content: '✓ ' / '';
+  font-weight: 700;
+}

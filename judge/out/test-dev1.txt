@@ -1,0 +1,20 @@
+PASS 1 Custom elements and open Shadow DOM
+PASS 2 One-line auto-mount modes and script attributes
+PASS 3 Composed host events and consent-gated private data
+PASS 4 Scoped IndexedDB/localStorage persistence and debounce
+PASS 5 Ordered offline PATCH replay on online event
+PASS 6 Mock jobs, schema.org metadata, privacy and fallback data
+PASS 7 Four-second API timeout and automatic mock fallback
+PASS 8 Native homepage hamburger and named logo links
+PASS 9 Skip links, main headings, hierarchy and widget embedding
+PASS 10 Focus scroll margin and visible focus ring
+PASS 11 No duplicate IDs on required host and demo pages
+  gzipped bundle: 157.93 KB
+PASS 12 Production bundle, copied pages, audio and gzip budget
+  axe PASS /pages/signup.html (1 mounted widget(s))
+  axe PASS /pages/profile.html (1 mounted widget(s))
+  axe PASS /pages/jobs.html (2 mounted widget(s))
+  axe PASS /demo/blank.html (2 mounted widget(s))
+PASS 13 Signup aliases, guide pages and built-page axe audit
+
+Dev 1 judge audit: 13/13 passed.

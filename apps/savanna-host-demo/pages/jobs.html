@@ -58,7 +58,15 @@
           <button type="button" data-db-lang="en" aria-pressed="true">English</button>
           <button type="button" data-db-lang="am" aria-pressed="false"><span lang="am">አማርኛ</span></button>
         </div>
-        <button type="button" class="db-topbar-contrast" data-db-contrast aria-pressed="false">High contrast</button>
+        <span class="db-topbar-vision">
+          <label for="db-vision">Colours</label>
+          <select id="db-vision" data-db-vision>
+            <option value="terracotta">Warm (default)</option>
+            <option value="colorblind-safe">Colour-blind safe (blue and gold)</option>
+            <option value="high-contrast">High contrast (black and white)</option>
+            <option value="dark">Dark (low glare)</option>
+          </select>
+        </span>
       </div>
     </header>
     <main class="db-host-main" id="main-content">

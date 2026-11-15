@@ -26,9 +26,18 @@ speech with synchronized captions.
 4. **Mobile voice and zoomed header:** Android Chrome could drop continuous
    recognition; sticky header links were underlined and the bar obscured help
    controls while scrolling. The top bar is static, links are styled without
-   underlines, pills are bold, and color-blind-safe indicators plus Afaan
-   Oromo (`om`), Tigrinya (`ti`), and Ethiopian Sign Language visual-support
-   guidance are provided.
+   underlines, pills are bold, and color-blind-safe indicators and Ethiopian Sign
+   Language visual-support guidance are provided. (Afaan Oromo and Tigrinya were
+   requested but are not included yet: they need native translators.)
+5. **Colour shades and sign language (second fix round, 15 Nov afternoon):**
+   testers said colour-blind users cannot tell same-shade buttons apart, and
+   asked for sign language support. Added a four-mode Colours menu (Warm,
+   Colour-blind safe blue/gold, High contrast, Dark) with dashed hover borders
+   and inverted, ringed, ✓-marked selected states; and a sign-language panel
+   on every voice field: a sign-language video answer for an interpreter to
+   read, number / letter / word cards, and an optional camera wave control.
+   The request "understand sign language and convert it into words" is **not**
+   met: the widget does not recognise signs. To retest with a Deaf co-designer.
 
 Date/time: ____________________
 Location/device: ____________________

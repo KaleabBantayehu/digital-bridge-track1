@@ -10,6 +10,12 @@ Tags: **VERIFIED** (ran it, output quoted), **INFERRED** (read the code, `file:l
 > page links) and D-21 (both Slow-3G profiles) done. Still open: D-03 (co-designer log), D-04/D-05/D-06/D-07/D-15/D-16/D-19
 > (API, Dev 3), D-09 now merged on main by Dev 4 (re-test LTI), D-11 (Docker, Dev 4), D-12 (LICENSE).
 
+> **Status update (15 Nov afternoon, branch `feat/dev2-vision-sign`):** four colour modes and a sign-language panel
+> added; `node scripts/judge-audit.mjs` now runs **154/154** (all four colour modes and the sign panel axe-clean),
+> `node judge/gate.mjs` 0 violations in 55 state scans, `node scripts/test-dev1.mjs` 13/13 (158 KB gz), 0 DEP0190
+> warnings. Also fixed on the way: Amharic text in `scripts/judge-audit.mjs` had been saved in the wrong encoding on
+> main (the Amharic voice-command checks could not match), and voice control "down" no longer gets stuck on a list.
+
 ---
 
 ## 1. Verdict

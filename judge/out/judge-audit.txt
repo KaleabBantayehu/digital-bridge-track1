@@ -1,0 +1,156 @@
+PASS  no header/sidebar overlap: pages/signup.html [en] 1280px
+PASS  axe pages/signup.html [en] 1280px: 0 violations
+PASS  no page errors: pages/signup.html [en] 1280px 
+PASS  no header/sidebar overlap: pages/signup.html [am] 1280px
+PASS  widgets render lang="am": pages/signup.html [am] 1280px
+PASS  axe pages/signup.html [am] 1280px: 0 violations
+PASS  no page errors: pages/signup.html [am] 1280px 
+PASS  no header/sidebar overlap: pages/profile.html [en] 1280px
+PASS  axe pages/profile.html [en] 1280px: 0 violations
+PASS  no page errors: pages/profile.html [en] 1280px 
+PASS  no header/sidebar overlap: pages/profile.html [am] 1280px
+PASS  widgets render lang="am": pages/profile.html [am] 1280px
+PASS  axe pages/profile.html [am] 1280px: 0 violations
+PASS  no page errors: pages/profile.html [am] 1280px 
+PASS  no header/sidebar overlap: pages/jobs.html [en] 1280px
+PASS  axe pages/jobs.html [en] 1280px: 0 violations
+PASS  no page errors: pages/jobs.html [en] 1280px 
+PASS  no header/sidebar overlap: pages/jobs.html [am] 1280px
+PASS  widgets render lang="am": pages/jobs.html [am] 1280px
+PASS  axe pages/jobs.html [am] 1280px: 0 violations
+PASS  no page errors: pages/jobs.html [am] 1280px 
+PASS  no header/sidebar overlap: demo/blank.html [en] 1280px
+PASS  axe demo/blank.html [en] 1280px: 0 violations
+PASS  no page errors: demo/blank.html [en] 1280px 
+PASS  no header/sidebar overlap: pages/homepage-v1-self-paced.html [en] 1280px
+PASS  axe pages/homepage-v1-self-paced.html [en] 1280px: 0 violations
+PASS  no page errors: pages/homepage-v1-self-paced.html [en] 1280px 
+PASS  no header/sidebar overlap: pages/homepage-v1-paced.html [en] 1280px
+PASS  axe pages/homepage-v1-paced.html [en] 1280px: 0 violations
+PASS  no page errors: pages/homepage-v1-paced.html [en] 1280px 
+PASS  no header/sidebar overlap: pages/signup.html [en] 320px
+PASS  no horizontal scroll at 320px: pages/signup.html [en] 320px (scrollWidth 320)
+PASS  axe pages/signup.html [en] 320px: 0 violations
+PASS  no page errors: pages/signup.html [en] 320px 
+PASS  no header/sidebar overlap: pages/signup.html [am] 320px
+PASS  no horizontal scroll at 320px: pages/signup.html [am] 320px (scrollWidth 320)
+PASS  widgets render lang="am": pages/signup.html [am] 320px
+PASS  axe pages/signup.html [am] 320px: 0 violations
+PASS  no page errors: pages/signup.html [am] 320px 
+PASS  no header/sidebar overlap: pages/profile.html [en] 320px
+PASS  no horizontal scroll at 320px: pages/profile.html [en] 320px (scrollWidth 320)
+PASS  axe pages/profile.html [en] 320px: 0 violations
+PASS  no page errors: pages/profile.html [en] 320px 
+PASS  no header/sidebar overlap: pages/profile.html [am] 320px
+PASS  no horizontal scroll at 320px: pages/profile.html [am] 320px (scrollWidth 320)
+PASS  widgets render lang="am": pages/profile.html [am] 320px
+PASS  axe pages/profile.html [am] 320px: 0 violations
+PASS  no page errors: pages/profile.html [am] 320px 
+PASS  no header/sidebar overlap: pages/jobs.html [en] 320px
+PASS  no horizontal scroll at 320px: pages/jobs.html [en] 320px (scrollWidth 320)
+PASS  axe pages/jobs.html [en] 320px: 0 violations
+PASS  no page errors: pages/jobs.html [en] 320px 
+PASS  no header/sidebar overlap: pages/jobs.html [am] 320px
+PASS  no horizontal scroll at 320px: pages/jobs.html [am] 320px (scrollWidth 320)
+PASS  widgets render lang="am": pages/jobs.html [am] 320px
+PASS  axe pages/jobs.html [am] 320px: 0 violations
+PASS  no page errors: pages/jobs.html [am] 320px 
+PASS  no header/sidebar overlap: demo/blank.html [en] 320px
+PASS  no horizontal scroll at 320px: demo/blank.html [en] 320px (scrollWidth 320)
+PASS  axe demo/blank.html [en] 320px: 0 violations
+PASS  no page errors: demo/blank.html [en] 320px 
+PASS  no header/sidebar overlap: pages/homepage-v1-self-paced.html [en] 320px
+PASS  no horizontal scroll at 320px: pages/homepage-v1-self-paced.html [en] 320px (scrollWidth 320)
+PASS  axe pages/homepage-v1-self-paced.html [en] 320px: 0 violations
+PASS  no page errors: pages/homepage-v1-self-paced.html [en] 320px 
+PASS  no header/sidebar overlap: pages/homepage-v1-paced.html [en] 320px
+PASS  no horizontal scroll at 320px: pages/homepage-v1-paced.html [en] 320px (scrollWidth 320)
+PASS  axe pages/homepage-v1-paced.html [en] 320px: 0 violations
+PASS  no page errors: pages/homepage-v1-paced.html [en] 320px 
+PASS  axe signup [am] name step: 0 violations
+PASS  am: fallback explanation shown when SpeechRecognition is missing
+PASS  am: focus moved to the Stop recording button
+PASS  am: recorded voice note has an audio preview
+PASS  axe signup [am] voice-note preview: 0 violations
+PASS  am: "voice note saved" badge shown on the field
+PASS  am: both name fields answered by voice note
+PASS  am: Fidel helper turns "abebe" into አበበ
+PASS  axe signup [am] Fidel helper open: 0 violations
+PASS  am: nothing was typed into the name fields
+PASS  am: name step completed with voice notes only, now on step 3
+PASS  am: read-aloud caption box shows the words with no am-ET voice
+PASS  am: current phrase highlighted
+PASS  axe signup [am] read-aloud caption box: 0 violations
+PASS  db-signup:step fires once per step (1,2,3)
+PASS  no page errors in the Amharic journey 
+PASS  voice control: Alt+V turns it on (aria-pressed)
+PASS  axe signup [am] voice control on: 0 violations
+PASS  voice control: "ታች" (down) moves focus to the consent checkbox
+PASS  voice control: "ምረጥ" (choose) ticks the focused checkbox
+PASS  voice control: spoken/visible confirmation says it is ticked
+PASS  voice control: "ቀጥል" (next) saves and moves to step 2
+PASS  voice control: "ተመለስ" (back) returns to step 1
+PASS  voice control: English "next" also works in the Amharic UI
+PASS  voice control: reaches the first-name text box
+PASS  voice control: "መልስ" (answer) dictates into the focused field, shown for review
+PASS  voice control: moves to "Use this answer"
+PASS  voice control: "ምረጥ" uses the reviewed answer
+PASS  spoken Amharic number words become a phone number (0911234567)
+PASS  voice control: "አቁም" (stop) turns it off
+PASS  no page errors in the voice-control journey 
+PASS  axe index.html 1280px: 0 violations
+PASS  signup [en] 1280px scrolled halfway (scrollY 229)
+PASS  axe signup [en] 1280px scrolled halfway, step 2: 0 violations
+PASS  top bar is not sticky (position: static)
+PASS  signup [am] 1280px scrolled halfway (scrollY 270)
+PASS  axe signup [am] 1280px scrolled halfway, step 2: 0 violations
+PASS  top bar is not sticky (position: static)
+PASS  axe index.html 320px: 0 violations
+PASS  signup [en] 320px scrolled halfway (scrollY 599)
+PASS  axe signup [en] 320px scrolled halfway, step 2: 0 violations
+PASS  top bar is not sticky (position: static)
+PASS  signup [am] 320px scrolled halfway (scrollY 648)
+PASS  axe signup [am] 320px scrolled halfway, step 2: 0 violations
+PASS  top bar is not sticky (position: static)
+PASS  widget adds no third-party font link to the host page (0)
+PASS  voice control shows numbered badges (11)
+PASS  axe signup [am] voice control with numbered badges: 0 violations
+PASS  saying the badge number (7) ticks the consent box
+PASS  "እርዳታ" (help) opens the Need help dialog
+PASS  Need help dialog has the Ethiopian Sign Language section
+PASS  Need help dialog has the blind and keyboard guide
+PASS  axe signup [am] Need help dialog with guide + EthSL: 0 violations
+PASS  e-mail is recognised in English inside the Amharic UI (en-US)
+PASS  spelled e-mail becomes "abebe@gmail.com" (abebe@gmail.com)
+PASS  spoken code shows in the visible field at once (DB-4F7K2Q)
+PASS  Cancel puts the previous (empty) value back
+PASS  no page errors in the co-designer checks 
+PASS  colour mode "colorblind-safe" applied to the widget (colorblind-safe)
+PASS  axe signup in "colorblind-safe" mode (ticked row + pressed toggle): 0 violations
+PASS  "colorblind-safe": ticked row shown by a 3px border and inner ring, not colour alone (3px true)
+PASS  axe jobs in "colorblind-safe" mode: 0 violations
+PASS  no page errors in "colorblind-safe" mode 
+PASS  colour mode "high-contrast" applied to the widget (high-contrast)
+PASS  axe signup in "high-contrast" mode (ticked row + pressed toggle): 0 violations
+PASS  "high-contrast": ticked row shown by a 3px border and inner ring, not colour alone (3px true)
+PASS  axe jobs in "high-contrast" mode: 0 violations
+PASS  no page errors in "high-contrast" mode 
+PASS  colour mode "dark" applied to the widget (dark)
+PASS  axe signup in "dark" mode (ticked row + pressed toggle): 0 violations
+PASS  "dark": ticked row shown by a 3px border and inner ring, not colour alone (3px true)
+PASS  axe jobs in "dark" mode: 0 violations
+PASS  no page errors in "dark" mode 
+PASS  sign panel says plainly that it does not read signs by itself
+PASS  sign cards build the word "ABEBE"
+PASS  axe sign language panel (cards): 0 violations
+PASS  cards answer is written into the field as "Abebe"
+PASS  axe sign language panel (camera on, recording): 0 violations
+PASS  sign-language video kept, "Sign language video saved" badge shown
+PASS  father's name field left empty (answered by video)
+PASS  step completed with a sign-language video instead of typing
+PASS  no page errors in the sign-language checks 
+PASS  profile.html (mode="edit") opens on "Edit my profile"
+PASS  page load does not move focus into the widget
+PASS  no 404s ()
+
+ALL 154 JUDGE CHECKS PASSED

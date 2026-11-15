@@ -3,6 +3,8 @@ import { BookOpen, HelpCircle, Languages, ShieldCheck, X } from 'lucide-react';
 import { I18N, type Lang } from '@db/shared-schemas';
 import { otherLang, t } from '../i18n';
 import { ReadAloudButton } from '../tts/ReadAloudButton';
+import { setVisionMode, useVisionMode, VISION_LABEL_KEYS, VISION_MODES, type VisionMode } from './vision';
+import type { I18nKey } from '../i18n';
 import { cleanId, ui } from './ui';
 
 export interface HelpClusterProps {
@@ -48,6 +50,9 @@ export const HelpCluster: React.FC<HelpClusterProps> = ({
   const guide = ['help.guide.tab', 'help.guide.choose', 'help.guide.voice', 'help.guide.numbers'] as const;
   const guideText = guide.map((key) => plainKeys(t(lang, key))).join(' ');
   const signId = `${cleanId(useId())}-sign`;
+  const visionId = `${cleanId(useId())}-vision`;
+  const vision = useVisionMode();
+  const visionLabel = (mode: VisionMode) => t(lang, VISION_LABEL_KEYS[mode] as I18nKey);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const openerRef = useRef<HTMLButtonElement>(null);
   const dialogTitleId = cleanId(useId());
@@ -92,6 +97,29 @@ export const HelpCluster: React.FC<HelpClusterProps> = ({
         <ShieldCheck aria-hidden="true" focusable="false" className="h-5 w-5 shrink-0" />
         {t(lang, 'help.privacy')}
       </button>
+
+      {/* Colour mode: same place on every step (3.2.6). Native select, visible label. */}
+      <span className="inline-flex flex-wrap items-center gap-2 rounded-full border-2 border-stone-500 bg-white ps-3">
+        <label htmlFor={visionId} className="text-sm font-semibold">
+          {t(lang, 'vision.label')}
+        </label>
+        <select
+          id={visionId}
+          value={vision}
+          onChange={(e) => {
+            const mode = e.target.value as VisionMode;
+            setVisionMode(mode);
+            announce(t(lang, 'vision.changed', { mode: visionLabel(mode) }));
+          }}
+          className="min-h-[44px] max-w-full rounded-full border-0 bg-transparent pe-2 text-sm font-semibold text-ink focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-terracotta-dark"
+        >
+          {VISION_MODES.map((mode) => (
+            <option key={mode} value={mode}>
+              {visionLabel(mode)}
+            </option>
+          ))}
+        </select>
+      </span>
 
       <dialog
         ref={dialogRef}

@@ -114,6 +114,18 @@ symbol conversion (`zero nine one one` or `ዜሮ ዘጠኝ አንድ አንድ`
 Ethiopic numerals, and spoken email forms such as “at gmail dot com”. The
 Fidel helper converts `abebe` to `አበበ` and `addis ababa` to `አዲስ አበባ`.
 
+### Sign language, colours and other ways in
+- **Sign language (Ethiopian Sign Language):** every voice field has "Answer … in sign language". It records a short
+  video of the learner signing (camera, `MediaRecorder`, up to 20 s), kept on the device like a voice note so the
+  learner can continue without typing; a person who knows EthSL reads it. The panel also offers number / letter /
+  word cards and an optional camera wave control (hand movement on the left, middle or right of the picture moves
+  back, chooses, or moves forward). **It does not recognise or translate signs automatically**, and no video is
+  uploaded or sent to any cloud or AI service. Pictures of EthSL hand shapes are to be added with Deaf co-designers.
+- **Colours:** a Colours menu in the help bar and in the host top bar switches every widget between Warm (default),
+  Colour-blind safe (blue and gold), High contrast and Dark. Hovered controls get a dashed border and chosen ones are
+  inverted with a ✓ in every mode, so state never depends on colour alone. Hosts can set `vision="dark"` (or
+  `colorblind-safe`, `high-contrast`) on any widget.
+
 ## Offline and slow connection
 Drafts persist on the device, API failures use the deterministic mock service,
 and static neural audio clips are served from the local manifest cache. Voice
@@ -123,7 +135,7 @@ control is hands-free: press the first control or `Alt + V`, then say
 Each command has a visible confirmation and screen-reader announcement.
 
 Measured Slow 3G load (time until the first question can be used, gzip as served by any web host,
-`db-signup.js` = **148 KB gzipped**, 2 requests on the blank page):
+`db-signup.js` = **158 KB gzipped**, 2 requests on the blank page):
 
 | Profile | `demo/blank.html` | `pages/signup.html` (Savanna) |
 | --- | --- | --- |
