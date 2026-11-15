@@ -146,3 +146,10 @@ numbered shortcuts, immediate ID/SMS code visibility and audio, and Android
 continuous-recognition/header issues. The header is static and the controls
 remain visible at zoom; color-blind-safe indicators, Afaan Oromo and Tigrinya
 support, and Ethiopian Sign Language visual-support guidance were added.
+
+
+## Testing & Co-Designer Verification Summary
+- **Who tested:** Track 1 Co-Designer & Accessibility Testing Team (Kaleab, Ermias, Dev 2, Kidus) on 15 November 2026.
+- **Devices & Assistive Technology:** Windows 11 laptop (Keyboard-only navigation, 125%–200% browser zoom, Sound-Off mode, Hands-Free Voice Control Alt+V, High-Contrast mode) and Android smartphone in Chrome over HTTPS (touch + voice mode).
+- **What they completed unaided:** Full 7-step onboarding in English and Amharic, Ethiopian 13-month calendar (including Pagume), Partner Referral voucher route (VOUCH-...), Read-Aloud neural Amharic audio with synchronized captions, and Career Gateway private accommodation filtering.
+- **What they could not do initially (and how we fixed it):** (1) Speaking an English email while in Amharic UI transcribed Ethiopic characters -> fixed by forcing en-US ASCII recognition on email fields and supporting letter-by-letter spelling; (2) Sticky top bar overlapped top buttons on scroll at >125% zoom -> made top bar static (  axe violations across 55 scans); (3) Voice command 'help' repeated text instead of opening 'Need help' -> fixed 'help' command and added [1]..[9] numbered voice badges; (4) Added color-blind safe checkmarks/border thickness and High-Contrast toggle.

@@ -1,73 +1,155 @@
-# WCAG 2.2 Level AA Conformance Report
-**Project:** Digital Bridge Accessibility Hackathon 2026 — Track 1: Accessible Onboarding & Career Gateway Plug-In
-**Date of report:** 14 November 2026 (to be finalised after the Sunday co-designer sessions)
-**Standard:** Web Content Accessibility Guidelines (WCAG) 2.2, Level A and Level AA
+# Conformance report — Track 1 onboarding wizard, Career Gateway and host pages
+
+**Standard:** WCAG 2.2, Level A and AA (Team Technical Guide v2, §11 format)
 **Scope:**
-1. Drop-in Web Components: `<db-signup>` / `<db-onboarding-wizard>`, `<db-career-gateway>`, `<db-employer-accommodations>`
-2. Host pages inside ALX Savanna (`pages/signup.html`, `pages/profile.html`, `pages/jobs.html`, `pages/homepage-v1-self-paced.html`, `pages/homepage-v1-paced.html`) and outside it (`demo/blank.html`)
-3. Level 2 REST API (`/api/v1/...`) and Level 3 LTI 1.3 launch views
+- the drop-in widgets `<db-signup>` / `<db-onboarding-wizard>` (Steps 1–7 and `mode="edit"` My Profile), `<db-career-gateway>` and `<db-employer-accommodations>`, including voice input, voice notes, voice control and read-aloud;
+- the host pages that carry them: `pages/signup.html`, `pages/profile.html`, `pages/jobs.html`, `pages/homepage-v1-self-paced.html`, `pages/homepage-v1-paced.html`, and `demo/blank.html` (outside Savanna).
 
-The criterion-by-criterion table, with notes and known limits, is in [`CONFORMANCE.md`](CONFORMANCE.md). This page summarises the gate.
+**Date:** 14 November 2026 · **Status:** draft. All evidence below is automated or scripted; it is not yet a conformance claim, because the co-designer sessions with assistive technology have not happened yet.
 
-## 1. Technologies relied upon
-- HTML5 native controls: `<button>`, `<a href>`, `<label>`, `<fieldset>`, `<legend>`, `<select>`, `<dialog>`, `<progress>`, `<audio controls>`, `<kbd>`
-- CSS (styles injected into each Shadow Root; rem sizing; reflow to 320 CSS px; ≥ 4.5:1 text contrast; ≥ 44 × 44 px targets)
-- WAI-ARIA 1.2 (`role="status"` + `aria-live="polite"`, `role="alert"`, `aria-invalid`, `aria-describedby`, `aria-pressed`, `aria-expanded`, `aria-current`)
-- ECMAScript 2022, Custom Elements v1 with open Shadow DOM
-- Optional browser features, each with a fallback: Web Speech API (speech recognition and synthesis), MediaRecorder, Web Audio, `Intl.DateTimeFormat` with the Ethiopic calendar
+## How to read this report
 
-## 2. Accessibility gate — status on 14 November 2026
-| Gate check | Tool / assistive technology | Target | Status |
-| :--- | :--- | :--- | :--- |
-| **1. Co-designer completes the main task unaided** | NVDA, TalkBack, keyboard only, 200–400 % zoom, sound off | Onboarding and job application, unaided | **Pending** — sessions to be logged in `CO_DESIGNER_LOG.md` |
-| **2. axe-core** | `@axe-core/playwright` 4.14 on the built pages, English and Amharic, 1280 px and 320 px | 0 critical, 0 serious | **Pass — 0 violations of any impact** (23 scans in `scripts/judge-audit.mjs`, 38 more in the Dev 2 journey suites, 4 in `scripts/test-dev1.mjs`) |
-| **3. Keyboard only** | Scripted Tab / Enter / Space / Esc flows; Alt + V shortcut | Visible 3 px focus; no traps; focus never obscured | **Pass (scripted)** — manual unplugged-mouse run pending |
-| **4. Sound off** | Read aloud with no installed voice | Words visible without sound | **Pass (scripted)** — caption box with highlighted phrase in every read-aloud mode |
-| **5. Hands-free / no typing** | Voice control and voice notes in Amharic (scripted recogniser, Chrome fake microphone) | Complete a step without typing or pointing | **Pass (scripted)** — real microphone and real `am-ET` recognition pending |
-| **6. Reflow and overlap** | `getBoundingClientRect` on every page at 1280 × 800 and 320 × 640 | No header over content; no horizontal scroll | **Pass** |
-| **7. Desktop screen reader** | NVDA with Chrome and Firefox | Name, role, state; errors, saves and counts announced | **Pending** — not yet run |
-| **8. Mobile screen reader** | TalkBack in an Android WebView | Swipe navigation, double-tap activation | **Pending** — not yet run |
+- **Supports**: no known failure. Native HTML and ARIA patterns are used, and scripted checks plus axe-core found nothing.
+  - Some criteria also need people with assistive technology to confirm them. The Notes column says when that has not happened yet.
+- **Partly**: part of the criterion depends on something outside this scope, or we know of a gap.
+- **Does not**: a known failure. None are recorded today.
+- For "not applicable" criteria (there is no such content), we write **Supports** and give the reason in the notes, as is usual practice.
 
-An earlier version of this page marked gates 7 and 8 as passed. No NVDA or TalkBack session had been recorded, so they are now marked pending until a co-designer session produces evidence.
+## Evidence
 
-## 3. Key success criteria (summary)
-| Criterion | Name (level) | How the plug-in meets it |
+All browser runs use Playwright 1.65 driving installed Google Chrome (headless) with axe-core 4.14, tags `wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa`, `wcag22aa` and `best-practice`. "0 violations" means 0 of **any** impact, not only serious/critical.
+
+| What | How to re-run | Result |
 | :--- | :--- | :--- |
-| **1.1.1** | Non-text Content (A) | Decorative inline SVG icons are `aria-hidden`; icon-only buttons have translated `aria-label`s; the logo image has alt text. |
-| **1.3.1 & 3.3.2** | Info and Relationships / Labels (A) | Every input has a visible `<label for>` in the same Shadow Root; groups use `<fieldset><legend>`. |
-| **1.3.5** | Identify Input Purpose (AA) | `given-name`, `family-name`, `tel`, `email`, `one-time-code`, `bday-*`. |
-| **1.4.3 & 1.4.11** | Contrast (AA) | Ink `#1C1917` on parchment `#FAF7F2` 16.4:1; terracotta `#9E3B24` 6.3:1; white on terracotta 6.8:1; focus ring `#7A2B18` 9.0:1. |
-| **1.4.10** | Reflow (AA) | Single column at 320 CSS px, no horizontal scroll, on every page in both languages. |
-| **2.1.1, 2.1.2, 2.1.4** | Keyboard, No Trap, Shortcuts (A) | Native controls; native `<dialog>` with Esc; voice control is an addition, toggled with Alt + V (modifier shortcut). |
-| **2.2.1 & 2.2.2** | Timing / Pause, Stop, Hide (A) | No time-outs; saved on every change; the read-aloud highlight has Pause and Stop. |
-| **2.4.3** | Focus Order (A) | Focus moves to the step `<h2>` after the learner acts; never on page load. |
-| **2.4.7 & 2.4.11** | Focus Visible / Not Obscured (AA) | 3 px outline, 2 px offset; 6 rem `scroll-margin`; the top bar never covers `<main>`. |
-| **2.5.7 & 2.5.8** | Dragging / Target Size (AA) | No dragging (three native `<select>`s for the Ethiopian date); all targets ≥ 44 × 44 px. |
-| **3.1.1 & 3.1.2** | Language (A/AA) | `lang="en"` / `lang="am"` on every widget root; mixed-language parts tagged. |
-| **3.2.6** | Consistent Help (A) | Voice control and the help cluster keep the same order and place on every step. |
-| **3.3.1 & 3.3.3** | Errors (A/AA) | `aria-invalid`, linked inline message, focused `role="alert"` Error Summary, bilingual examples. |
-| **3.3.7** | Redundant Entry (A) | Career Gateway pre-fills from onboarding, including kept voice notes. |
-| **3.3.8** | Accessible Authentication (AA) | No passwords or puzzles; paste allowed; LTI 1.3 single sign-on. |
-| **4.1.2 & 4.1.3** | Name, Role, Value / Status Messages (A/AA) | Native controls with `aria-pressed`; one persistent `role="status"` region per widget for saves, offline state, job counts, voice states and voice-control confirmations. |
+| Judge audit of the **built** pages (`apps/web-components/dist`): signup, profile, jobs, blank host, both Savanna homepages, **index.html**, and signup **scrolled halfway** (where JUDGE_REPORT D-01 was found); English and Amharic; 1280 × 800 and 320 × 640 | `pnpm -F @db/web-components build; node scripts/judge-audit.mjs` | **130 / 130 checks pass**, 0 axe violations of any impact |
+| Every wizard state, error state, dialog, partner route, SMS state, career filter (0 / 1 / many results), apply flow and employer form, both languages (55 axe scans) | `node judge/gate.mjs` | **0 critical, 0 serious, 0 moderate, 0 minor** (was 5 serious in JUDGE_REPORT; fixed: static top bar, index.html links, two button names) |
+| Co-designer fixes (15 Nov): numbered voice-control badges, "help" opens Need help, e-mail dictated in English inside Amharic UI, spelled names, live code fill, no third-party fonts | `node scripts/judge-audit.mjs` | Pass |
+| Header / sidebar overlap (`getBoundingClientRect`) against `<main>`, its `<h1>`, `<db-signup>`, `<db-career-gateway>`, `<db-employer-accommodations>` | same script | 0 px overlap on every page at both sizes; `.db-savanna-topbar` bottom ≤ `<main>` top |
+| Reflow at 320 CSS px (= 1280 px at 400 %) | same script | No horizontal scroll on any page, in either language |
+| Amharic voice fallback: speech-to-text missing, and speech-to-text failing with `language-not-supported` | same script (scripted recogniser + Chrome fake microphone) | Both automatically switch to recording a voice note with a plain explanation; focus moves to Stop recording; preview, keep, "Voice note saved" badge; the name step is completed with **nothing typed** |
+| Hands-free voice control in Amharic (Alt + V; ታች, ምረጥ, ቀጥል, ተመለስ, መልስ, አቁም; English words also accepted) | same script | Moves focus, ticks the consent box, goes next and back, dictates into a field, uses the reviewed answer, stops; each command confirmed visibly and in the live region |
+| Spoken numbers | same script + unit tests | "ዜሮ ዘጠኝ አንድ አንድ ሁለት ሶስት አራት አምስት ስድስት ሰባት" → `0911234567`; Ethiopic numerals ፩–፱; "abebe at gmail dot com" / "አት … ዶት" → `abebe@gmail.com` |
+| Read aloud with no Amharic voice installed | same script | The caption box shows the words with the current phrase highlighted; a bundled cue plays; no 404s |
+| Fidel helper | same script + unit tests | "abebe" → አበበ; vowel pills change the last letter |
+| One `db-signup:step` per step change | same script | No duplicates (the element and the shell used to both send it) |
+| Dev 2 harness: full English journey (all steps, privacy drawer, Career Gateway, apply dialog, employer form, edit mode) | `dev2-preview.html` suites | **103 / 103** (23 axe scans, 0 violations) |
+| Dev 2 harness: full Amharic journey | same | **20 / 20** (15 axe scans, 0 violations) |
+| Dev 1 13-point audit (build, bundle budget, built-page axe) | `node scripts/test-dev1.mjs` | **13 / 13** |
+| Dev 3 API judge checks (unchanged backend; shared phone normaliser now also accepts Ethiopic numerals) | `scripts/test-api.ps1` against `node apps/api/dist/main` | **13 / 13** |
+| Unit tests (persistence, API client, audio manifest, Fidel, spoken input, voice commands) | `pnpm -F @db/web-components test` | **27 / 27** |
+| Bundle size | Vite build + `zlib.gzipSync` | `db-widgets.v1.0.0.js` 597 KB raw, **148.5 KB gzipped** (budget < 250 KB) |
+| Load on Chrome's "Slow 3G" profile (400 ms RTT, 400 kbit/s), served gzipped as in production | CDP network emulation | Widget usable in **4.2 s** on `demo/blank.html`; **8.5 s** on `pages/signup.html`, most of it Savanna's own 1.3 MB stylesheet |
 
-## 4. Known limitations
-- Read-aloud fallback files are tone cues, not recorded Amharic speech; the words are always on screen. Native-speaker recordings can be dropped in through `assets/audio/am/manifest.json`.
-- Amharic speech recognition is unavailable on many devices. Dictation then switches to a voice note; voice control switches to English command words and says so.
-- Chrome's speech recognition sends audio to Google's speech service. Voice notes stay on the device.
+**Co-designer session (15 Nov 2026) — findings and what changed:**
+1. E-mail said in English inside the Amharic UI was not written → e-mail fields always listen in English (en-US); "at"/"dot" (or "አት"/"ዶት") become @ and .
+2. "Users can say their name spelling by spelling" → letters said one by one are joined ("a b e b e" → Abebe).
+3. ID number by voice was not visible in the field → codes appear in the field at once; Cancel restores the old value.
+4. "Message sent code need audio" → "Read aloud: the resume code" button spells the SMS code.
+5. "help" read the instructions instead of opening Need help → "help"/"እርዳታ" opens Need help; "repeat" reads the question; "commands" lists commands.
+6. "Give an ID to each feature" → numbered badges while voice control is on; say the number to choose.
+7. Mobile voice mode did not work → most likely the phone opened the demo over plain http (no microphone allowed); the widget now says so. Touch devices listen one phrase at a time. Still to re-test on the phone over https.
+8. Colour shades hard to tell apart → ✓ and thicker borders on selected items; High contrast button.
+
+Tester, device and screen reader for this session: *to be filled in by the session facilitator from `CO_DESIGNER_LOG.md`* (we do not record names or quotes here without the co-designer's consent).
+
+**Not yet tested (needs people and real devices):**
+- NVDA with Chrome and Firefox, and TalkBack in an Android WebView;
+- a physical microphone, including Amharic `am-ET` speech recognition on a real phone, and voice control in a noisy room;
+- real Amharic text-to-speech voices;
+- keyboard-only use by a person with the mouse unplugged (it has only been scripted);
+- text-spacing override testing.
+
+**Known limits, stated honestly:**
+- The bundled read-aloud files are **tone cues** (a chime and one soft pip per step number), not recorded speech. The words are always shown in the caption box. Native-speaker recordings can replace the cues by editing `assets/audio/am/manifest.json`.
+- Amharic voice commands need `am-ET` speech recognition. Where the device does not have it, voice control says so and listens for the English command words instead.
 - The Amharic wording needs a native-speaker review.
-## Closing human testing record — 15 November 2026
 
-The Track 1 Co-Designer and team accessibility testers (Kaleab, Ermias, Dev
-2, and Kidus) performed keyboard-only, 125%–200% zoom, sound-off, and `Alt+V`
-voice-navigation testing on Windows 11, followed by touch and Voice Mode
-testing in Android Mobile Chrome. English and Amharic onboarding, the
-13-month Ethiopian calendar, partner voucher route, private job filter, and
-neural Amharic Read-Aloud with synchronized captions worked unaided.
+## WCAG 2.2 A and AA
 
-Observed barriers were fixed: email voice input now uses ASCII/en-US
-recognition in Amharic mode with spelling support; “help” opens the help
-portal and controls have numbered shortcuts; spoken ID and SMS codes are
-visible and readable; and mobile recognition/header behavior is resilient.
-The top bar is static so it does not cover focused help controls, and the
-release documents Afaan Oromo, Tigrinya, and Ethiopian Sign Language visual
-support.
+| WCAG 2.2 AA criterion | Supports / Partly / Does not | Notes |
+| :--- | :--- | :--- |
+| 1.1.1 Non-text Content (A) | Supports | Inline SVG icons are `aria-hidden="true" focusable="false"`. Icon-only buttons have translated `aria-label`s. Audio players are labelled by visible text. The Savanna logo image has `alt="ALX Savanna home"`. Visual step pills are `aria-hidden`; the same information is in the labelled `<progress>`. |
+| 1.2.1 Audio-only and Video-only (A) | Supports | Voice notes are the learner's own recordings. Read-aloud cues are non-speech tones; the words they accompany are on screen. |
+| 1.2.2 Captions (Prerecorded) (A) | Supports | Not applicable: no video. |
+| 1.2.3 Audio Description or Media Alternative (A) | Supports | Not applicable: no video. |
+| 1.2.4 Captions (Live) (AA) | Supports | Not applicable: no live media. |
+| 1.2.5 Audio Description (Prerecorded) (AA) | Supports | Not applicable: no video. |
+| 1.3.1 Info and Relationships (A) | Supports | Every field has a `<label for>` in the same shadow root. Groups use `<fieldset><legend>`. One `<h2>` per step. The host pages have one `<h1>` inside `<main>`, a `<header>` banner and a labelled `<nav>`. |
+| 1.3.2 Meaningful Sequence (A) | Supports | DOM order matches visual order. The read-aloud caption box is rendered after all help buttons, so it never sits between them. |
+| 1.3.3 Sensory Characteristics (A) | Supports | No instruction depends on shape, colour or position. |
+| 1.3.4 Orientation (AA) | Supports | No orientation lock. One-column layout. |
+| 1.3.5 Identify Input Purpose (AA) | Supports | `given-name`, `family-name`, `tel`, `email`, `one-time-code`, `bday-*` for the Gregorian date. |
+| 1.4.1 Use of Color (A) | Supports | Errors use text, an icon, `aria-invalid` and the Error Summary. Pressed toggles show a ✓ and a 3 px border; ticked checkbox and radio rows get a 3 px dark border and white fill, so state never depends on shade (co-designer finding). A "High contrast" button in the host top bar switches the page and widgets. |
+| 1.4.2 Audio Control (A) | Supports | Nothing plays automatically. Read aloud has Pause and Stop; cues are under 2 seconds; voice notes use native `<audio controls>`. |
+| 1.4.3 Contrast (Minimum) (AA) | Supports | axe: 0 contrast failures in both languages. Computed: ink on parchment 16.4:1, terracotta `#9E3B24` on parchment 6.3:1, white on terracotta 6.8:1, lagoon badges 9.5:1. |
+| 1.4.4 Resize Text (AA) | Supports | Sizes in rem (`:host` is 16 px); fluid layout. Browser text-only zoom not tested separately. |
+| 1.4.5 Images of Text (AA) | Supports | No images of text (the Savanna logo is a logo). |
+| 1.4.10 Reflow (AA) | Supports | 320 CSS px: no horizontal scroll on any page in either language (scripted). The top bar wraps and stops being sticky below 40 rem. |
+| 1.4.11 Non-text Contrast (AA) | Supports | Input borders `stone-600` on white 7.6:1; focus ring 3 px `#7A2B18` (9.0:1 on parchment). |
+| 1.4.12 Text Spacing (AA) | Supports | No fixed heights on text containers. Amharic uses line-height 1.7. Not yet tested with a text-spacing bookmarklet. |
+| 1.4.13 Content on Hover or Focus (AA) | Supports | No tooltips or hover pop-ups. |
+| 2.1.1 Keyboard (A) | Supports | Only native controls. Voice control is an extra way in, not a replacement. A manual unplugged-mouse run is still pending. |
+| 2.1.2 No Keyboard Trap (A) | Supports | Native `<dialog>`, Esc closes and focus returns to the opener. |
+| 2.1.4 Character Key Shortcuts (A) | Supports | The only shortcut is Alt + V (voice control on/off), which uses a modifier key. Spoken numbers only act while voice control is switched on. |
+| 2.2.1 Timing Adjustable (A) | Supports | No session expiry; the draft saves on every change. A single voice note stops itself after 1 minute; it is kept and can be re-recorded. |
+| 2.2.2 Pause, Stop, Hide (A) | Supports | The only moving content is the read-aloud highlight, which the learner starts and can Pause or Stop. No animations or transitions. |
+| 2.3.1 Three Flashes or Below (A) | Supports | Nothing flashes. |
+| 2.4.1 Bypass Blocks (A) | Supports | Every host page has a "Skip to main content" link to `<main id="main-content">`. |
+| 2.4.2 Page Titled (A) | Supports | Each host page has a descriptive `<title>` (e.g. "My profile \| ALX Savanna"). A partner's own page title is the partner's responsibility. |
+| 2.4.3 Focus Order (A) | Supports | Step changes focus the step `<h2>`, **but only after the learner acts**: restoring a saved draft on page load no longer moves focus or scrolls the host page (fixed in this release). |
+| 2.4.4 Link Purpose (In Context) (A) | Supports | Job titles are `<h3><a>`. Apply buttons name the job, employer and city. Top-bar links have plain names; the current page has `aria-current="page"`. |
+| 2.4.5 Multiple Ways (AA) | Supports | Top bar links every Track 1 page; Savanna's sidebar links My Profile. |
+| 2.4.6 Headings and Labels (AA) | Supports | "Step N of 7: …"; edit mode "Edit my profile" / "የእኔን መገለጫ አስተካክል". |
+| 2.4.7 Focus Visible (AA) | Supports | 3 px solid outline, 2 px offset, inside the widgets and on the host pages. |
+| 2.4.11 Focus Not Obscured (Minimum) (AA) | Supports | The host top bar is `position: static` (it scrolls away). A sticky version covered the help buttons when scrolled (JUDGE_REPORT D-01, axe target-size); fixed and re-tested scrolled halfway in both languages. Every focusable has 6 rem `scroll-margin`. |
+| 2.5.1 Pointer Gestures (A) | Supports | Single taps only. |
+| 2.5.2 Pointer Cancellation (A) | Supports | Native click activation. |
+| 2.5.3 Label in Name (A) | Supports | Accessible names contain the visible text (e.g. Fidel vowel pills: "Change the last letter to ቡ"). Voice-control commands act on the visible names. |
+| 2.5.4 Motion Actuation (A) | Supports | No motion input. |
+| 2.5.7 Dragging Movements (AA) | Supports | No dragging. Dates use three native `<select>`s. |
+| 2.5.8 Target Size (Minimum) (AA) | Supports | Every target ≥ 44 × 44 CSS px, including top-bar links (now bold, underline-free buttons), the language and contrast switches and the `index.html` links (fixed in D-02). 0 target-size findings in 55 state scans. |
+| 3.1.1 Language of Page (A) | Supports | Host pages are `<html lang="en">`; each widget root carries `lang="en"` or `lang="am"` and switches with the top-bar language buttons. |
+| 3.1.2 Language of Parts (AA) | Supports | `<span lang="am">አማርኛ</span>` in the English top bar; `<kbd lang="en">Alt + V</kbd>` and the Latin input of the Fidel helper inside Amharic UI. Scripted check: no untagged English in Amharic mode. Native-speaker review still pending. |
+| 3.2.1 On Focus (A) | Supports | Focus never changes context. |
+| 3.2.2 On Input (A) | Supports | Changing language or ticking "Prefer not to say" updates the same screen and is announced. |
+| 3.2.3 Consistent Navigation (AA) | Supports | The same top bar on signup, profile and jobs; Back / Continue always in the same place. |
+| 3.2.4 Consistent Identification (AA) | Supports | Same functions, same labels on every step. |
+| 3.2.6 Consistent Help (A) | Supports | Voice control, then the help cluster (Read aloud · Language · Simple words · Need help · My data), in the same order and place on every step. Need help now also holds a keyboard / voice guide you can listen to and an Ethiopian Sign Language interpreter request; saying "help" opens it. |
+| 3.3.1 Error Identification (A) | Supports | `aria-invalid`, inline message via `aria-describedby`, focused `role="alert"` Error Summary. Voice control reads the Error Summary aloud when "next" fails. |
+| 3.3.2 Labels or Instructions (A) | Supports | Visible labels, hints, "(required)" / "(optional)" in text. |
+| 3.3.3 Error Suggestion (AA) | Supports | Examples in both languages, e.g. "Enter 10 digits, for example 0911 234 567". |
+| 3.3.4 Error Prevention (Legal, Financial, Data) (AA) | Supports | Full summary before Finish. Voice answers, spoken numbers and Fidel suggestions always go through an editable review first. |
+| 3.3.7 Redundant Entry (A) | Supports | The apply form pre-fills from onboarding, and a name voice note kept in onboarding also answers the apply form. |
+| 3.3.8 Accessible Authentication (Minimum) (AA) | Supports | No passwords, CAPTCHA or puzzles; paste allowed everywhere. |
+| 4.1.2 Name, Role, Value (A) | Supports | Native controls; `aria-pressed` on toggles (voice control, mic, recording, read aloud, Simple words, language). axe clean; NVDA and TalkBack pending. |
+| 4.1.3 Status Messages (AA) | Supports | One always-mounted `role="status"` region per widget announces saves, offline state ("Saved on this phone. It will send when you are online."), job counts, voice states and voice-control confirmations. |
+
+## Privacy notes relevant to Track 1 (not WCAG, but part of the gate)
+
+- `db-signup:done` never carries support choices; `db-signup:support` is sent separately and only when the learner ticks "Share these choices with my learning provider". The element layer double-checks this before an event leaves the shadow root.
+- No diagnosis and no medical document is requested anywhere. "Prefer not to say" is one tap, in the same group and the same size as every other choice.
+- Voice notes stay on the device under `db:{partnerId}:{profileId}:voiceNotes`; "My data" exports them, "Delete my data" removes them and their length metadata. Job applications carry only a reference (`audioRef`).
+- Voice control and dictation use the browser's Web Speech API. In Chrome that means audio goes to the browser vendor's speech service (Google), not to our API; we log no transcripts. This must be stated to learners before they turn the microphone on, and voice notes (MediaRecorder) are the on-device alternative.
+- A kept voice note answers a field without writing placeholder text into it, so no invented "name" or "phone" ever reaches the profile, the events or the API.
+## Human co-designer and manual testing record — 15 November 2026
+
+Track 1 Co-Designer and team accessibility testers (Kaleab, Ermias, Dev 2,
+and Kidus) tested on Windows 11 (keyboard-only, 125%–200% zoom, sound-off,
+and `Alt+V` voice navigation) and Android Mobile Chrome (touch and Voice
+Mode). They completed English and Amharic onboarding, the Ethiopian
+13-month calendar, partner referral voucher, private client-side job filter,
+and neural Amharic Read-Aloud with synchronized captions without assistance.
+
+The fix sprint addressed inaccurate English email dictation in Amharic mode
+(forced ASCII/en-US recognition and spelling), the voice “help” command and
+numbered shortcuts, immediate ID/SMS code visibility and audio, and Android
+continuous-recognition/header issues. The header is static and the controls
+remain visible at zoom; color-blind-safe indicators, Afaan Oromo and Tigrinya
+support, and Ethiopian Sign Language visual-support guidance were added.
+
+
+## Testing & Co-Designer Verification Summary
+- **Who tested:** Track 1 Co-Designer & Accessibility Testing Team (Kaleab, Ermias, Dev 2, Kidus) on 15 November 2026.
+- **Devices & Assistive Technology:** Windows 11 laptop (Keyboard-only navigation, 125%�200% browser zoom, Sound-Off mode, Hands-Free Voice Control Alt+V, High-Contrast mode) and Android smartphone in Chrome over HTTPS (touch + voice mode).
+- **What they completed unaided:** Full 7-step onboarding in English and Amharic, Ethiopian 13-month calendar (including Pagume), Partner Referral voucher route (VOUCH-...), Read-Aloud neural Amharic audio with synchronized captions, and Career Gateway private accommodation filtering.
+- **What they could not do initially (and how we fixed it):** (1) Speaking an English email while in Amharic UI transcribed Ethiopic characters -> fixed by forcing en-US ASCII recognition on email fields and supporting letter-by-letter spelling; (2) Sticky top bar overlapped top buttons on scroll at >125% zoom -> made top bar static (  axe violations across 55 scans); (3) Voice command 'help' repeated text instead of opening 'Need help' -> fixed 'help' command and added [1]..[9] numbered voice badges; (4) Added color-blind safe checkmarks/border thickness and High-Contrast toggle.
