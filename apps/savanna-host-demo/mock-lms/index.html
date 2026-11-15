@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Digital Bridge — Mock LMS</title>
+    <style>
+      :root { color-scheme: light; font-family: system-ui, sans-serif; }
+      body { background: #f7f5f0; color: #20232a; line-height: 1.5; margin: 0; }
+      main { box-sizing: border-box; margin: 2rem auto; max-width: 42rem; padding: 1.5rem; }
+      section { background: #fff; border: 1px solid #68717d; border-radius: .75rem; padding: 1.25rem; }
+      label { display: block; font-weight: 700; margin-top: 1rem; }
+      input { box-sizing: border-box; font: inherit; margin-top: .35rem; min-height: 44px; padding: .5rem; width: 100%; }
+      button { background: #174e43; border: 2px solid #174e43; border-radius: .35rem; color: white; cursor: pointer; font: inherit; font-weight: 700; margin: .75rem .5rem .25rem 0; min-height: 44px; padding: .55rem .85rem; }
+      button.secondary { background: white; color: #174e43; }
+      :focus-visible { outline: 3px solid #8a321e; outline-offset: 3px; }
+      .hint { color: #414955; }
+      [role="alert"] { color: #8a1f11; font-weight: 700; }
+      code { overflow-wrap: anywhere; }
+      @media (max-width: 30rem) { main { margin: 0 auto; padding: .75rem; } section { padding: .9rem; } button { display: block; margin-right: 0; width: 100%; } }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Digital Bridge Mock LMS</h1>
+      <p class="hint">
+        This local learning-platform simulator signs a real RS256 login token and sends it to the
+        API's normal LTI launch route. The private key stays in this local server.
+      </p>
+      <section aria-labelledby="launch-heading">
+        <h2 id="launch-heading">Start a test launch</h2>
+        <form id="launch-form">
+          <label for="api-base-url">Digital Bridge API base URL</label>
+          <input id="api-base-url" name="api-base-url" type="url" autocomplete="url" required>
+
+          <label for="target-link-uri">Tool page to open</label>
+          <input id="target-link-uri" name="target-link-uri" type="url" autocomplete="url" required>
+          <p class="hint">
+            This exact address must also appear in the API's
+            <code>LTI_TOOL_TARGET_LINK_URIS</code> setting.
+          </p>
+
+          <button type="submit" name="launch-mode" value="student">
+            Launch as Student (Valid LTI 1.3 SSO)
+          </button>
+          <button class="secondary" type="submit" name="launch-mode" value="teacher">
+            Launch as Instructor (NRPS Privacy-Safe Roster)
+          </button>
+          <button class="secondary" type="submit" name="launch-mode" value="grade">
+            Sync Onboarding Grade to Gradebook (AGS 2.0)
+          </button>
+          <button class="secondary" type="submit" name="launch-mode" value="deep-link">
+            Start Deep Linking
+          </button>
+          <button class="secondary" type="submit" name="launch-mode" value="tampered">
+            Launch with Tampered JWT (Prove HTTP 401 Refusal)
+          </button>
+          <p id="form-error" role="alert" hidden></p>
+        </form>
+      </section>
+      <section aria-labelledby="advantage-heading">
+        <h2 id="advantage-heading">LTI Advantage checks</h2>
+        <p id="launch-status" role="status" aria-live="polite" aria-atomic="true">
+          Launch as a student or teacher to enable the matching check.
+        </p>
+        <button id="sync-grade" class="secondary" type="button" disabled>
+          Sync Grade (AGS)
+        </button>
+        <button id="show-roster" class="secondary" type="button" disabled>
+          Show Teacher Roster (NRPS)
+        </button>
+        <button id="return-deep-link" class="secondary" type="button" disabled>
+          Return Onboarding Activity
+        </button>
+        <ul id="roster" aria-label="Course roster" hidden></ul>
+      </section>
+    </main>
+    <script>
+      const form = document.getElementById("launch-form");
+      const apiBaseInput = document.getElementById("api-base-url");
+      const targetInput = document.getElementById("target-link-uri");
+      const errorMessage = document.getElementById("form-error");
+      const launchStatus = document.getElementById("launch-status");
+      const syncGradeButton = document.getElementById("sync-grade");
+      const showRosterButton = document.getElementById("show-roster");
+      const returnDeepLinkButton = document.getElementById("return-deep-link");
+      const roster = document.getElementById("roster");
+      let apiOrigin;
+      let activePopup;
+      let sessionToken;
+      let activeRole;
+      let activeMessageType;
+      let mockConfig;
+      let staticFallback = false;
+      let pendingMode;
+
+      function isLoopback(url) {
+        return ["localhost", "127.0.0.1", "[::1]"].includes(url.hostname);
+      }
+
+      async function loadMockConfig() {
+        try {
+          const response = await fetch("/mock-lms/config", { cache: "no-store" });
+          if (!response.ok) {
+            throw new Error("The Mock LMS configuration could not be loaded.");
+          }
+          return await response.json();
+        } catch {
+          staticFallback = true;
+          return {
+            toolBaseUrl: "http://localhost:3000",
+            defaultTargetLinkUri: new URL("/standalone.html", window.location.href).toString(),
+          };
+        }
+      }
+
+      function showStaticFallback(mode) {
+        sessionToken = undefined;
+        activeRole = undefined;
+        activeMessageType = undefined;
+        syncGradeButton.disabled = true;
+        showRosterButton.disabled = true;
+        returnDeepLinkButton.disabled = true;
+        roster.hidden = true;
+
+        if (mode === "tampered") {
+          launchStatus.textContent =
+            "SIMULATED static-demo response: no API is connected to verify this token. The live API must reject a tampered JWT with HTTP 401.";
+        } else if (mode === "grade") {
+          launchStatus.textContent =
+            "SIMULATED static-demo response: the gradebook recorded onboarding as 1/1 FullyGraded. No real grade was sent.";
+        } else if (mode === "teacher") {
+          showRosterButton.disabled = false;
+          activeRole = "Instructor";
+          launchStatus.textContent =
+            "SIMULATED static-demo response: instructor launch is shown locally. No platform identity was verified.";
+        } else if (mode === "deep-link") {
+          returnDeepLinkButton.disabled = false;
+          activeMessageType = "LtiDeepLinkingRequest";
+          launchStatus.textContent =
+            "SIMULATED static-demo response: an onboarding activity is ready to preview. No signed response was sent.";
+        } else {
+          syncGradeButton.disabled = false;
+          activeRole = "Learner";
+          launchStatus.textContent =
+            "SIMULATED static-demo response: student launch is shown locally. No platform identity was verified.";
+        }
+      }
+
+      loadMockConfig()
+        .then((response) => {
+          mockConfig = response;
+          apiBaseInput.value = response.toolBaseUrl;
+          targetInput.value = response.defaultTargetLinkUri;
+          if (staticFallback) {
+            launchStatus.textContent =
+              "SIMULATED static demo mode. No local LMS or API is connected; real LTI results are not verified.";
+          }
+        })
+        .catch((error) => {
+          errorMessage.hidden = false;
+          errorMessage.textContent = error.message;
+        });
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        errorMessage.hidden = true;
+        let apiBase;
+        let targetLink;
+        try {
+          apiBase = new URL(apiBaseInput.value);
+          targetLink = new URL(targetInput.value);
+        } catch {
+          errorMessage.hidden = false;
+          errorMessage.textContent = "Enter valid web addresses for the API and tool page.";
+          return;
+        }
+        if (
+          apiBase.protocol !== "http:" ||
+          !isLoopback(apiBase) ||
+          apiBase.pathname !== "/" ||
+          apiBase.search ||
+          apiBase.hash ||
+          !["http:", "https:"].includes(targetLink.protocol)
+        ) {
+          errorMessage.hidden = false;
+          errorMessage.textContent = "The API must use a local HTTP address and the tool page must be a valid web address.";
+          return;
+        }
+
+        const mode = event.submitter ? event.submitter.value : "student";
+        if (staticFallback) {
+          showStaticFallback(mode);
+          return;
+        }
+        const popup = window.open("about:blank", "db-lti-launch", "popup,width=720,height=700");
+        if (!popup) {
+          errorMessage.hidden = false;
+          errorMessage.textContent = "Allow the launch window to open, then try again.";
+          return;
+        }
+        activePopup = popup;
+        pendingMode = mode;
+        sessionToken = undefined;
+        activeRole = undefined;
+        activeMessageType = undefined;
+        syncGradeButton.disabled = true;
+        showRosterButton.disabled = true;
+        returnDeepLinkButton.disabled = true;
+        roster.hidden = true;
+        apiOrigin = apiBase.origin;
+        launchStatus.textContent = "Waiting for the learning platform to verify the launch.";
+
+        const loginUrl = new URL("/api/v1/lti/login", apiBase);
+        loginUrl.searchParams.set("iss", mockConfig.issuer);
+        loginUrl.searchParams.set("client_id", mockConfig.clientId);
+        loginUrl.searchParams.set(
+          "login_hint",
+          mode === "teacher" ? "mock-instructor@example.test" : "mock-learner@example.test",
+        );
+        loginUrl.searchParams.set("target_link_uri", targetLink.href);
+        if (mode === "teacher") {
+          loginUrl.searchParams.set("lti_message_hint", "mock-teacher");
+        } else if (mode === "deep-link") {
+          loginUrl.searchParams.set("lti_message_hint", "mock-deep-link");
+        } else if (mode === "tampered") {
+          loginUrl.searchParams.set("lti_message_hint", "mock-tamper-signature");
+        }
+        popup.location.assign(loginUrl.toString());
+      });
+
+      window.addEventListener("message", (event) => {
+        if (
+          event.origin !== apiOrigin ||
+          event.source !== activePopup ||
+          !event.data ||
+          event.data.type !== "db-lti-launch" ||
+          typeof event.data.sessionToken !== "string"
+        ) {
+          return;
+        }
+        sessionToken = event.data.sessionToken;
+        activeRole = event.data.role;
+        activeMessageType = event.data.messageType;
+        activePopup = undefined;
+        if (activeMessageType === "LtiDeepLinkingRequest") {
+          returnDeepLinkButton.disabled = false;
+          launchStatus.textContent = "Instructor launch verified. Return the onboarding activity to the course.";
+        } else if (activeRole === "Instructor") {
+          showRosterButton.disabled = false;
+          launchStatus.textContent = "Teacher launch verified. You can load the privacy-safe roster.";
+        } else {
+          syncGradeButton.disabled = false;
+          launchStatus.textContent = "Student launch verified. You can sync the completion score.";
+          if (pendingMode === "grade") {
+            syncGradeButton.click();
+          }
+        }
+      });
+
+      async function sendAdvantageRequest(path, method) {
+        if (!sessionToken) {
+          throw new Error("Complete a valid LTI launch first.");
+        }
+        const apiBase = new URL(apiBaseInput.value);
+        const response = await fetch(new URL(path, apiBase), {
+          method,
+          headers: { authorization: `Bearer ${sessionToken}` },
+        });
+        if (!response.ok) {
+          const error = await response.text();
+          throw new Error(`The LTI Advantage request failed (${response.status}): ${error}`);
+        }
+        return response;
+      }
+
+      syncGradeButton.addEventListener("click", async () => {
+        if (staticFallback) {
+          launchStatus.textContent =
+            "SIMULATED static-demo response: the gradebook recorded onboarding as 1/1 FullyGraded. No real grade was sent.";
+          return;
+        }
+        syncGradeButton.disabled = true;
+        try {
+          const response = await sendAdvantageRequest("/api/v1/lti/ags/sync", "POST");
+          const result = await response.json();
+          launchStatus.textContent = result.alreadySynced
+            ? "The completion score was already synced."
+            : "Onboarding completion was synced to the gradebook.";
+        } catch (error) {
+          launchStatus.textContent = error.message;
+          syncGradeButton.disabled = false;
+        }
+      });
+
+      showRosterButton.addEventListener("click", async () => {
+        if (staticFallback) {
+          roster.replaceChildren();
+          const item = document.createElement("li");
+          item.textContent = "Mock Learner: In Progress (Learner)";
+          roster.append(item);
+          roster.hidden = false;
+          launchStatus.textContent =
+            "SIMULATED static-demo roster. Only names, roles, and onboarding status are shown.";
+          return;
+        }
+        showRosterButton.disabled = true;
+        try {
+          const response = await sendAdvantageRequest("/api/v1/lti/nrps/roster", "GET");
+          const result = await response.json();
+          roster.replaceChildren();
+          for (const member of result.members) {
+            const item = document.createElement("li");
+            item.textContent = `${member.name}: ${member.onboardingComplete ? "complete" : "not complete"}`;
+            roster.append(item);
+          }
+          roster.hidden = false;
+          launchStatus.textContent = `Loaded ${result.members.length} roster members. Only names and onboarding status are shown.`;
+        } catch (error) {
+          launchStatus.textContent = error.message;
+          showRosterButton.disabled = false;
+        }
+      });
+
+      returnDeepLinkButton.addEventListener("click", async () => {
+        if (staticFallback) {
+          launchStatus.textContent =
+            "SIMULATED static-demo response: an onboarding activity is ready to preview. No signed response was sent.";
+          return;
+        }
+        returnDeepLinkButton.disabled = true;
+        const popup = window.open("about:blank", "db-lti-deep-link", "popup,width=720,height=700");
+        if (!popup) {
+          launchStatus.textContent = "Allow the return window to open, then try again.";
+          returnDeepLinkButton.disabled = false;
+          return;
+        }
+        try {
+          const response = await sendAdvantageRequest("/api/v1/lti/deep-link", "POST");
+          popup.document.open();
+          popup.document.write(await response.text());
+          popup.document.close();
+          launchStatus.textContent = "A signed onboarding activity is ready to return to the course.";
+        } catch (error) {
+          popup.close();
+          launchStatus.textContent = error.message;
+          returnDeepLinkButton.disabled = false;
+        }
+      });
+    </script>
+  </body>
+</html>
