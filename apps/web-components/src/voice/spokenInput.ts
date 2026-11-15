@@ -77,11 +77,35 @@ export function spokenToCode(text: string): string {
     .toUpperCase();
 }
 
+/**
+ * Co-designer finding: "users can say their name spelling by spelling". Runs of two or more single letters
+ * ("a b e b e", "K A L E A B") become one word ("Abebe", "Kaleab"); other words are left alone.
+ */
+export function collapseSpelledLetters(text: string): string {
+  const words = text.trim().split(/\s+/).filter(Boolean);
+  const out: string[] = [];
+  for (let i = 0; i < words.length; ) {
+    if (/^[A-Za-z]\.?$/.test(words[i])) {
+      let j = i;
+      while (j < words.length && /^[A-Za-z]\.?$/.test(words[j])) j++;
+      if (j - i >= 2) {
+        const joined = words.slice(i, j).map((w) => w.replace('.', '')).join('').toLowerCase();
+        out.push(joined.charAt(0).toUpperCase() + joined.slice(1));
+        i = j;
+        continue;
+      }
+    }
+    out.push(words[i]);
+    i++;
+  }
+  return out.join(' ');
+}
+
 export function normaliseSpoken(text: string, kind: SpokenKind): string {
   if (kind === 'tel') return spokenToPhone(text);
-  if (kind === 'email') return spokenToEmail(text);
+  if (kind === 'email') return spokenToEmail(text).toLowerCase();
   if (kind === 'code') return spokenToCode(text);
-  return text.trim();
+  return collapseSpelledLetters(text);
 }
 
 /** For read-back: say a phone/code one character at a time ("0 9 1 1 …") instead of "nine hundred million". */

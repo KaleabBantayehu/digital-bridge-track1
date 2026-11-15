@@ -120,3 +120,40 @@
     background-color: Highlight;
   }
 }
+
+/* Voice control: numbered badges ("say 3"). Shown only while voice control is on; hidden from screen readers via
+   the CSS alt-text syntax (the first declaration is the fallback for browsers without it). */
+:host [data-vc-num] {
+  position: relative;
+}
+
+:host [data-vc-num]::after {
+  content: attr(data-vc-num);
+  content: attr(data-vc-num) / '';
+  position: absolute;
+  top: -0.7rem;
+  inset-inline-start: -0.7rem;
+  z-index: 2;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 0.3rem;
+  border: 2px solid #ffffff;
+  border-radius: 9999px;
+  background: #1c1917;
+  color: #ffffff;
+  font: 700 0.8rem/1.25rem system-ui, sans-serif;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* Colour-blind safe states (co-designer finding): pressed toggles get a thicker border and a check mark, so the
+   state never depends on shade alone. Checked rows are styled in ui.checkRow. */
+:host button[aria-pressed='true'] {
+  border-width: 3px !important;
+}
+
+:host button[aria-pressed='true']::before {
+  content: '✓';
+  content: '✓' / '';
+  font-weight: 700;
+}

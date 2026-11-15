@@ -1,0 +1,526 @@
+# step1-welcome
+- region "የዲጂታል ብሪጅ ምዝገባ":
+  - status
+  - paragraph: የዲጂታል ብሪጅ ምዝገባ
+  - paragraph: "የምዝገባ ሂደት: ደረጃ 1 ከ 7"
+  - 'progressbar "የምዝገባ ሂደት: ደረጃ 1 ከ 7"': ደረጃ 1 ከ 7
+  - button "በድምጽ መቆጣጠሪያ"
+  - paragraph: ይህን ቅጽ በመናገር ይጠቀሙ። የቁልፍ ሰሌዳ አቋራጭ፦ Alt + V
+  - group "እገዛ እና ቅንብሮች":
+    - button "ጮክ ብለህ አንብብ"
+    - 'button "ቋንቋ ቀይር: English"'
+    - button "ቀላል ቃላት"
+    - button "እገዛ ያስፈልገኛል"
+    - button "የእኔ መረጃ"
+  - form "ደረጃ 1 ከ 7፦ እንኳን ደህና መጡ — ከመጀመራችን በፊት":
+    - heading "ደረጃ 1 ከ 7፦ እንኳን ደህና መጡ — ከመጀመራችን በፊት" [level=2]
+    - paragraph: በአንድ ጊዜ አንድ ጥያቄ። የጊዜ ገደብ የለም። መልሶችዎ በዚህ መሣሪያ ላይ ይቀመጣሉ። ሁሉንም ጥያቄዎች በድምጽ መመለስ ይችላሉ።
+    - paragraph: ይህ 10 ደቂቃ ያህል ይወስዳል። እንዴት እንደሚሠራ ይኸውና።
+    - list:
+      - listitem: በአንድ ጊዜ አንድ ጥያቄ።
+      - listitem: የጊዜ ገደብ የለም። ቢያቆሙም ምንም አይጠፋም።
+      - listitem: ሲጽፉ መልሶችዎ በዚህ መሣሪያ ላይ ይቀመጣሉ።
+      - listitem: ሁሉንም ጥያቄዎች በድምጽ መመለስ፣ ከመጠቀሙም በፊት ማረጋገጥ ይችላሉ።
+    - group "ስለ መረጃዎ የእርስዎ ምርጫዎች":
+      - text: ስለ መረጃዎ የእርስዎ ምርጫዎች
+      - checkbox "እንድቀጥል መልሶቼን አስቀምጥ (ግዴታ) ለመቀጠል ያስፈልጋል። መልሶችዎ በዚህ መሣሪያ እና በዲጂታል ብሪጅ ይቀመጣሉ።"
+      - text: እንድቀጥል መልሶቼን አስቀምጥ (ግዴታ) ለመቀጠል ያስፈልጋል። መልሶችዎ በዚህ መሣሪያ እና በዲጂታል ብሪጅ ይቀመጣሉ።
+      - checkbox "በሌላ ቀን እንድቀጥል የጽሑፍ መልእክት (SMS) ማስፈንጠሪያ ላክልኝ"
+      - text: በሌላ ቀን እንድቀጥል የጽሑፍ መልእክት (SMS) ማስፈንጠሪያ ላክልኝ
+      - checkbox "የማመለክትባቸው ቀጣሪዎች ስሜንና አድራሻዬን እንዲያዩ ፍቀድ"
+      - text: የማመለክትባቸው ቀጣሪዎች ስሜንና አድራሻዬን እንዲያዩ ፍቀድ
+    - button "መረጃዎን እንዴት እንደምንጠብቅ ያንብቡ"
+    - button "ቀጥል"
+
+# step1-error
+- region "የዲጂታል ብሪጅ ምዝገባ":
+  - status
+  - paragraph: የዲጂታል ብሪጅ ምዝገባ
+  - paragraph: "የምዝገባ ሂደት: ደረጃ 1 ከ 7"
+  - 'progressbar "የምዝገባ ሂደት: ደረጃ 1 ከ 7"': ደረጃ 1 ከ 7
+  - button "በድምጽ መቆጣጠሪያ"
+  - paragraph: ይህን ቅጽ በመናገር ይጠቀሙ። የቁልፍ ሰሌዳ አቋራጭ፦ Alt + V
+  - group "እገዛ እና ቅንብሮች":
+    - button "ጮክ ብለህ አንብብ"
+    - 'button "ቋንቋ ቀይር: English"'
+    - button "ቀላል ቃላት"
+    - button "እገዛ ያስፈልገኛል"
+    - button "የእኔ መረጃ"
+  - form "ደረጃ 1 ከ 7፦ እንኳን ደህና መጡ — ከመጀመራችን በፊት":
+    - heading "ደረጃ 1 ከ 7፦ እንኳን ደህና መጡ — ከመጀመራችን በፊት" [level=2]
+    - alert:
+      - heading "ችግር አለ" [level=3]
+      - paragraph: ለመቀጠል የሚከተሉትን ያስተካክሉ። ወደ ጥያቄው ለመሄድ አንዱን ይምረጡ።
+      - list:
+        - listitem:
+          - 'link "እንድቀጥል መልሶቼን አስቀምጥ: ለመቀጠል እባክዎ ፈቃድዎን ያረጋግጡ።"':
+            - /url: "#db-_r_0_-saveAnswers"
+    - paragraph: በአንድ ጊዜ አንድ ጥያቄ። የጊዜ ገደብ የለም። መልሶችዎ በዚህ መሣሪያ ላይ ይቀመጣሉ። ሁሉንም ጥያቄዎች በድምጽ መመለስ ይችላሉ።
+    - paragraph: ይህ 10 ደቂቃ ያህል ይወስዳል። እንዴት እንደሚሠራ ይኸውና።
+    - list:
+      - listitem: በአንድ ጊዜ አንድ ጥያቄ።
+      - listitem: የጊዜ ገደብ የለም። ቢያቆሙም ምንም አይጠፋም።
+      - listitem: ሲጽፉ መልሶችዎ በዚህ መሣሪያ ላይ ይቀመጣሉ።
+      - listitem: ሁሉንም ጥያቄዎች በድምጽ መመለስ፣ ከመጠቀሙም በፊት ማረጋገጥ ይችላሉ።
+    - group "ስለ መረጃዎ የእርስዎ ምርጫዎች":
+      - text: ስለ መረጃዎ የእርስዎ ምርጫዎች
+      - paragraph: ለመቀጠል እባክዎ ፈቃድዎን ያረጋግጡ።
+      - checkbox "እንድቀጥል መልሶቼን አስቀምጥ (ግዴታ) ለመቀጠል ያስፈልጋል። መልሶችዎ በዚህ መሣሪያ እና በዲጂታል ብሪጅ ይቀመጣሉ።" [invalid]
+      - text: እንድቀጥል መልሶቼን አስቀምጥ (ግዴታ) ለመቀጠል ያስፈልጋል። መልሶችዎ በዚህ መሣሪያ እና በዲጂታል ብሪጅ ይቀመጣሉ።
+      - checkbox "በሌላ ቀን እንድቀጥል የጽሑፍ መልእክት (SMS) ማስፈንጠሪያ ላክልኝ"
+      - text: በሌላ ቀን እንድቀጥል የጽሑፍ መልእክት (SMS) ማስፈንጠሪያ ላክልኝ
+      - checkbox "የማመለክትባቸው ቀጣሪዎች ስሜንና አድራሻዬን እንዲያዩ ፍቀድ"
+      - text: የማመለክትባቸው ቀጣሪዎች ስሜንና አድራሻዬን እንዲያዩ ፍቀድ
+    - button "መረጃዎን እንዴት እንደምንጠብቅ ያንብቡ"
+    - button "ቀጥል"
+
+# step2-name
+- region "የዲጂታል ብሪጅ ምዝገባ":
+  - status: መልስዎ በዚህ መሣሪያ ላይ ተቀምጧል።
+  - paragraph: የዲጂታል ብሪጅ ምዝገባ
+  - paragraph: "የምዝገባ ሂደት: ደረጃ 2 ከ 7"
+  - 'progressbar "የምዝገባ ሂደት: ደረጃ 2 ከ 7"': ደረጃ 2 ከ 7
+  - button "በድምጽ መቆጣጠሪያ"
+  - paragraph: ይህን ቅጽ በመናገር ይጠቀሙ። የቁልፍ ሰሌዳ አቋራጭ፦ Alt + V
+  - group "እገዛ እና ቅንብሮች":
+    - button "ጮክ ብለህ አንብብ"
+    - 'button "ቋንቋ ቀይር: English"'
+    - button "ቀላል ቃላት"
+    - button "እገዛ ያስፈልገኛል"
+    - button "የእኔ መረጃ"
+  - form "ደረጃ 2 ከ 7፦ ስምዎ ማን ነው?":
+    - heading "ደረጃ 2 ከ 7፦ ስምዎ ማን ነው?" [level=2]
+    - paragraph: ቀጣሪዎች እንዲያዩት በሚፈልጉት መንገድ ስምዎን ይጻፉ።
+    - text: ስም (ግዴታ)
+    - paragraph: ለምሳሌ አበበ
+    - textbox "ስም (ግዴታ)"
+    - button "በእንግሊዝኛ ፊደል አማርኛ ይጻፉ"
+    - button "ስምን በድምጽ ይመልሱ"
+    - button "በምትኩ ለስም የድምጽ መልእክት ይቅረጹ"
+    - text: የአባት ስም (ግዴታ)
+    - paragraph: ለምሳሌ ከበደ
+    - textbox "የአባት ስም (ግዴታ)"
+    - button "በእንግሊዝኛ ፊደል አማርኛ ይጻፉ"
+    - button "የአባት ስምን በድምጽ ይመልሱ"
+    - button "በምትኩ ለየአባት ስም የድምጽ መልእክት ይቅረጹ"
+    - button "ተመለስ"
+    - button "ቀጥል"
+
+# step3-contact
+- region "የዲጂታል ብሪጅ ምዝገባ":
+  - status: መልስዎ በዚህ መሣሪያ ላይ ተቀምጧል።
+  - paragraph: የዲጂታል ብሪጅ ምዝገባ
+  - paragraph: "የምዝገባ ሂደት: ደረጃ 3 ከ 7"
+  - 'progressbar "የምዝገባ ሂደት: ደረጃ 3 ከ 7"': ደረጃ 3 ከ 7
+  - button "በድምጽ መቆጣጠሪያ"
+  - paragraph: ይህን ቅጽ በመናገር ይጠቀሙ። የቁልፍ ሰሌዳ አቋራጭ፦ Alt + V
+  - group "እገዛ እና ቅንብሮች":
+    - button "ጮክ ብለህ አንብብ"
+    - 'button "ቋንቋ ቀይር: English"'
+    - button "ቀላል ቃላት"
+    - button "እገዛ ያስፈልገኛል"
+    - button "የእኔ መረጃ"
+  - form "ደረጃ 3 ከ 7፦ እንዴት እናግኝዎ?":
+    - heading "ደረጃ 3 ከ 7፦ እንዴት እናግኝዎ?" [level=2]
+    - paragraph: ይህንን የምንጠቀመው ስለ ትምህርትዎና ስለ ሥራዎች መረጃ ለመላክ ብቻ ነው።
+    - text: ስልክ ቁጥር (ግዴታ)
+    - paragraph: 10 ቁጥሮች፣ ለምሳሌ 0911 234 567
+    - textbox "ስልክ ቁጥር (ግዴታ)"
+    - button "ስልክ ቁጥርን በድምጽ ይመልሱ"
+    - checkbox "ስልክ የምጋራው ከሌሎች ጋር ነው — በአጋር ድርጅቴ በኩል አግኙኝ"
+    - text: ስልክ የምጋራው ከሌሎች ጋር ነው — በአጋር ድርጅቴ በኩል አግኙኝ ኢሜይል አድራሻ (አማራጭ)
+    - paragraph: ለምሳሌ name@example.com
+    - textbox "ኢሜይል አድራሻ (አማራጭ)"
+    - button "ኢሜይል አድራሻን በድምጽ ይመልሱ"
+    - region "በኋላ በSMS ይቀጥሉ":
+      - heading "በኋላ በSMS ይቀጥሉ" [level=3]
+      - paragraph: ማስፈንጠሪያ ያለው የጽሑፍ መልእክት ልንልክልዎ እንችላለን። አንድ ጊዜ ብቻ፣ ለ24 ሰዓት ይሠራል።
+      - button "አስቀምጥና የመቀጠያ SMS ላክ"
+    - region "የመቀጠያ ኮድ አለዎት?":
+      - heading "የመቀጠያ ኮድ አለዎት?" [level=3]
+      - text: የመቀጠያ ኮድ
+      - paragraph: ከጽሑፍ መልእክትዎ የተገኘው ኮድ፣ ለምሳሌ DB-4F7K2Q
+      - textbox "የመቀጠያ ኮድ"
+      - button "በእንግሊዝኛ ፊደል አማርኛ ይጻፉ"
+      - button "መልሶቼን መልስ"
+    - button "ተመለስ"
+    - button "ቀጥል"
+
+# step3-error
+- region "የዲጂታል ብሪጅ ምዝገባ":
+  - status: መልስዎ በዚህ መሣሪያ ላይ ተቀምጧል።
+  - paragraph: የዲጂታል ብሪጅ ምዝገባ
+  - paragraph: "የምዝገባ ሂደት: ደረጃ 3 ከ 7"
+  - 'progressbar "የምዝገባ ሂደት: ደረጃ 3 ከ 7"': ደረጃ 3 ከ 7
+  - button "በድምጽ መቆጣጠሪያ"
+  - paragraph: ይህን ቅጽ በመናገር ይጠቀሙ። የቁልፍ ሰሌዳ አቋራጭ፦ Alt + V
+  - group "እገዛ እና ቅንብሮች":
+    - button "ጮክ ብለህ አንብብ"
+    - 'button "ቋንቋ ቀይር: English"'
+    - button "ቀላል ቃላት"
+    - button "እገዛ ያስፈልገኛል"
+    - button "የእኔ መረጃ"
+  - form "ደረጃ 3 ከ 7፦ እንዴት እናግኝዎ?":
+    - heading "ደረጃ 3 ከ 7፦ እንዴት እናግኝዎ?" [level=2]
+    - alert:
+      - heading "ችግር አለ" [level=3]
+      - paragraph: ለመቀጠል የሚከተሉትን ያስተካክሉ። ወደ ጥያቄው ለመሄድ አንዱን ይምረጡ።
+      - list:
+        - listitem:
+          - 'link "ስልክ ቁጥር: ባለ 10 ቁጥር ስልክ ያስገቡ፣ ለምሳሌ 0911 234 567"':
+            - /url: "#db-_r_0_-phone"
+    - paragraph: ይህንን የምንጠቀመው ስለ ትምህርትዎና ስለ ሥራዎች መረጃ ለመላክ ብቻ ነው።
+    - text: ስልክ ቁጥር (ግዴታ)
+    - paragraph: 10 ቁጥሮች፣ ለምሳሌ 0911 234 567
+    - paragraph: ባለ 10 ቁጥር ስልክ ያስገቡ፣ ለምሳሌ 0911 234 567
+    - textbox "ስልክ ቁጥር (ግዴታ)" [invalid]: "123"
+    - button "ስልክ ቁጥርን በድምጽ ይመልሱ"
+    - checkbox "ስልክ የምጋራው ከሌሎች ጋር ነው — በአጋር ድርጅቴ በኩል አግኙኝ"
+    - text: ስልክ የምጋራው ከሌሎች ጋር ነው — በአጋር ድርጅቴ በኩል አግኙኝ ኢሜይል አድራሻ (አማራጭ)
+    - paragraph: ለምሳሌ name@example.com
+    - textbox "ኢሜይል አድራሻ (አማራጭ)"
+    - button "ኢሜይል አድራሻን በድምጽ ይመልሱ"
+    - region "በኋላ በSMS ይቀጥሉ":
+      - heading "በኋላ በSMS ይቀጥሉ" [level=3]
+      - paragraph: ማስፈንጠሪያ ያለው የጽሑፍ መልእክት ልንልክልዎ እንችላለን። አንድ ጊዜ ብቻ፣ ለ24 ሰዓት ይሠራል።
+      - button "አስቀምጥና የመቀጠያ SMS ላክ"
+    - region "የመቀጠያ ኮድ አለዎት?":
+      - heading "የመቀጠያ ኮድ አለዎት?" [level=3]
+      - text: የመቀጠያ ኮድ
+      - paragraph: ከጽሑፍ መልእክትዎ የተገኘው ኮድ፣ ለምሳሌ DB-4F7K2Q
+      - textbox "የመቀጠያ ኮድ"
+      - button "በእንግሊዝኛ ፊደል አማርኛ ይጻፉ"
+      - button "መልሶቼን መልስ"
+    - button "ተመለስ"
+    - button "ቀጥል"
+
+# step4-dob
+- region "የዲጂታል ብሪጅ ምዝገባ":
+  - status: መልስዎ በዚህ መሣሪያ ላይ ተቀምጧል።
+  - paragraph: የዲጂታል ብሪጅ ምዝገባ
+  - paragraph: "የምዝገባ ሂደት: ደረጃ 4 ከ 7"
+  - 'progressbar "የምዝገባ ሂደት: ደረጃ 4 ከ 7"': ደረጃ 4 ከ 7
+  - button "በድምጽ መቆጣጠሪያ"
+  - paragraph: ይህን ቅጽ በመናገር ይጠቀሙ። የቁልፍ ሰሌዳ አቋራጭ፦ Alt + V
+  - group "እገዛ እና ቅንብሮች":
+    - button "ጮክ ብለህ አንብብ"
+    - 'button "ቋንቋ ቀይር: English"'
+    - button "ቀላል ቃላት"
+    - button "እገዛ ያስፈልገኛል"
+    - button "የእኔ መረጃ"
+  - form "ደረጃ 4 ከ 7፦ መቼ ተወለዱ?":
+    - heading "ደረጃ 4 ከ 7፦ መቼ ተወለዱ?" [level=2]
+    - paragraph: በደንብ የሚያውቁትን የቀን መቁጠሪያ ይምረጡ። እኛ እንቀይርልዎታለን።
+    - group "የትኛው የቀን መቁጠሪያ?":
+      - text: የትኛው የቀን መቁጠሪያ?
+      - radio "የኢትዮጵያ የቀን መቁጠሪያ" [checked]
+      - text: የኢትዮጵያ የቀን መቁጠሪያ
+      - radio "የግሪጎሪያን (የአውሮፓ) የቀን መቁጠሪያ"
+      - text: የግሪጎሪያን (የአውሮፓ) የቀን መቁጠሪያ
+    - group "የትውልድ ቀን (ግዴታ)":
+      - text: የትውልድ ቀን (ግዴታ) ቀን
+      - combobox "ቀን":
+        - option "ይምረጡ…" [selected]
+        - option "1"
+        - option "2"
+        - option "3"
+        - option "4"
+        - option "5"
+        - option "6"
+        - option "7"
+        - option "8"
+        - option "9"
+        - option "10"
+        - option "11"
+        - option "12"
+        - option "13"
+        - option "14"
+        - option "15"
+        - option "16"
+        - option "17"
+        - option "18"
+        - option "19"
+        - option "20"
+        - option "21"
+        - option "22"
+        - option "23"
+        - option "24"
+        - option "25"
+        - option "26"
+        - option "27"
+        - option "28"
+        - option "29"
+        - option "30"
+      - text: ወር
+      - combobox "ወር":
+        - option "ይምረጡ…" [selected]
+        - option "መስከረም"
+        - option "ጥቅምት"
+        - option "ኅዳር"
+        - option "ታኅሣሥ"
+        - option "ጥር"
+        - option "የካቲት"
+        - option "መጋቢት"
+        - option "ሚያዝያ"
+        - option "ግንቦት"
+        - option "ሰኔ"
+        - option "ሐምሌ"
+        - option "ነሐሴ"
+        - option "ጳጉሜ"
+      - text: ዓመት
+      - combobox "ዓመት":
+        - option "ይምረጡ…" [selected]
+        - option "2019"
+        - option "2018"
+        - option "2017"
+        - option "2016"
+        - option "2015"
+        - option "2014"
+        - option "2013"
+        - option "2012"
+        - option "2011"
+        - option "2010"
+        - option "2009"
+        - option "2008"
+        - option "2007"
+        - option "2006"
+        - option "2005"
+        - option "2004"
+        - option "2003"
+        - option "2002"
+        - option "2001"
+        - option "2000"
+        - option "1999"
+        - option "1998"
+        - option "1997"
+        - option "1996"
+        - option "1995"
+        - option "1994"
+        - option "1993"
+        - option "1992"
+        - option "1991"
+        - option "1990"
+        - option "1989"
+        - option "1988"
+        - option "1987"
+        - option "1986"
+        - option "1985"
+        - option "1984"
+        - option "1983"
+        - option "1982"
+        - option "1981"
+        - option "1980"
+        - option "1979"
+        - option "1978"
+        - option "1977"
+        - option "1976"
+        - option "1975"
+        - option "1974"
+        - option "1973"
+        - option "1972"
+        - option "1971"
+        - option "1970"
+        - option "1969"
+        - option "1968"
+        - option "1967"
+        - option "1966"
+        - option "1965"
+        - option "1964"
+        - option "1963"
+        - option "1962"
+        - option "1961"
+        - option "1960"
+        - option "1959"
+        - option "1958"
+        - option "1957"
+        - option "1956"
+        - option "1955"
+        - option "1954"
+        - option "1953"
+        - option "1952"
+        - option "1951"
+        - option "1950"
+        - option "1949"
+        - option "1948"
+        - option "1947"
+        - option "1946"
+        - option "1945"
+        - option "1944"
+        - option "1943"
+        - option "1942"
+        - option "1941"
+        - option "1940"
+        - option "1939"
+        - option "1938"
+        - option "1937"
+        - option "1936"
+        - option "1935"
+        - option "1934"
+        - option "1933"
+        - option "1932"
+        - option "1931"
+        - option "1930"
+        - option "1929"
+        - option "1928"
+        - option "1927"
+        - option "1926"
+        - option "1925"
+        - option "1924"
+        - option "1923"
+        - option "1922"
+        - option "1921"
+        - option "1920"
+        - option "1919"
+      - paragraph: ጳጉሜ 5 ቀናት አሏት፤ በዘመነ ዮሐንስ 6 ቀናት።
+    - button "ተመለስ"
+    - button "ቀጥል"
+
+# step5-identity
+- region "የዲጂታል ብሪጅ ምዝገባ":
+  - status: መልስዎ በዚህ መሣሪያ ላይ ተቀምጧል።
+  - paragraph: የዲጂታል ብሪጅ ምዝገባ
+  - paragraph: "የምዝገባ ሂደት: ደረጃ 5 ከ 7"
+  - 'progressbar "የምዝገባ ሂደት: ደረጃ 5 ከ 7"': ደረጃ 5 ከ 7
+  - button "በድምጽ መቆጣጠሪያ"
+  - paragraph: ይህን ቅጽ በመናገር ይጠቀሙ። የቁልፍ ሰሌዳ አቋራጭ፦ Alt + V
+  - group "እገዛ እና ቅንብሮች":
+    - button "ጮክ ብለህ አንብብ"
+    - 'button "ቋንቋ ቀይር: English"'
+    - button "ቀላል ቃላት"
+    - button "እገዛ ያስፈልገኛል"
+    - button "የእኔ መረጃ"
+  - form "ደረጃ 5 ከ 7፦ ማንነትዎን እንዴት እናረጋግጥ?":
+    - heading "ደረጃ 5 ከ 7፦ ማንነትዎን እንዴት እናረጋግጥ?" [level=2]
+    - paragraph: ማንኛውንም አንድ መንገድ ይምረጡ። የቀበሌ መታወቂያ ወይም ፓስፖርት አያስፈልግዎትም።
+    - group "አንድ መንገድ ይምረጡ (ግዴታ)":
+      - text: አንድ መንገድ ይምረጡ (ግዴታ)
+      - radio "ብሔራዊ መታወቂያ፣ የቀበሌ መታወቂያ ወይም ፓስፖርት በካርድዎ ላይ ያለውን ቁጥር ይጻፉ።"
+      - text: ብሔራዊ መታወቂያ፣ የቀበሌ መታወቂያ ወይም ፓስፖርት በካርድዎ ላይ ያለውን ቁጥር ይጻፉ።
+      - radio "የስደተኛ ወይም የተመላሽ መታወቂያ (UNHCR / RRS) በስደተኛ ወይም በተመላሽ ካርድዎ ላይ ያለውን ቁጥር ይጻፉ።"
+      - text: የስደተኛ ወይም የተመላሽ መታወቂያ (UNHCR / RRS) በስደተኛ ወይም በተመላሽ ካርድዎ ላይ ያለውን ቁጥር ይጻፉ።
+      - radio "የትምህርት ማስረጃ፣ የልደት ምዝገባ ወይም የማኅበረሰብ ደብዳቤ ስምዎ የተጻፈበት ማንኛውም ይፋዊ ወረቀት።"
+      - text: የትምህርት ማስረጃ፣ የልደት ምዝገባ ወይም የማኅበረሰብ ደብዳቤ ስምዎ የተጻፈበት ማንኛውም ይፋዊ ወረቀት።
+      - radio "በአጋር ድርጅት በኩል ይጠቁሙኝ የሚያውቁት የአጋር ድርጅት ማንነትዎን ያረጋግጣል። ሰነድ አያስፈልግም።"
+      - text: በአጋር ድርጅት በኩል ይጠቁሙኝ የሚያውቁት የአጋር ድርጅት ማንነትዎን ያረጋግጣል። ሰነድ አያስፈልግም።
+    - button "ተመለስ"
+    - button "ቀጥል"
+
+# step6-support
+- region "የዲጂታል ብሪጅ ምዝገባ":
+  - status: መልስዎ በዚህ መሣሪያ ላይ ተቀምጧል።
+  - paragraph: የዲጂታል ብሪጅ ምዝገባ
+  - paragraph: "የምዝገባ ሂደት: ደረጃ 6 ከ 7"
+  - 'progressbar "የምዝገባ ሂደት: ደረጃ 6 ከ 7"': ደረጃ 6 ከ 7
+  - button "በድምጽ መቆጣጠሪያ"
+  - paragraph: ይህን ቅጽ በመናገር ይጠቀሙ። የቁልፍ ሰሌዳ አቋራጭ፦ Alt + V
+  - group "እገዛ እና ቅንብሮች":
+    - button "ጮክ ብለህ አንብብ"
+    - 'button "ቋንቋ ቀይር: English"'
+    - button "ቀላል ቃላት"
+    - button "እገዛ ያስፈልገኛል"
+    - button "የእኔ መረጃ"
+  - form "ደረጃ 6 ከ 7፦ ለመማርና ለመሥራት የሚረዳዎት ምን ዓይነት ድጋፍ ነው?":
+    - heading "ደረጃ 6 ከ 7፦ ለመማርና ለመሥራት የሚረዳዎት ምን ዓይነት ድጋፍ ነው?" [level=2]
+    - paragraph: የሚረዳዎትን ማንኛውንም ይምረጡ። ይህን ጥያቄ መዝለል ይችላሉ።
+    - paragraph:
+      - strong: የሕክምና ማስረጃ አያስፈልግም። ይህ በሚስጥር ይያዛል፤ ያለእርስዎ ፈቃድ ለማንም አይሰጥም።
+    - group "የሚረዳኝ ድጋፍ (አማራጭ)":
+      - text: የሚረዳኝ ድጋፍ (አማራጭ)
+      - checkbox "መናገር አልፈልግም። አሁን ድጋፍ መጠየቅ አልፈልግም።"
+      - text: መናገር አልፈልግም። አሁን ድጋፍ መጠየቅ አልፈልግም።
+      - checkbox "የጽሑፍ ትርጉም (ካፕሽን) ወይም የኢትዮጵያ ምልክት ቋንቋ አስተርጓሚ"
+      - text: የጽሑፍ ትርጉም (ካፕሽን) ወይም የኢትዮጵያ ምልክት ቋንቋ አስተርጓሚ
+      - checkbox "የስክሪን አንባቢ ድጋፍ (በስክሪን አንባቢ የሚሠሩ ጽሑፎች)"
+      - text: የስክሪን አንባቢ ድጋፍ (በስክሪን አንባቢ የሚሠሩ ጽሑፎች)
+      - checkbox "ትልቅ ጽሑፍ ወይም ከፍተኛ ንፅፅር"
+      - text: ትልቅ ጽሑፍ ወይም ከፍተኛ ንፅፅር
+      - checkbox "ተጨማሪ ጊዜ"
+      - text: ተጨማሪ ጊዜ
+      - checkbox "ማዳመጥ የምችለው መመሪያ"
+      - text: ማዳመጥ የምችለው መመሪያ
+      - checkbox "ከስልክ ጥሪ ይልቅ የጽሑፍ መልእክት"
+      - text: ከስልክ ጥሪ ይልቅ የጽሑፍ መልእክት
+      - checkbox "ደረጃ የሌለው ሕንፃ"
+      - text: ደረጃ የሌለው ሕንፃ
+      - checkbox "ጸጥ ያለ የሥራ ቦታ"
+      - text: ጸጥ ያለ የሥራ ቦታ
+      - checkbox "ሌላ ነገር"
+      - text: ሌላ ነገር
+    - button "ተመለስ"
+    - button "ቀጥል"
+
+# step7-review
+- region "የዲጂታል ብሪጅ ምዝገባ":
+  - status: መልስዎ በዚህ መሣሪያ ላይ ተቀምጧል።
+  - paragraph: የዲጂታል ብሪጅ ምዝገባ
+  - paragraph: "የምዝገባ ሂደት: ደረጃ 7 ከ 7"
+  - 'progressbar "የምዝገባ ሂደት: ደረጃ 7 ከ 7"': ደረጃ 7 ከ 7
+  - button "በድምጽ መቆጣጠሪያ"
+  - paragraph: ይህን ቅጽ በመናገር ይጠቀሙ። የቁልፍ ሰሌዳ አቋራጭ፦ Alt + V
+  - group "እገዛ እና ቅንብሮች":
+    - button "ጮክ ብለህ አንብብ"
+    - 'button "ቋንቋ ቀይር: English"'
+    - button "ቀላል ቃላት"
+    - button "እገዛ ያስፈልገኛል"
+    - button "የእኔ መረጃ"
+  - form "ደረጃ 7 ከ 7፦ መልሶችዎን ያረጋግጡ":
+    - heading "ደረጃ 7 ከ 7፦ መልሶችዎን ያረጋግጡ" [level=2]
+    - paragraph: ሁሉም ትክክል መሆኑን ያረጋግጡ። መልስ ለመቀየር "አስተካክል"ን ይምረጡ።
+    - heading "የእርስዎ ምርጫዎች" [level=3]
+    - button "አስተካክል የእርስዎ ምርጫዎች"
+    - term: እንድቀጥል መልሶቼን አስቀምጥ
+    - definition: አዎ
+    - term: በሌላ ቀን እንድቀጥል የጽሑፍ መልእክት (SMS) ማስፈንጠሪያ ላክልኝ
+    - definition: አይ
+    - term: የማመለክትባቸው ቀጣሪዎች ስሜንና አድራሻዬን እንዲያዩ ፍቀድ
+    - definition: አይ
+    - heading "ስም" [level=3]
+    - button "አስተካክል ስም"
+    - term: ስም
+    - definition: አበበ
+    - term: የአባት ስም
+    - definition: ከበደ
+    - heading "አድራሻ" [level=3]
+    - button "አስተካክል አድራሻ"
+    - term: ስልክ ቁጥር
+    - definition: "+251911234567"
+    - term: ኢሜይል አድራሻ
+    - definition: አልተሰጠም
+    - heading "የትውልድ ቀን" [level=3]
+    - button "አስተካክል የትውልድ ቀን"
+    - term: የትውልድ ቀን
+    - definition: 1 መስከረም 1999
+    - heading "ማንነትን ማረጋገጥ" [level=3]
+    - button "አስተካክል ማንነትን ማረጋገጥ"
+    - term: ማንነትን የማረጋገጫ መንገድ
+    - definition: ብሔራዊ መታወቂያ፣ የቀበሌ መታወቂያ ወይም ፓስፖርት
+    - term: የመታወቂያ ቁጥር
+    - definition: ET1234567
+    - heading "ድጋፍ (የግል)" [level=3]
+    - button "አስተካክል ድጋፍ (የግል)"
+    - term: የሚረዳኝ ድጋፍ
+    - definition:
+      - list:
+        - listitem: ተጨማሪ ጊዜ
+        - listitem: የጽሑፍ ትርጉም (ካፕሽን) ወይም የኢትዮጵያ ምልክት ቋንቋ አስተርጓሚ
+    - button "የእኔ መረጃ"
+    - button "ተመለስ"
+    - button "ምዝገባውን ጨርስ"
+
+# finished
+- region "የዲጂታል ብሪጅ ምዝገባ":
+  - status: ምዝገባውን ጨርሰዋል
+  - paragraph: የዲጂታል ብሪጅ ምዝገባ
+  - paragraph: "የምዝገባ ሂደት: ደረጃ 7 ከ 7"
+  - 'progressbar "የምዝገባ ሂደት: ደረጃ 7 ከ 7"': ደረጃ 7 ከ 7
+  - button "በድምጽ መቆጣጠሪያ"
+  - paragraph: ይህን ቅጽ በመናገር ይጠቀሙ። የቁልፍ ሰሌዳ አቋራጭ፦ Alt + V
+  - group "እገዛ እና ቅንብሮች":
+    - button "ጮክ ብለህ አንብብ"
+    - 'button "ቋንቋ ቀይር: English"'
+    - button "ቀላል ቃላት"
+    - button "እገዛ ያስፈልገኛል"
+    - button "የእኔ መረጃ"
+  - heading "ምዝገባውን ጨርሰዋል" [level=2]
+  - paragraph: እናመሰግናለን። መገለጫዎ ዝግጁ ነው። አሁን በሥራ መግቢያው ሥራ መፈለግ ይችላሉ።
+  - button "መልሶችዎን ያረጋግጡ"

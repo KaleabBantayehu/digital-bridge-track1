@@ -1,0 +1,22 @@
+// What does the widget PATCH to the API, and what does the API answer? (Answers typed in the widget did not reach the server.)
+import { en, launch, newPage, save, serve, sleep } from './lib.mjs';
+import { wizard } from './flow.mjs';
+const API = (process.env.API_BASE ?? 'http://localhost:3000') + '/api/v1';
+const srv = await serve();
+const browser = await launch();
+const page = await newPage(browser);
+const log = [];
+page.on('response', async (r) => { if (r.url().startsWith(API)) log.push(`${r.request().method()} ${r.url().replace(API, '')} -> ${r.status()} | sent ${(r.request().postData() ?? '').slice(0, 160)} | got ${(await r.text().catch(() => '')).slice(0, 160)}`); });
+await page.addInitScript((api) => new MutationObserver(() => document.querySelectorAll('db-signup:not([api])').forEach((el) => el.setAttribute('api', api))).observe(document, { childList: true, subtree: true }), API);
+await page.goto(`${srv.base}/pages/signup.html`, { waitUntil: 'networkidle' });
+const z = wizard(page);
+await z.heading().waitFor();
+await z.w.getByLabel(en['consent.saveAnswers']).check();
+await z.submit().click(); await z.waitStep(2);
+await z.w.locator('input[autocomplete="given-name"]').fill('Meron');
+await z.w.locator('input[autocomplete="family-name"]').fill('Haile');
+await z.submit().click(); await z.waitStep(3);
+await sleep(3000);
+save('probe-sync.txt', log.join('\n'));
+console.log(log.join('\n'));
+await browser.close(); srv.close();

@@ -1,0 +1,234 @@
+{
+  "en": {
+    "step1-welcome": {
+      "h2": [
+        "Step 1 of 7: Welcome — before we start"
+      ],
+      "unnamed": [],
+      "brokenRefs": [],
+      "statusRegions": 1,
+      "statusText": "",
+      "invalidFieldsWithMessage": [],
+      "langMismatches": []
+    },
+    "step1-error": {
+      "h2": [
+        "Step 1 of 7: Welcome — before we start"
+      ],
+      "unnamed": [],
+      "brokenRefs": [],
+      "statusRegions": 1,
+      "statusText": "",
+      "invalidFieldsWithMessage": [
+        true
+      ],
+      "langMismatches": []
+    },
+    "step2-name": {
+      "h2": [
+        "Step 2 of 7: What is your name?"
+      ],
+      "unnamed": [],
+      "brokenRefs": [],
+      "statusRegions": 1,
+      "statusText": "Your answer is saved on this device.​",
+      "invalidFieldsWithMessage": [],
+      "langMismatches": []
+    },
+    "step3-contact": {
+      "h2": [
+        "Step 3 of 7: How can we contact you?"
+      ],
+      "unnamed": [],
+      "brokenRefs": [],
+      "statusRegions": 1,
+      "statusText": "Your answer is saved on this device.",
+      "invalidFieldsWithMessage": [],
+      "langMismatches": []
+    },
+    "step3-error": {
+      "h2": [
+        "Step 3 of 7: How can we contact you?"
+      ],
+      "unnamed": [],
+      "brokenRefs": [],
+      "statusRegions": 1,
+      "statusText": "Your answer is saved on this device.",
+      "invalidFieldsWithMessage": [
+        true
+      ],
+      "langMismatches": []
+    },
+    "step4-dob": {
+      "h2": [
+        "Step 4 of 7: When were you born?"
+      ],
+      "unnamed": [],
+      "brokenRefs": [],
+      "statusRegions": 1,
+      "statusText": "Your answer is saved on this device.​",
+      "invalidFieldsWithMessage": [],
+      "langMismatches": []
+    },
+    "step5-identity": {
+      "h2": [
+        "Step 5 of 7: How can we confirm who you are?"
+      ],
+      "unnamed": [],
+      "brokenRefs": [],
+      "statusRegions": 1,
+      "statusText": "Your answer is saved on this device.",
+      "invalidFieldsWithMessage": [],
+      "langMismatches": []
+    },
+    "step6-support": {
+      "h2": [
+        "Step 6 of 7: What support helps you learn and work best?"
+      ],
+      "unnamed": [],
+      "brokenRefs": [],
+      "statusRegions": 1,
+      "statusText": "Your answer is saved on this device.​",
+      "invalidFieldsWithMessage": [],
+      "langMismatches": []
+    },
+    "step7-review": {
+      "h2": [
+        "Step 7 of 7: Check your answers"
+      ],
+      "unnamed": [],
+      "brokenRefs": [],
+      "statusRegions": 1,
+      "statusText": "Your answer is saved on this device.",
+      "invalidFieldsWithMessage": [],
+      "langMismatches": []
+    },
+    "finished": {
+      "h2": [
+        "You have finished onboarding"
+      ],
+      "unnamed": [],
+      "brokenRefs": [],
+      "statusRegions": 1,
+      "statusText": "You have finished onboarding​",
+      "invalidFieldsWithMessage": [],
+      "langMismatches": []
+    }
+  },
+  "am": {
+    "step1-welcome": {
+      "h2": [
+        "ደረጃ 1 ከ 7፦ እንኳን ደህና መጡ — ከመጀመራችን በፊት"
+      ],
+      "unnamed": [],
+      "brokenRefs": [],
+      "statusRegions": 1,
+      "statusText": "",
+      "invalidFieldsWithMessage": [],
+      "langMismatches": []
+    },
+    "step1-error": {
+      "h2": [
+        "ደረጃ 1 ከ 7፦ እንኳን ደህና መጡ — ከመጀመራችን በፊት"
+      ],
+      "unnamed": [],
+      "brokenRefs": [],
+      "statusRegions": 1,
+      "statusText": "",
+      "invalidFieldsWithMessage": [
+        true
+      ],
+      "langMismatches": []
+    },
+    "step2-name": {
+      "h2": [
+        "ደረጃ 2 ከ 7፦ ስምዎ ማን ነው?"
+      ],
+      "unnamed": [],
+      "brokenRefs": [],
+      "statusRegions": 1,
+      "statusText": "መልስዎ በዚህ መሣሪያ ላይ ተቀምጧል።​",
+      "invalidFieldsWithMessage": [],
+      "langMismatches": []
+    },
+    "step3-contact": {
+      "h2": [
+        "ደረጃ 3 ከ 7፦ እንዴት እናግኝዎ?"
+      ],
+      "unnamed": [],
+      "brokenRefs": [],
+      "statusRegions": 1,
+      "statusText": "መልስዎ በዚህ መሣሪያ ላይ ተቀምጧል።",
+      "invalidFieldsWithMessage": [],
+      "langMismatches": []
+    },
+    "step3-error": {
+      "h2": [
+        "ደረጃ 3 ከ 7፦ እንዴት እናግኝዎ?"
+      ],
+      "unnamed": [],
+      "brokenRefs": [],
+      "statusRegions": 1,
+      "statusText": "መልስዎ በዚህ መሣሪያ ላይ ተቀምጧል።",
+      "invalidFieldsWithMessage": [
+        true
+      ],
+      "langMismatches": []
+    },
+    "step4-dob": {
+      "h2": [
+        "ደረጃ 4 ከ 7፦ መቼ ተወለዱ?"
+      ],
+      "unnamed": [],
+      "brokenRefs": [],
+      "statusRegions": 1,
+      "statusText": "መልስዎ በዚህ መሣሪያ ላይ ተቀምጧል።​",
+      "invalidFieldsWithMessage": [],
+      "langMismatches": []
+    },
+    "step5-identity": {
+      "h2": [
+        "ደረጃ 5 ከ 7፦ ማንነትዎን እንዴት እናረጋግጥ?"
+      ],
+      "unnamed": [],
+      "brokenRefs": [],
+      "statusRegions": 1,
+      "statusText": "መልስዎ በዚህ መሣሪያ ላይ ተቀምጧል።",
+      "invalidFieldsWithMessage": [],
+      "langMismatches": []
+    },
+    "step6-support": {
+      "h2": [
+        "ደረጃ 6 ከ 7፦ ለመማርና ለመሥራት የሚረዳዎት ምን ዓይነት ድጋፍ ነው?"
+      ],
+      "unnamed": [],
+      "brokenRefs": [],
+      "statusRegions": 1,
+      "statusText": "መልስዎ በዚህ መሣሪያ ላይ ተቀምጧል።​",
+      "invalidFieldsWithMessage": [],
+      "langMismatches": []
+    },
+    "step7-review": {
+      "h2": [
+        "ደረጃ 7 ከ 7፦ መልሶችዎን ያረጋግጡ"
+      ],
+      "unnamed": [],
+      "brokenRefs": [],
+      "statusRegions": 1,
+      "statusText": "መልስዎ በዚህ መሣሪያ ላይ ተቀምጧል።",
+      "invalidFieldsWithMessage": [],
+      "langMismatches": []
+    },
+    "finished": {
+      "h2": [
+        "ምዝገባውን ጨርሰዋል"
+      ],
+      "unnamed": [],
+      "brokenRefs": [],
+      "statusRegions": 1,
+      "statusText": "ምዝገባውን ጨርሰዋል​",
+      "invalidFieldsWithMessage": [],
+      "langMismatches": []
+    }
+  }
+}

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { normaliseEtPhone } from '@db/shared-schemas';
-import { spokenToCode, spokenToEmail, spokenToPhone } from './spokenInput';
+import { collapseSpelledLetters, normaliseSpoken, spokenToCode, spokenToEmail, spokenToPhone } from './spokenInput';
 
 describe('spoken phone numbers', () => {
   it('turns Amharic number words into digits', () => {
@@ -31,5 +31,18 @@ describe('spoken e-mail addresses', () => {
 describe('spoken ID numbers', () => {
   it('joins letters and digits', () => {
     expect(spokenToCode('et one two three four five six seven')).toBe('ET1234567');
+  });
+});
+
+describe('spelled-out answers (co-designer finding)', () => {
+  it('joins letters spoken one by one', () => {
+    expect(collapseSpelledLetters('a b e b e')).toBe('Abebe');
+    expect(collapseSpelledLetters('K A L E A B')).toBe('Kaleab');
+    expect(collapseSpelledLetters('my name is a b e b e')).toBe('my name is Abebe');
+    expect(collapseSpelledLetters('Selam')).toBe('Selam');
+  });
+
+  it('spelled e-mail addresses come out lower case without spaces', () => {
+    expect(normaliseSpoken('K A L E A B at gmail dot com', 'email')).toBe('kaleab@gmail.com');
   });
 });

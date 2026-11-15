@@ -71,9 +71,36 @@
     if (initial === 'en' || initial === 'am') apply(initial);
   }
 
+  /** Top-bar "High contrast" toggle: host page + every widget (theme="high-contrast"), remembered on this device. */
+  function setupContrastToggle() {
+    const button = document.querySelector('[data-db-contrast]');
+    if (!button) return;
+    const widgets = () =>
+      document.querySelectorAll('db-signup, db-onboarding-wizard, db-career-gateway, db-employer-accommodations');
+    const apply = (on) => {
+      document.body.classList.toggle('db-high-contrast', on);
+      widgets().forEach((widget) => widget.setAttribute('theme', on ? 'high-contrast' : 'terracotta'));
+      button.setAttribute('aria-pressed', String(on));
+      try {
+        localStorage.setItem('db-host-contrast', on ? '1' : '0');
+      } catch (error) {
+        // Storage blocked: the choice still applies to this page.
+      }
+    };
+    button.addEventListener('click', () => apply(button.getAttribute('aria-pressed') !== 'true'));
+    let saved = null;
+    try {
+      saved = localStorage.getItem('db-host-contrast');
+    } catch (error) {
+      saved = null;
+    }
+    if (saved === '1' || new URLSearchParams(location.search).get('contrast') === 'high') apply(true);
+  }
+
   function setupAll() {
     setupHostAccessibility();
     setupWidgetLanguage();
+    setupContrastToggle();
   }
 
   if (document.readyState === 'loading') {

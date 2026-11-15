@@ -24,7 +24,8 @@ export const ui = {
   label: 'block font-semibold text-base mb-1',
   hint: 'text-sm text-stone-700 mb-1',
   error: 'flex items-start gap-1 text-sm font-semibold text-red-800 mb-1',
-  checkRow: 'flex items-start gap-3 min-h-[44px] py-2',
+  /** Checked rows get a 3px dark border and white fill, so the choice is visible without relying on colour. */
+  checkRow: 'flex items-start gap-3 min-h-[44px] py-2 px-2 rounded-lg border-2 border-transparent has-[:checked]:border-[3px] has-[:checked]:border-ink has-[:checked]:bg-white',
   checkbox: `mt-1 h-6 w-6 shrink-0 accent-terracotta ${focusable}`,
   fieldset: 'border border-sand rounded-xl bg-white/60 p-4 mb-4 min-w-0',
   legend: 'font-semibold text-base px-1',

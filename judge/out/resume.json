@@ -1,0 +1,18 @@
+{
+  "link": "http://127.0.0.1:11794/pages/signup.html?resume=c118f85e63bc73f95afa4178fd4cd2b7",
+  "smsCalls": [
+    "POST /onboarding/sessions/0f60ebb2-7b3a-419b-88db-4f86cb87fa72/resume-sms"
+  ],
+  "freshStep": 1,
+  "freshRestoredMessage": 1,
+  "freshConsentTicked": false,
+  "freshGivenNameAfterContinue": "",
+  "freshCalls": [
+    "GET /onboarding/resume/c118f85e63bc73f95afa4178fd4cd2b7",
+    "POST /onboarding/sessions",
+    "PATCH /onboarding/sessions/0d57a098-b175-4dae-a0c8-230f1036ef2e",
+    "PATCH /onboarding/sessions/0d57a098-b175-4dae-a0c8-230f1036ef2e",
+    "PATCH /onboarding/sessions/0d57a098-b175-4dae-a0c8-230f1036ef2e"
+  ],
+  "replayMessage": "This link has expired. Request a new link.​"
+}

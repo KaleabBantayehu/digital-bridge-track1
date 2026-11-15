@@ -16,15 +16,38 @@ export interface HelpClusterProps {
   onOpenPrivacy: () => void;
   announce: (message: string) => void;
   audioBaseUrl?: string;
+  /** Ethiopian Sign Language interpreter / captions request (stored as the private support need). */
+  signLanguage?: boolean;
+  onSignLanguage?: (wanted: boolean) => void;
 }
+
+const KEYS: Record<string, string> = { tab: 'Tab', shiftTab: 'Shift + Tab', space: 'Space', enter: 'Enter', altV: 'Alt + V' };
+
+/** Render "{tab}"-style placeholders as <kbd lang="en"> so key names are never read with the Amharic voice. */
+function withKeys(text: string): React.ReactNode[] {
+  return text.split(/(\{\w+\})/).map((part, i) => {
+    const key = part.match(/^\{(\w+)\}$/)?.[1];
+    return key && KEYS[key] ? (
+      <kbd key={i} lang="en" className="rounded border border-stone-500 bg-white px-1.5 py-0.5 font-mono text-sm text-ink">
+        {KEYS[key]}
+      </kbd>
+    ) : (
+      <React.Fragment key={i}>{part}</React.Fragment>
+    );
+  });
+}
+const plainKeys = (text: string) => text.replace(/\{(\w+)\}/g, (_, key: string) => KEYS[key] ?? key);
 
 /**
  * Consistent Help (WCAG 3.2.6): same controls, same DOM order, same position on every step.
  * Order: Read aloud · Language · Simple words · Need help · My data.
  */
 export const HelpCluster: React.FC<HelpClusterProps> = ({
-  lang, readText, promptKey, simple, onToggleSimple, onSwitchLang, onOpenPrivacy, announce, audioBaseUrl,
+  lang, readText, promptKey, simple, onToggleSimple, onSwitchLang, onOpenPrivacy, announce, audioBaseUrl, signLanguage = false, onSignLanguage,
 }) => {
+  const guide = ['help.guide.tab', 'help.guide.choose', 'help.guide.voice', 'help.guide.numbers'] as const;
+  const guideText = guide.map((key) => plainKeys(t(lang, key))).join(' ');
+  const signId = `${cleanId(useId())}-sign`;
   const dialogRef = useRef<HTMLDialogElement>(null);
   const openerRef = useRef<HTMLButtonElement>(null);
   const dialogTitleId = cleanId(useId());
@@ -60,7 +83,7 @@ export const HelpCluster: React.FC<HelpClusterProps> = ({
         {t(lang, 'help.simpleWords')}
       </button>
 
-      <button type="button" ref={openerRef} onClick={openHelp} aria-haspopup="dialog" className={ui.btnPill}>
+      <button type="button" ref={openerRef} onClick={openHelp} aria-haspopup="dialog" className={ui.btnPill} data-db-help-button="">
         <HelpCircle aria-hidden="true" focusable="false" className="h-5 w-5 shrink-0" />
         {t(lang, 'help.needHelp')}
       </button>
@@ -89,6 +112,36 @@ export const HelpCluster: React.FC<HelpClusterProps> = ({
             <li>{t(lang, 'help.dialogBody3')}</li>
             <li>{t(lang, 'help.dialogBody4')}</li>
           </ul>
+
+          <section aria-labelledby={`${dialogTitleId}-blind`} className="mb-4 rounded-xl border border-sand bg-white p-3">
+            <h3 id={`${dialogTitleId}-blind`} className="text-lg font-bold mb-2">{t(lang, 'help.blindTitle')}</h3>
+            <ul className="list-disc ps-5 space-y-1 mb-3">
+              {guide.map((key) => (
+                <li key={key}>{withKeys(t(lang, key))}</li>
+              ))}
+            </ul>
+            <ReadAloudButton lang={lang} text={guideText} label={`${t(lang, 'help.readAloud')}: ${t(lang, 'help.blindTitle')}`} announce={announce} pill />
+          </section>
+
+          {onSignLanguage && (
+            <section aria-labelledby={`${dialogTitleId}-sign`} className="mb-4 rounded-xl border border-sand bg-white p-3">
+              <h3 id={`${dialogTitleId}-sign`} className="text-lg font-bold mb-2">{t(lang, 'help.signTitle')}</h3>
+              <p className="mb-2">{t(lang, 'help.signBody')}</p>
+              <div className={ui.checkRow}>
+                <input
+                  id={signId}
+                  type="checkbox"
+                  checked={signLanguage}
+                  onChange={(e) => {
+                    onSignLanguage(e.target.checked);
+                    announce(t(lang, 'help.signSaved'));
+                  }}
+                  className={ui.checkbox}
+                />
+                <label htmlFor={signId} className="text-base cursor-pointer">{t(lang, 'help.signToggle')}</label>
+              </div>
+            </section>
+          )}
           <button type="button" onClick={closeHelp} className={ui.btnPrimary}>
             {t(lang, 'common.close')}
           </button>

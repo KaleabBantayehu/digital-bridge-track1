@@ -1,0 +1,108 @@
+{
+  "readmeCurls": [
+    {
+      "line": "curl -X POST http://localhost:3000/api/v1/learners -H \"content-type: application/json\" -d \"{\\\"name\\\":\\\"Abebe Kebede\\\",\\\"language\\\":\\\"en\\\"}\"",
+      "result": "{\"statusCode\":404,\"error\":\"NotFound\",\"summary\":{\"en\":\"We could not find the requested resource.\",\"am\":\"የተጠየቀው መረጃ አልተገኘም።\"},\"fields\":[]} | HTTP 404"
+    },
+    {
+      "line": "curl -X POST http://localhost:3000/api/v1/onboarding/sessions -H \"content-type: application/json\" -d \"{\\\"lang\\\":\\\"en\\\",\\\"partnerId\\\":\\\"demo\\\"}\"",
+      "result": "{\"id\":\"6a3fa192-9690-4e95-8754-e9d708b1ede5\",\"partnerId\":\"demo\",\"lang\":\"en\",\"consent\":{\"saveAnswers\":true,\"smsResume\":false,\"shareWithEmployers\":false,\"givenAt\":\"2026-11-15T07:33:03.988Z\"},\"name\":{\"givenName\":\"\",\"familyN"
+    }
+  ],
+  "docs": {
+    "/docs": 404,
+    "/api/docs": 200,
+    "/api/v1/docs": 404,
+    "/openapi.yaml": 404,
+    "/api/docs-json": 200
+  },
+  "create": {
+    "status": 201,
+    "keys": [
+      "id",
+      "partnerId",
+      "lang",
+      "consent",
+      "name",
+      "contact",
+      "dateOfBirth",
+      "identity",
+      "progress",
+      "revision",
+      "updatedAt"
+    ]
+  },
+  "failures": {
+    "bad phone (422?)": {
+      "status": 422,
+      "envelope": "statusCode,error,summary,fields",
+      "bilingual": true,
+      "sample": "{\"statusCode\":422,\"error\":\"ValidationError\",\"summary\":{\"en\":\"Please check the highlighted fields and try again.\",\"am\":\"እባክዎ የተመለከቱትን ቦታዎች ይመልከቱና እንደገና ይሞክሩ።\"},\""
+    },
+    "unknown field (400)": {
+      "status": 422,
+      "envelope": "statusCode,error,summary,fields",
+      "bilingual": true,
+      "sample": "{\"statusCode\":422,\"error\":\"ValidationError\",\"summary\":{\"en\":\"Please check the highlighted fields and try again.\",\"am\":\"እባክዎ የተመለከቱትን ቦታዎች ይመልከቱና እንደገና ይሞክሩ።\"},\""
+    },
+    "malformed JSON": {
+      "status": 400,
+      "envelope": "statusCode,error,summary,fields",
+      "bilingual": true,
+      "sample": "{\"statusCode\":400,\"error\":\"ValidationError\",\"summary\":{\"en\":\"Please check the highlighted fields and try again.\",\"am\":\"እባክዎ የተመለከቱትን ቦታዎች ይመልከቱና እንደገና ይሞክሩ።\"},\""
+    },
+    "missing session (404)": {
+      "status": 404,
+      "envelope": "statusCode,error,summary,fields",
+      "bilingual": true,
+      "sample": "{\"statusCode\":404,\"error\":\"NotFound\",\"summary\":{\"en\":\"We could not find the requested resource.\",\"am\":\"የተጠየቀው መረጃ አልተገኘም።\"},\"fields\":[]}"
+    },
+    "unknown route (404)": {
+      "status": 404,
+      "envelope": "statusCode,error,summary,fields",
+      "bilingual": true,
+      "sample": "{\"statusCode\":404,\"error\":\"NotFound\",\"summary\":{\"en\":\"We could not find the requested resource.\",\"am\":\"የተጠየቀው መረጃ አልተገኘም።\"},\"fields\":[]}"
+    },
+    "bad resume token": {
+      "status": 410,
+      "envelope": "statusCode,error,summary,fields",
+      "bilingual": true,
+      "sample": "{\"statusCode\":410,\"error\":\"NotFound\",\"summary\":{\"en\":\"We could not find the requested resource.\",\"am\":\"የተጠየቀው መረጃ አልተገኘም።\"},\"fields\":[{\"field\":\"form\",\"code\":\"TO"
+    },
+    "privacy export without token (401?)": {
+      "status": 200,
+      "envelope": "session,supportPreferences,applications",
+      "bilingual": false,
+      "sample": "{\"session\":{\"id\":\"6a3fa192-9690-4e95-8754-e9d708b1ede5\",\"partnerId\":\"demo\",\"lang\":\"en\",\"consentJson\":{\"saveAnswers\":true,\"smsResume\":false,\"shareWithEmployers\":"
+    },
+    "post job without token (401?)": {
+      "status": 422,
+      "envelope": "statusCode,error,summary,fields",
+      "bilingual": true,
+      "sample": "{\"statusCode\":422,\"error\":\"ValidationError\",\"summary\":{\"en\":\"Please check the highlighted fields and try again.\",\"am\":\"እባክዎ የተመለከቱትን ቦታዎች ይመልከቱና እንደገና ይሞክሩ።\"},\""
+    },
+    "vouch without partner key": {
+      "status": 422,
+      "envelope": "statusCode,error,summary,fields",
+      "bilingual": true,
+      "sample": "{\"statusCode\":422,\"error\":\"ValidationError\",\"summary\":{\"en\":\"Please check the highlighted fields and try again.\",\"am\":\"እባክዎ የተመለከቱትን ቦታዎች ይመልከቱና እንደገና ይሞክሩ።\"},\""
+    }
+  },
+  "token": {
+    "status": 422,
+    "sample": "{\"statusCode\":422,\"error\":\"ValidationError\",\"summary\":{\"en\":\"Please check the highlighted fields and try again.\",\"am\":\"እባክዎ የተመለከቱትን ቦታዎች ይመልከቱና እንደገና ይሞክሩ።\"},\"fields\":[{\"field\":\"property partnerId sh"
+  },
+  "cors": "*",
+  "jobsFilterParam": {
+    "status": 200,
+    "count": 0
+  },
+  "jobSample": "{\"id\":\"seed-job-1\",\"title\":\"Customer Support Agent\",\"employer\":\"Addis Digital Services\",\"location\":\"Addis Ababa\",\"remote\":true,\"deadlineIso\":null,\"description\":\"Customer Support Agent opportunity in Addis Ababa. Training and an accessible onboarding process are provided.\",\"offeredAccommodations\":[\"screen_reader_software\",\"flexible_hours\",\"written_instructions\"],\"contactEmail\":null,\"createdAt\":\"202",
+  "xss": {
+    "status": 200,
+    "sample": "{\"id\":\"83bee666-9aa5-4029-a106-0243f1e92f4c\",\"partnerId\":\"demo\",\"lang\":\"en\",\"consent\":{\"saveAnswers\":true,\"smsResume\":false,\"shareWithEmployers\":false,\"givenAt\""
+  },
+  "lti /api/v1/lti/jwks": 404,
+  "lti /api/v1/lti/login": 404,
+  "lti launch tampered": 404
+}
