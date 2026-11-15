@@ -161,7 +161,7 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 320, height: 640 
   // Fidel helper on the first-name field.
   await w.getByRole('button', { name: am['fidel.toggle'] }).first().click();
   await w.getByLabel(am['fidel.label']).first().fill('abebe');
-  check((await w.locator('output').first().textContent()).includes('አበበ'), 'am: Fidel helper turns "abebe" into አበበ');
+  check((await w.locator('output').first().textContent()).includes('áŠ á‰ á‰ '), 'am: Fidel helper turns "abebe" into áŠ á‰ á‰ ');
   await axe(page, 'signup [am] Fidel helper open');
   await w.getByRole('button', { name: am['fidel.toggle'] }).first().click();
 
@@ -211,7 +211,7 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 320, height: 640 
   };
   const activeIs = (selector) => page.evaluate((sel) => !!document.querySelector('db-signup').shadowRoot.activeElement?.matches(sel), selector);
   const downUntil = async (selector) => {
-    for (let i = 0; i < 25 && !(await activeIs(selector)); i++) await say('ታች');
+    for (let i = 0; i < 25 && !(await activeIs(selector)); i++) await say('á‰³á‰½');
     return activeIs(selector);
   };
   await page.goto(`${BASE}/pages/signup.html?lang=am`, { waitUntil: 'networkidle' });
@@ -223,45 +223,45 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 320, height: 640 
   check(await w.getByRole('button', { name: am['vc.toggle'] }).getAttribute('aria-pressed') === 'true', 'voice control: Alt+V turns it on (aria-pressed)');
   await axe(page, 'signup [am] voice control on');
 
-  check(await downUntil('input[type="checkbox"]'), 'voice control: "ታች" (down) moves focus to the consent checkbox');
-  await say('ምረጥ');
-  check(await w.getByLabel(am['consent.saveAnswers']).isChecked(), 'voice control: "ምረጥ" (choose) ticks the focused checkbox');
+  check(await downUntil('input[type="checkbox"]'), 'voice control: "á‰³á‰½" (down) moves focus to the consent checkbox');
+  await say('áˆáˆ¨áŒ¥');
+  check(await w.getByLabel(am['consent.saveAnswers']).isChecked(), 'voice control: "áˆáˆ¨áŒ¥" (choose) ticks the focused checkbox');
   check((await w.locator('[data-db-voice-status]').textContent()).includes(am['vc.checked']), 'voice control: spoken/visible confirmation says it is ticked');
-  await say('ቀጥል');
+  await say('á‰€áŒ¥áˆ');
   await w.getByRole('heading', { level: 2, name: /2/ }).waitFor();
-  check(true, 'voice control: "ቀጥል" (next) saves and moves to step 2');
-  await say('ተመለስ');
+  check(true, 'voice control: "á‰€áŒ¥áˆ" (next) saves and moves to step 2');
+  await say('á‰°áˆ˜áˆˆáˆµ');
   await w.getByRole('heading', { level: 2, name: /1/ }).waitFor();
-  check(true, 'voice control: "ተመለስ" (back) returns to step 1');
+  check(true, 'voice control: "á‰°áˆ˜áˆˆáˆµ" (back) returns to step 1');
   await say('next');
   await w.getByRole('heading', { level: 2, name: /2/ }).waitFor();
   check(true, 'voice control: English "next" also works in the Amharic UI');
 
   check(await downUntil('input[autocomplete="given-name"]'), 'voice control: reaches the first-name text box');
-  await say('መልስ');
+  await say('áˆ˜áˆáˆµ');
   await page.waitForTimeout(300);
-  await page.evaluate(() => window.__say('አበበ'));
+  await page.evaluate(() => window.__say('áŠ á‰ á‰ '));
   const review = w.getByLabel(am['voice.reviewLabel']);
   await review.waitFor();
-  check(await review.inputValue() === 'አበበ', 'voice control: "መልስ" (answer) dictates into the focused field, shown for review');
+  check(await review.inputValue() === 'áŠ á‰ á‰ ', 'voice control: "áˆ˜áˆáˆµ" (answer) dictates into the focused field, shown for review');
   await page.waitForTimeout(500);
   check(await downUntil('button.bg-terracotta'), 'voice control: moves to "Use this answer"');
-  await say('ምረጥ');
-  check(await w.locator('input[autocomplete="given-name"]').inputValue() === 'አበበ', 'voice control: "ምረጥ" uses the reviewed answer');
+  await say('áˆáˆ¨áŒ¥');
+  check(await w.locator('input[autocomplete="given-name"]').inputValue() === 'áŠ á‰ á‰ ', 'voice control: "áˆáˆ¨áŒ¥" uses the reviewed answer');
 
-  await w.locator('input[autocomplete="family-name"]').fill('ከበደ');
-  await say('ቀጥል');
+  await w.locator('input[autocomplete="family-name"]').fill('áŠ¨á‰ á‹°');
+  await say('á‰€áŒ¥áˆ');
   await w.getByRole('heading', { level: 2, name: /3/ }).waitFor();
   await w.locator('input[autocomplete="tel"]').focus();
-  await say('መልስ');
+  await say('áˆ˜áˆáˆµ');
   await page.waitForTimeout(300);
-  await page.evaluate(() => window.__say('ዜሮ ዘጠኝ አንድ አንድ ሁለት ሶስት አራት አምስት ስድስት ሰባት'));
+  await page.evaluate(() => window.__say('á‹œáˆ® á‹˜áŒ áŠ áŠ áŠ•á‹µ áŠ áŠ•á‹µ áˆáˆˆá‰µ áˆ¶áˆµá‰µ áŠ áˆ«á‰µ áŠ áˆáˆµá‰µ áˆµá‹µáˆµá‰µ áˆ°á‰£á‰µ'));
   await review.waitFor();
   check(await review.inputValue() === '0911234567', 'spoken Amharic number words become a phone number (0911234567)');
 
   await page.waitForTimeout(500);
-  await say('አቁም');
-  check(await w.getByRole('button', { name: am['vc.toggle'] }).getAttribute('aria-pressed') === 'false', 'voice control: "አቁም" (stop) turns it off');
+  await say('áŠ á‰áˆ');
+  check(await w.getByRole('button', { name: am['vc.toggle'] }).getAttribute('aria-pressed') === 'false', 'voice control: "áŠ á‰áˆ" (stop) turns it off');
   check(page.__errors.length === 0, `no page errors in the voice-control journey ${page.__errors.slice(0, 1).join('')}`);
   await page.close();
 }
@@ -333,19 +333,19 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 320, height: 640 
   }, am['consent.saveAnswers']);
   await say(consentNumber);
   check(await w.getByLabel(am['consent.saveAnswers']).isChecked(), `saying the badge number (${consentNumber}) ticks the consent box`);
-  await say('እርዳታ');
-  check(await w.locator('dialog[open]').count() === 1, '"እርዳታ" (help) opens the Need help dialog');
+  await say('áŠ¥áˆ­á‹³á‰³');
+  check(await w.locator('dialog[open]').count() === 1, '"áŠ¥áˆ­á‹³á‰³" (help) opens the Need help dialog');
   check(await w.locator('dialog[open]').getByRole('heading', { name: am['help.signTitle'], exact: true }).count() === 1, 'Need help dialog has the Ethiopian Sign Language section');
   check(await w.locator('dialog[open]').getByRole('heading', { name: am['help.blindTitle'], exact: true }).count() === 1, 'Need help dialog has the blind and keyboard guide');
   await axe(page, 'signup [am] Need help dialog with guide + EthSL');
   await page.keyboard.press('Escape');
-  await say('አቁም');
+  await say('áŠ á‰áˆ');
 
   // E-mail in English inside the Amharic UI; ID number fills the visible field at once.
   await w.locator('form button[type=submit]').click();
   await w.getByRole('heading', { level: 2, name: /2/ }).waitFor();
-  await w.locator('input[autocomplete="given-name"]').fill('አበበ');
-  await w.locator('input[autocomplete="family-name"]').fill('ከበደ');
+  await w.locator('input[autocomplete="given-name"]').fill('áŠ á‰ á‰ ');
+  await w.locator('input[autocomplete="family-name"]').fill('áŠ¨á‰ á‹°');
   await w.locator('form button[type=submit]').click();
   await w.getByRole('heading', { level: 2, name: /3/ }).waitFor();
   await page.evaluate(() => { window.__next = 'a b e b e at gmail dot com'; });

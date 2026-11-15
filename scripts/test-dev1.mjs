@@ -209,7 +209,7 @@ check('11 No duplicate IDs on required host and demo pages', () => {
 
 check('12 Production bundle, copied pages, audio and gzip budget', () => {
   const build = spawnSync('pnpm', ['-F', '@db/web-components', 'build'], {
-    shell: process.platform === 'win32', // pnpm is pnpm.cmd on Windows
+    shell: false, // pnpm is pnpm.cmd on Windows
     cwd: root,
     encoding: 'utf8',
     timeout: 180_000,
