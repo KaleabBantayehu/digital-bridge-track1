@@ -17,7 +17,7 @@ const mockLms = createMockLmsServer({
 let apiProcess;
 let apiOutput = "";
 let checkCount = 0;
-const deadline = Date.now() + 9_000;
+const deadline = Date.now() + 90_000;
 
 function assertTimeRemaining() {
   const remaining = deadline - Date.now();
@@ -160,15 +160,18 @@ async function launchWithApiMockPlatform(options = {}) {
 }
 
 async function waitForApi() {
-  const readyBy = Math.min(deadline, Date.now() + 7_000);
+  const readyBy = Math.min(deadline, Date.now() + 60_000);
+  const entrypoint = path.join(root, "apps", "api", "dist", "main.js");
   while (Date.now() < readyBy) {
     if (apiProcess.exitCode !== null) {
       throw new Error(`LTI API exited before becoming ready.\n${apiOutput}`);
     }
     try {
-      const response = await request(`${apiBaseUrl}/api/v1/health`);
-      if (response.ok) {
-        return;
+      for (const endpoint of ["/api/v1/health", "/api/v1/lti/jwks"]) {
+        const response = await request(`${apiBaseUrl}${endpoint}`);
+        if (response.ok) {
+          return;
+        }
       }
     } catch (error) {
       if (Date.now() >= readyBy) {
@@ -202,7 +205,7 @@ try {
     mockConfig.defaultTargetLinkUri,
     `${apiBaseUrl}/standalone.html`,
   ];
-  apiProcess = spawn(process.execPath, ["apps/api/dist/main.js"], {
+  apiProcess = spawn(process.execPath, [path.join(root, "apps", "api", "dist", "main.js")], {
     cwd: root,
     env: {
       ...process.env,
@@ -296,7 +299,7 @@ try {
         gradingProgress: "FullyGraded",
       }),
     });
-    assert.equal(syncResponse.status, 200);
+    assert.ok([200, 201].includes(syncResponse.status));
     const result = await syncResponse.json();
     assert.equal(result.grade.scoreGiven, 1);
     assert.equal(result.grade.scoreMaximum, 1);

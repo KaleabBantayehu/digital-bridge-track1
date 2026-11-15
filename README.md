@@ -5,8 +5,26 @@ Digital Bridge provides offline-first, bilingual (English and Amharic) onboardin
 
 The project uses native controls, explicit labels, keyboard navigation, visible focus, Shadow DOM focus management, bilingual errors and live regions, 44px targets, 400% reflow, and a high-contrast theme. Support preferences are isolated and never shared without explicit consent.
 
+### 21 October Co-Design Feedback → What We Built
+
+| Barrier heard on 21 October | What we built |
+| --- | --- |
+| Forms timed out or erased progress | Offline-first drafts persist on the device, with no expiry and resumable SMS links. |
+| Learners had no Kebele ID | Inclusive identity routes accept national ID, refugee ID, community documents, or a consented partner voucher; no Kebele ID is mandatory. |
+| Fear of disclosing disability to employers | Support preferences are private, stored separately, excluded from normal profiles and applications, and shared only with explicit consent. |
+| Speech recognition failed on Ethiopian names | Voice answers remain editable for review, voice-note fallback works offline, and the Fidel helper supports Amharic transliteration. |
+| Budget Android phones lacked Amharic TTS | The cascade uses an installed OS voice, then bundled neural Amharic audio, then a synchronized visual caption bar. |
+| Job boards broke under screen readers | Jobs use semantic headings and links, keyboard-accessible filters, live result counts, and embedded `schema.org/JobPosting` metadata. |
+
 ## The main task we tested
 Learners can complete onboarding by keyboard, screen reader, typing, voice with review and edit, Amharic or English, and resume later without losing their draft. The journey also covers inclusive identity verification, SMS resume, Ethiopian dates, private support preferences, job matching, applications, and bilingual recovery from validation errors.
+
+**Yours to answer:**
+
+- **A refugee has no document tonight:** They can continue with the refugee-ID route when available, a community document, or a consented partner voucher; no medical proof or mandatory Kebele ID blocks onboarding.
+- **The connection drops on question 7:** The current draft is saved locally on every change and the API client queues patches; the learner reloads or returns later without losing answers.
+- **Someone cannot read finishes alone:** One question appears at a time with native controls, keyboard and voice control, Read Aloud, bundled Amharic audio, visual captions, simple words, and editable voice-note review.
+- **A partner registers a learner with consent without learning a password:** The partner uses the partner-vouch route with explicit learner consent; the learner receives a session and can resume through the one-time SMS link, with no password disclosed.
 
 ## Run it
 ```powershell
@@ -40,7 +58,13 @@ career jobs and applications, privacy export/delete, and bilingual validation
 errors.
 
 ## Install, Level 3
-Use the REST API and LTI 1.3 integration under `/api/v1`, or host the generated Web Component bundle in any LMS or partner page. The Mock LMS signs real RS256 launch tokens so state, JWKS signature, issuer, audience, time claims, nonce, and required LTI claims are exercised locally.
+Use the REST API and LTI 1.3 integration under `/api/v1`, or host the generated Web Component bundle in any LMS or partner page. The `pages/jobs.html` Career Gateway embeds valid `schema.org/JobPosting` JSON-LD in each job card so external job boards can ingest listings without custom adapters.
+
+LTI 1.3 uses OIDC login initiation and verifies RS256 signatures, state, nonce,
+issuer, audience, expiry, and required claims; invalid launches return bilingual
+401 responses before the tool renders. The Mock LMS Judge Launchpad at
+`apps/savanna-host-demo/mock-lms/index.html` signs real launch tokens and
+exercises the verification path end to end.
 
 ## Languages
 English and Amharic are included. Adding Afaan Oromo (`om.json`), Tigrinya

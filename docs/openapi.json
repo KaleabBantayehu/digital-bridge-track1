@@ -337,6 +337,155 @@
           "Privacy"
         ]
       }
+    },
+    "/api/v1/lti/jwks": {
+      "get": {
+        "operationId": "LtiController_getJwks",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "lti"
+        ]
+      }
+    },
+    "/api/v1/lti/login": {
+      "get": {
+        "operationId": "LtiController_startLoginGet",
+        "summary": "Start an LTI 1.3 login from a trusted platform",
+        "parameters": [],
+        "responses": {
+          "302": {
+            "description": "Redirects to the registered platform."
+          }
+        },
+        "tags": [
+          "lti"
+        ]
+      },
+      "post": {
+        "operationId": "LtiController_startLoginPost",
+        "summary": "Start an LTI 1.3 login from a trusted platform",
+        "parameters": [],
+        "responses": {
+          "302": {
+            "description": "Redirects to the registered platform."
+          }
+        },
+        "tags": [
+          "lti"
+        ]
+      }
+    },
+    "/api/v1/lti/mock-platform/jwks": {
+      "get": {
+        "operationId": "LtiController_getMockPlatformJwks",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "lti"
+        ]
+      }
+    },
+    "/api/v1/lti/mock-platform/sign-launch": {
+      "post": {
+        "operationId": "LtiController_signMockLaunch",
+        "summary": "Sign a development-only LTI launch for automated tests",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "lti"
+        ]
+      }
+    },
+    "/api/v1/lti/launch": {
+      "post": {
+        "operationId": "LtiController_launch",
+        "summary": "Verify an LTI 1.3 launch",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns a short-lived LTI session token."
+          },
+          "401": {
+            "description": "Rejects an invalid or replayed launch."
+          }
+        },
+        "tags": [
+          "lti"
+        ]
+      }
+    },
+    "/api/v1/lti/ags/sync": {
+      "post": {
+        "operationId": "LtiController_syncGrade",
+        "summary": "Send an onboarding completion score to the LTI gradebook",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Reports whether the grade was newly synchronized."
+          }
+        },
+        "tags": [
+          "lti"
+        ]
+      }
+    },
+    "/api/v1/lti/ags/grades": {
+      "get": {
+        "operationId": "LtiController_getGrades",
+        "summary": "Read privacy-safe LTI grade receipts for this course",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "lti"
+        ]
+      }
+    },
+    "/api/v1/lti/nrps/roster": {
+      "get": {
+        "operationId": "LtiController_getRoster",
+        "summary": "Return an instructor's roster with onboarding status only",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns names and completion booleans only."
+          }
+        },
+        "tags": [
+          "lti"
+        ]
+      }
+    },
+    "/api/v1/lti/deep-link": {
+      "post": {
+        "operationId": "LtiController_returnDeepLink",
+        "summary": "Return an LTI Deep Linking response to a platform",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns a signed Deep Linking response form."
+          }
+        },
+        "tags": [
+          "lti"
+        ]
+      }
     }
   },
   "info": {
