@@ -9,4 +9,5 @@ RUN pnpm install --frozen-lockfile=false
 COPY . .
 RUN pnpm build:schemas && pnpm -F @db/web-components build && pnpm -F @db/api build
 EXPOSE 3000 5173
-CMD ["pnpm", "dev"]
+HEALTHCHECK --interval=10s --timeout=3s --start-period=30s --retries=5 CMD node -e "fetch('http://127.0.0.1:3000/api/v1/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+CMD ["node", "scripts/docker-entrypoint.mjs"]
