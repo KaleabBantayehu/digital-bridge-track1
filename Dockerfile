@@ -1,5 +1,8 @@
 FROM node:22-alpine
-RUN corepack enable && corepack prepare pnpm@9.12.0 --activate
+RUN apk add --no-cache wget \
+    && wget -qO /tmp/pnpm.tgz https://registry.npmjs.org/pnpm/-/pnpm-9.12.0.tgz \
+    && npm install --global /tmp/pnpm.tgz \
+    && rm -f /tmp/pnpm.tgz
 WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 COPY packages/shared-schemas/package.json ./packages/shared-schemas/

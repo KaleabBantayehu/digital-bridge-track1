@@ -21,6 +21,40 @@ let flushInProgress: Promise<void> | undefined;
 let queueMutation: Promise<void> = Promise.resolve();
 let retryTimer: ReturnType<typeof setTimeout> | undefined;
 let listeningForOnline = false;
+const countListeners = new Set<(count: number) => void>();
+const syncStatusListeners = new Set<(status: SyncStatus) => void>();
+
+export type SyncStatus =
+  | { type: 'idle' }
+  | { type: 'offline'; count: number }
+  | { type: 'syncing'; current: number; total: number }
+  | { type: 'synced' };
+
+let latestSyncStatus: SyncStatus = { type: 'idle' };
+
+function notifyQueueState(queue: SyncItem[]): void {
+  const count = queue.length;
+  countListeners.forEach((listener) => listener(count));
+}
+
+function setSyncStatus(status: SyncStatus): void {
+  latestSyncStatus = status;
+  syncStatusListeners.forEach((listener) => listener(status));
+}
+
+export function subscribeToSyncQueue(
+  onCount: (count: number) => void,
+  onStatus: (status: SyncStatus) => void,
+): () => void {
+  countListeners.add(onCount);
+  syncStatusListeners.add(onStatus);
+  onStatus(latestSyncStatus);
+  void readQueue().then((queue) => onCount(queue.length)).catch(() => onCount(0));
+  return () => {
+    countListeners.delete(onCount);
+    syncStatusListeners.delete(onStatus);
+  };
+}
 
 async function readQueue(): Promise<SyncItem[]> {
   const raw = await onboardingStorage.getItem(QUEUE_KEY);
@@ -34,6 +68,7 @@ async function readQueue(): Promise<SyncItem[]> {
 
 async function writeQueue(queue: SyncItem[]): Promise<void> {
   await onboardingStorage.setItem(QUEUE_KEY, JSON.stringify(queue));
+  notifyQueueState(queue);
 }
 
 function updateQueue(updater: (queue: SyncItem[]) => SyncItem[]): Promise<void> {
@@ -94,9 +129,19 @@ export function flushSyncQueue(): Promise<void> {
 }
 
 async function flushQueue(): Promise<void> {
-  if (!activeClient || (typeof navigator !== 'undefined' && !navigator.onLine)) return;
+  if (!activeClient || (typeof navigator !== 'undefined' && !navigator.onLine)) {
+    const queue = await readQueue();
+    setSyncStatus(queue.length ? { type: 'offline', count: queue.length } : { type: 'idle' });
+    return;
+  }
   const queue = await readQueue();
+  if (queue.length === 0) {
+    setSyncStatus({ type: 'idle' });
+    return;
+  }
+  setSyncStatus({ type: 'syncing', current: 1, total: queue.length });
 
+  let synced = 0;
   for (const item of queue) {
     if (item.nextAttemptAt > Date.now()) {
       if (retryTimer) clearTimeout(retryTimer);
@@ -109,6 +154,13 @@ async function flushQueue(): Promise<void> {
     try {
       await activeClient.saveStep(item.profile, item.step, item.data, item.revision, item.clientUpdatedAt);
       await updateQueue((current) => current.filter((queued) => queued.id !== item.id));
+      synced += 1;
+      const remaining = queue.length - synced;
+      if (remaining > 0) {
+        setSyncStatus({ type: 'syncing', current: synced + 1, total: queue.length });
+      } else {
+        setSyncStatus({ type: 'synced' });
+      }
     } catch (error) {
       if (error instanceof Error && "status" in error) {
         const status = Number((error as Error & { status?: unknown }).status);

@@ -93,7 +93,12 @@ export abstract class ReactShadowElement extends HTMLElement {
   }
 
   protected get apiUrl(): string | undefined {
-    return this.getAttribute('api') || this.getAttribute('api-url') || undefined;
+    const explicit = this.getAttribute('api') || this.getAttribute('api-url');
+    if (explicit) return explicit.replace(/\/+$/, '');
+    if (typeof window === 'undefined') return undefined;
+    const hostname = window.location.hostname.toLowerCase();
+    const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '[::1]';
+    return isLocalhost ? undefined : 'https://digital-bridge-track1.onrender.com/api/v1';
   }
 
   protected get partnerId(): string {

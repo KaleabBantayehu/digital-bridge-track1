@@ -106,9 +106,14 @@
           }
           return await response.json();
         } catch {
-          staticFallback = true;
+          const hosted = !["localhost", "127.0.0.1", "[::1]"].includes(window.location.hostname);
+          staticFallback = !hosted;
           return {
-            toolBaseUrl: "http://localhost:3000",
+            issuer: "https://mock-lms.local",
+            clientId: "digital-bridge-mock-client",
+            toolBaseUrl: hosted
+              ? "https://digital-bridge-track1.onrender.com/api/v1"
+              : "http://localhost:3000",
             defaultTargetLinkUri: new URL("/standalone.html", window.location.href).toString(),
           };
         }
@@ -176,15 +181,15 @@
           return;
         }
         if (
-          apiBase.protocol !== "http:" ||
-          !isLoopback(apiBase) ||
-          apiBase.pathname !== "/" ||
+          (apiBase.protocol === "http:" && !isLoopback(apiBase)) ||
+          !["http:", "https:"].includes(apiBase.protocol) ||
+          (apiBase.pathname !== "/" && apiBase.pathname !== "/api/v1") ||
           apiBase.search ||
           apiBase.hash ||
           !["http:", "https:"].includes(targetLink.protocol)
         ) {
           errorMessage.hidden = false;
-          errorMessage.textContent = "The API must use a local HTTP address and the tool page must be a valid web address.";
+          errorMessage.textContent = "The API must use a local HTTP address or HTTPS address and the tool page must be a valid web address.";
           return;
         }
 
@@ -265,7 +270,7 @@
         const apiBase = new URL(apiBaseInput.value);
         const response = await fetch(new URL(path, apiBase), {
           method,
-          headers: { authorization: `Bearer ${sessionToken}` },
+          headers: { authorization: 'Bearer ' + sessionToken },
         });
         if (!response.ok) {
           const error = await response.text();

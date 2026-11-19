@@ -103,7 +103,7 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 320, height: 640 
       }
       await axe(page, tag);
       check(page.__errors.length === 0, `no page errors: ${tag} ${page.__errors.slice(0, 1).join('')}`);
-      await page.close();
+      await page.context().close();
     }
   }
 }
@@ -188,7 +188,7 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 320, height: 640 
   const steps = await page.evaluate(() => window.__events.filter(([n]) => n === 'db-signup:step').map(([, d]) => d.step));
   check(steps.length === new Set(steps).size, `db-signup:step fires once per step (${steps.join(',')})`);
   check(page.__errors.length === 0, `no page errors in the Amharic journey ${page.__errors.slice(0, 1).join('')}`);
-  await page.close();
+  await page.context().close();
 }
 
 // 2b) Hands-free voice control in Amharic: a scripted speech engine stands in for the microphone, so every
@@ -269,7 +269,7 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 320, height: 640 
   await say('አቁም');
   check(await w.getByRole('button', { name: am['vc.toggle'] }).getAttribute('aria-pressed') === 'false', 'voice control: "አቁም" (stop) turns it off');
   check(page.__errors.length === 0, `no page errors in the voice-control journey ${page.__errors.slice(0, 1).join('')}`);
-  await page.close();
+  await page.context().close();
 }
 
 // 2c) JUDGE_REPORT D-01 / D-02 regressions: axe on the landing page, and on signup.html scrolled halfway down
@@ -279,7 +279,7 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 320, height: 640 
     const page = await newPage(viewport);
     await page.goto(`${BASE}/index.html`, { waitUntil: 'networkidle' });
     await axe(page, `index.html ${viewport.width}px`);
-    await page.close();
+    await page.context().close();
   }
   for (const lang of ['en', 'am']) {
     const page = await newPage(viewport);
@@ -297,7 +297,7 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 320, height: 640 
     await axe(page, `signup [${lang}] ${viewport.width}px scrolled halfway, step 2`);
     const topbarPosition = await page.evaluate(() => getComputedStyle(document.querySelector('.db-savanna-topbar')).position);
     check(topbarPosition === 'static', `top bar is not sticky (position: ${topbarPosition})`);
-    await page.close();
+    await page.context().close();
   }
 }
 
@@ -371,7 +371,7 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 320, height: 640 
   await w.getByRole('button', { name: am['common.cancel'] }).click();
   check(await codeInput.inputValue() === '', 'Cancel puts the previous (empty) value back');
   check(page.__errors.length === 0, `no page errors in the co-designer checks ${page.__errors.slice(0, 1).join('')}`);
-  await page.close();
+  await page.context().close();
 }
 
 // 2e) Vision / colour modes: every non-default palette passes axe on the wizard (with a ticked row and a pressed
@@ -398,7 +398,7 @@ for (const mode of ['colorblind-safe', 'high-contrast', 'dark']) {
   await page.waitForTimeout(300);
   await axe(page, `jobs in "${mode}" mode`);
   check(page.__errors.length === 0, `no page errors in "${mode}" mode ${page.__errors.slice(0, 1).join('')}`);
-  await page.close();
+  await page.context().close();
 }
 
 // 2f) Sign language (EthSL) panel: build a word from the cards into the field, and keep a sign-language video that
@@ -436,7 +436,7 @@ for (const mode of ['colorblind-safe', 'high-contrast', 'dark']) {
   await w.getByRole('heading', { level: 2, name: /3/ }).waitFor({ timeout: 6000 });
   check(true, 'step completed with a sign-language video instead of typing');
   check(page.__errors.length === 0, `no page errors in the sign-language checks ${page.__errors.slice(0, 1).join('')}`);
-  await page.close();
+  await page.context().close();
 }
 
 // 2g) Round-2 manual blind / voice testing fixes.
@@ -546,7 +546,7 @@ for (const mode of ['colorblind-safe', 'high-contrast', 'dark']) {
   check(dob === '15/1/1995', `round 2: "15 Meskerem 1995" spoken fills Day / Month / Year (${dob})`);
   await axe(page, 'round 2: date of birth after speaking it');
   check(page.__errors.length === 0, `no page errors in the round-2 checks ${page.__errors.slice(0, 1).join('')}`);
-  await page.close();
+  await page.context().close();
 
   // One voice-control owner per page: turning it on in the Career Gateway turns it off in onboarding.
   const page2 = await newPage({ width: 1280, height: 800 }, scripted);
@@ -574,7 +574,7 @@ for (const mode of ['colorblind-safe', 'high-contrast', 'dark']) {
   check(true, 'profile.html (mode="edit") opens on "Edit my profile"');
   const focusedHost = await page.evaluate(() => document.activeElement === document.body);
   check(focusedHost, 'page load does not move focus into the widget');
-  await page.close();
+  await page.context().close();
 }
 
 check(missing.length === 0, `no 404s (${[...new Set(missing)].join(', ')})`);

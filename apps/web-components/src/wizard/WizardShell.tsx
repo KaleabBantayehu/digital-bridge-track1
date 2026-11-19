@@ -22,6 +22,7 @@ import { VoiceControl } from './VoiceControl';
 import { useVisionMode } from './vision';
 import { ETHIOPIC_CSS, scriptClass } from '../i18n/script';
 import { clearVoiceNotes, getVoiceNotes, profileVoiceNotes } from '../voice/voiceNotes';
+import { subscribeToSyncQueue, type SyncStatus } from '../state/syncQueue';
 import { WelcomeConsentStep } from './steps/WelcomeConsentStep';
 import { NameStep } from './steps/NameStep';
 import { ContactStep } from './steps/ContactStep';
@@ -94,6 +95,8 @@ export const WizardShell: React.FC<WizardShellProps> = ({
   // Offline (no network, or the API fell back to the on-device mock): say so in words, persistently.
   const storeOffline = useOnboardingStore((s) => s.isOffline);
   const [networkOffline, setNetworkOffline] = useState(() => typeof navigator !== 'undefined' && navigator.onLine === false);
+  const [syncStatus, setSyncStatus] = useState<SyncStatus>({ type: 'idle' });
+  const [queuedCount, setQueuedCount] = useState(0);
   const [finished, setFinished] = useState(!editMode && !!profile.progress.completedAt);
   const [partnerDraft, setPartnerDraft] = useState<PartnerDraft>(() => partnerDraftFrom(profile));
 
@@ -151,6 +154,19 @@ export const WizardShell: React.FC<WizardShellProps> = ({
       window.removeEventListener('online', goOnline);
     };
   }, [announce]);
+  useEffect(() => subscribeToSyncQueue(
+    (count) => setQueuedCount(count),
+    (status) => {
+      setSyncStatus(status);
+      if (status.type === 'syncing') {
+        announce(translate(useOnboardingStore.getState().profile.lang, 'sync.syncing', { current: status.current, total: status.total }));
+      } else if (status.type === 'synced') {
+        announce(translate(useOnboardingStore.getState().profile.lang, 'sync.synced'));
+      } else if (status.type === 'offline') {
+        announce(translate(useOnboardingStore.getState().profile.lang, 'sync.offlineCount', { count: status.count }));
+      }
+    },
+  ), [announce, lang]);
   const offline = networkOffline || storeOffline;
 
   /** Becomes true after the first navigation, so remounted headings take focus but page load never does. */
@@ -333,10 +349,18 @@ export const WizardShell: React.FC<WizardShellProps> = ({
         </p>
       )}
 
-      {offline && (
-        <p className={ui.notice}>
+      {(offline || syncStatus.type !== 'idle') && (
+        <p className={ui.notice} role="status" aria-live="polite" aria-atomic="true">
           <WifiOff aria-hidden="true" focusable="false" className="h-6 w-6 shrink-0 text-terracotta" />
-          <span>{t('status.offlineSaved')}</span>
+          <span>
+            {syncStatus.type === 'syncing'
+              ? t('sync.syncing', { current: syncStatus.current, total: syncStatus.total })
+              : syncStatus.type === 'synced'
+                ? t('sync.synced')
+                : offline && queuedCount > 0
+                  ? t('sync.offlineCount', { count: queuedCount })
+                  : t('status.offlineSaved')}
+          </span>
         </p>
       )}
 

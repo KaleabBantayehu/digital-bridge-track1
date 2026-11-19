@@ -50,9 +50,16 @@ The REST API (optional — the widgets work offline without it): `cd apps/api &&
 http://localhost:3000/api/v1/health and Swagger UI at http://localhost:3000/api/docs. The first start can take a few
 minutes on a slow laptop.
 
-Docker: `docker compose up --build` builds everything and starts the API on port 3000 and the Vite **development**
-page on 5173. We have not been able to run Docker on our build machine yet, and the container currently runs the Vite
-dev server, so use the commands above to see the Savanna pages.
+Docker: `docker compose up --build -d` builds the production static site and API container. The production entrypoint
+serves `apps/web-components/dist` on port 5173 and NestJS on port 3000 (it does not run the Vite development server).
+During the latest audit Docker Desktop was running and the build context plus pnpm tarball setup passed, but dependency
+downloads from `registry.npmjs.org` repeatedly timed out inside the container, so local container runtime health and
+`http://127.0.0.1:3000/api/v1/health` could not be verified here. Use `docker compose down` to stop containers.
+
+Live hosted API: [Health](https://digital-bridge-track1.onrender.com/api/v1/health) and
+[Swagger UI](https://digital-bridge-track1.onrender.com/docs). Hosted widgets automatically use
+`https://digital-bridge-track1.onrender.com/api/v1`; localhost and `127.0.0.1` keep the local/mock behavior unless an
+explicit `api` or `api-url` attribute is provided.
 
 For widget development with hot reload: `pnpm dev` (standalone dev page on http://localhost:5173, API on 3000).
 

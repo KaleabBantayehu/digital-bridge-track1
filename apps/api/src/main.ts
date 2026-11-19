@@ -15,10 +15,25 @@ class AppModule {}
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.getHttpAdapter().getInstance().set('trust proxy', 1);
   app.setGlobalPrefix("api/v1");
+  const corsOrigins = (process.env.CORS_ORIGINS ||
+    "http://localhost:5173,http://localhost:8080,http://localhost:3000,http://127.0.0.1:5173,http://127.0.0.1:8080")
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
   app.enableCors({
-    origin: (process.env.CORS_ORIGINS ||
-      "http://localhost:5173,http://localhost:8080,http://localhost:3000,http://127.0.0.1:5173,http://127.0.0.1:8080").split(","),
+    origin: (origin, callback) => {
+      let hostedVercel = false;
+      try {
+        hostedVercel = new URL(origin).hostname.endsWith('.vercel.app');
+      } catch {
+        hostedVercel = false;
+      }
+      if (!origin || corsOrigins.includes(origin) || hostedVercel) callback(null, true);
+      else callback(new Error('Origin not allowed by CORS'), false);
+    },
+    credentials: true,
   });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
 

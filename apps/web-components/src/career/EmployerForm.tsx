@@ -31,6 +31,19 @@ const LABELS: Record<Field, I18nKey> = {
 };
 const EMPTY = { jobTitle: '', employerName: '', location: '', description: '', contactEmail: '' };
 
+const LOW_COST_ADJUSTMENTS: Array<{
+  filter: SupportFilter;
+  title: I18nKey;
+  explanation: I18nKey;
+  cost: I18nKey;
+}> = [
+  { filter: 'screen_reader_software', title: 'employer.adjustment.screenReader.title', explanation: 'employer.adjustment.screenReader.explanation', cost: 'employer.adjustment.screenReader.cost' },
+  { filter: 'flexible_hours', title: 'employer.adjustment.flexible.title', explanation: 'employer.adjustment.flexible.explanation', cost: 'employer.adjustment.flexible.cost' },
+  { filter: 'written_not_phone', title: 'employer.adjustment.instructions.title', explanation: 'employer.adjustment.instructions.explanation', cost: 'employer.adjustment.instructions.cost' },
+  { filter: 'sign_language_captions', title: 'employer.adjustment.captions.title', explanation: 'employer.adjustment.captions.explanation', cost: 'employer.adjustment.captions.cost' },
+  { filter: 'quiet_workspace', title: 'employer.adjustment.quiet.title', explanation: 'employer.adjustment.quiet.explanation', cost: 'employer.adjustment.quiet.cost' },
+];
+
 /** Employer accommodation form: post a job and the workplace support it offers. */
 export const EmployerForm: React.FC<EmployerFormProps> = ({ lang = 'en', services = localServices, announce, onPosted, headingLevel = 2 }) => {
   const Heading = headingLevel === 3 ? 'h3' : 'h2';
@@ -134,6 +147,42 @@ export const EmployerForm: React.FC<EmployerFormProps> = ({ lang = 'en', service
               checked={offers.includes(filter)} onChange={(on) => toggleOffer(filter, on)} />
           ))}
         </fieldset>
+
+        <section aria-labelledby={`${idBase}-suggestions-heading`} className="mt-6">
+          <h3 id={`${idBase}-suggestions-heading`} className="text-xl font-bold">
+            {t('employer.suggestionsTitle')}
+          </h3>
+          <p className="mt-1 mb-3">{t('employer.suggestionsIntro')}</p>
+          <ul className="grid gap-3">
+            {LOW_COST_ADJUSTMENTS.map((adjustment) => {
+              const active = offers.includes(adjustment.filter);
+              return (
+                <li key={adjustment.filter} className="rounded-xl border-2 border-sand p-3">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-bold">{t(adjustment.title)}</p>
+                      <p className="mt-1">{t(adjustment.explanation)}</p>
+                      <span className="mt-2 inline-block rounded-full border border-ink px-2 py-1 text-sm font-bold">
+                        {t(adjustment.cost)}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      aria-pressed={active}
+                      className={cx(ui.btnSecondary, 'min-h-[44px] min-w-[44px] shrink-0')}
+                      onClick={() => {
+                        toggleOffer(adjustment.filter, !active);
+                        say(`${t(active ? 'employer.removeSuggestion' : 'employer.addSuggestion')}: ${t(adjustment.title)}`);
+                      }}
+                    >
+                      {t(active ? 'employer.removeSuggestion' : 'employer.addSuggestion')}
+                    </button>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
 
         <button type="submit" className={ui.btnPrimary}>{t('employer.submit')}</button>
         {posted && <p className="mt-3 font-semibold">{posted}</p>}
