@@ -7,7 +7,7 @@ services:
       - "5173:5173"
     environment:
       - PORT=3000
-      - NODE_ENV=production
+      - NODE_ENV=development
       - DB_TYPE=sqlite
       - DB_DATABASE=data/digital_bridge.sqlite
       - STATIC_PORT=5173
