@@ -338,6 +338,59 @@
         ]
       }
     },
+    "/api/v1/help/ask": {
+      "post": {
+        "operationId": "HelpController_ask",
+        "summary": "Ask a question in English or Amharic and get an answer in the same language",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AskQuestionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "help"
+        ]
+      }
+    },
+    "/api/v1/help/faq": {
+      "get": {
+        "operationId": "HelpController_faq",
+        "summary": "List the common questions and answers in one language",
+        "parameters": [
+          {
+            "name": "lang",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "enum": [
+                "en",
+                "am"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "help"
+        ]
+      }
+    },
     "/api/v1/lti/jwks": {
       "get": {
         "operationId": "LtiController_getJwks",
@@ -373,6 +426,36 @@
         "responses": {
           "302": {
             "description": "Redirects to the registered platform."
+          }
+        },
+        "tags": [
+          "lti"
+        ]
+      }
+    },
+    "/api/v1/lti/install": {
+      "get": {
+        "operationId": "LtiController_getInstallGuide",
+        "summary": "One page of copy-ready values to install the tool in Moodle, Canvas or any LTI 1.3 platform",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "lti"
+        ]
+      }
+    },
+    "/api/v1/lti/install/canvas.json": {
+      "get": {
+        "operationId": "LtiController_getCanvasConfig",
+        "summary": "Canvas LTI 1.3 developer key configuration (paste this URL into Canvas)",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
           }
         },
         "tags": [
@@ -683,6 +766,27 @@
           "jobId",
           "applicantProfileId",
           "answers"
+        ]
+      },
+      "AskQuestionDto": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string",
+            "example": "Do I need an ID to sign up?",
+            "description": "English or Amharic. The answer uses the same language."
+          },
+          "lang": {
+            "type": "string",
+            "enum": [
+              "en",
+              "am"
+            ],
+            "description": "Used only when the question has no letters to detect."
+          }
+        },
+        "required": [
+          "question"
         ]
       }
     }
