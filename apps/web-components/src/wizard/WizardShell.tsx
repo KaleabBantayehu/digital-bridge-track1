@@ -349,8 +349,9 @@ export const WizardShell: React.FC<WizardShellProps> = ({
         </p>
       )}
 
+      {/* Announced through the persistent LiveRegion; this visible copy is not a second live region. */}
       {(offline || syncStatus.type !== 'idle') && (
-        <p className={ui.notice} role="status" aria-live="polite" aria-atomic="true">
+        <p className={ui.notice}>
           <WifiOff aria-hidden="true" focusable="false" className="h-6 w-6 shrink-0 text-terracotta" />
           <span>
             {syncStatus.type === 'syncing'
