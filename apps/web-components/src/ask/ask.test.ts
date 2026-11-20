@@ -1,5 +1,32 @@
 import { describe, expect, it } from 'vitest';
 import { answerHelpQuestion } from '@db/shared-schemas';
+import { bestAlternative, joinTranscripts, normaliseTranscript } from './askVoice';
+
+const result = (alts: Array<[string, number?]>, isFinal = true) =>
+  Object.assign(alts.map(([transcript, confidence]) => ({ transcript, confidence })), { isFinal });
+
+describe('db-ask voice transcript', () => {
+  it('writes interim and final words into one clean question', () => {
+    const list = [result([['Do I need ']]), result([[' an ID to sign up']], false)];
+    expect(joinTranscripts(list)).toBe('Do I need an ID to sign up');
+  });
+
+  it('does not repeat words when Android resends the text so far', () => {
+    const list = [result([['how']]), result([['how do I']]), result([['how do I find a job']])];
+    expect(joinTranscripts(list)).toBe('how do I find a job');
+  });
+
+  it('keeps Amharic transcripts and picks the most confident of 3 alternatives', () => {
+    expect(bestAlternative(result([['ስራ', 0.4], ['ሥራ እንዴት አገኛለሁ', 0.9], ['ስራ እንዴት', 0.6]]))).toBe('ሥራ እንዴት አገኛለሁ');
+    const spoken = joinTranscripts([result([['ሥራ እንዴት አገኛለሁ', 0.9]])]);
+    expect(answerHelpQuestion(spoken).id).toBe('jobs');
+  });
+
+  it('trims and collapses spaces, and ignores empty results', () => {
+    expect(normaliseTranscript('  ኢንተርኔት   ቢቋረጥ ')).toBe('ኢንተርኔት ቢቋረጥ');
+    expect(joinTranscripts([result([['   ']]), result([['hello']])])).toBe('hello');
+  });
+});
 
 // Pitch day: judges ask the product one question in English and the same question in Amharic.
 describe('bilingual help answers', () => {

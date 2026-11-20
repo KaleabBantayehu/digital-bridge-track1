@@ -566,6 +566,120 @@ for (const mode of ['colorblind-safe', 'high-contrast', 'dark']) {
   await page2.close();
 }
 
+// 2c) <db-ask> "Ask a question": live voice transcript, Amharic voice fallback, sign-language parity, language sync,
+//     and 0 axe violations in all 4 colour modes at 1280 and 320 px with the sign-language panel open.
+{
+  const page = await newPage({ width: 1280, height: 800 }, () => {
+    window.__micEvents = [];
+    window.addEventListener('db-voice-field:active', (e) => window.__micEvents.push(e.detail.active));
+    class ScriptedRecognition extends EventTarget {
+      start() { window.__askRec = this; }
+      stop() { if (window.__askRec === this) window.__askRec = null; this.onend?.(); }
+      abort() { if (window.__askRec === this) window.__askRec = null; }
+    }
+    window.SpeechRecognition = ScriptedRecognition;
+    window.webkitSpeechRecognition = ScriptedRecognition;
+    window.__heard = (list) => {
+      const rec = window.__askRec;
+      if (!rec) return false;
+      rec.onresult?.({ results: list.map(([text, isFinal]) => Object.assign([{ transcript: text, confidence: 0.9 }], { isFinal })) });
+      return true;
+    };
+  });
+  await page.goto(`${BASE}/pages/signup.html?lang=en`, { waitUntil: 'networkidle' });
+  const ask = page.locator('db-ask');
+  const input = ask.locator('[data-db-ask-input]');
+  const voice = ask.locator('[data-db-action="ask-voice"]');
+  await voice.click();
+  const settings = await page.evaluate(() => {
+    const r = window.__askRec;
+    return r && { continuous: r.continuous, interim: r.interimResults, alts: r.maxAlternatives, lang: r.lang };
+  });
+  check(!!settings && settings.continuous && settings.interim && settings.alts === 3 && settings.lang === 'en-US',
+    `ask voice: continuous + interim results + 3 alternatives (${JSON.stringify(settings)})`);
+  check(await voice.getAttribute('aria-pressed') === 'true' && (await voice.textContent()).includes(en['ask.voiceStop']), 'ask voice: shows a "Stop listening" toggle while active');
+  check((await page.evaluate(() => window.__micEvents)).includes(true), 'ask voice: dispatches db-voice-field:active {active:true} (pauses Alt+V voice control)');
+  await page.waitForTimeout(2500);
+  check(await voice.getAttribute('aria-pressed') === 'true', 'ask voice: still listening 2.5 s after start with no speech yet (no early cut-off)');
+  await page.evaluate(() => window.__heard([['Do I need', false]]));
+  await page.waitForTimeout(150);
+  check(await input.inputValue() === 'Do I need', `ask voice: interim words are written into the question box live ("${await input.inputValue()}")`);
+  await page.evaluate(() => window.__heard([['Do I need', true], ['an ID to sign up', false]]));
+  await page.waitForTimeout(150);
+  check(await input.inputValue() === 'Do I need an ID to sign up', 'ask voice: final + interim words join into one editable question');
+  await page.waitForTimeout(4600);
+  check(await voice.getAttribute('aria-pressed') === 'false', 'ask voice: stops by itself about 4 s after the learner stops speaking');
+  check((await page.evaluate(() => window.__micEvents)).at(-1) === false, 'ask voice: dispatches db-voice-field:active {active:false} when done');
+  check((await ask.locator('[data-db-ask-status]').textContent()).includes(fill(en['ask.heard'], { text: 'Do I need an ID to sign up' })),
+    'ask voice: role="status" says what was heard and to press Ask (no auto-submit)');
+  await ask.getByRole('button', { name: en['ask.submit'], exact: true }).click();
+  await ask.locator('[data-db-ask-answer]').waitFor();
+  check((await ask.locator('[data-db-ask-answer]').textContent()).startsWith('No.'), 'ask voice: the spoken question gets the ID answer');
+
+  // Sign-language parity: picture cards answer without typing; the shared SignPanel opens and closes cleanly.
+  const sign = ask.locator('[data-db-action="ask-sign"]');
+  await sign.click();
+  check(await sign.getAttribute('aria-expanded') === 'true', 'ask sign: "Ask in sign language" opens (aria-expanded=true)');
+  check(await ask.getByRole('heading', { name: en['sign.title'] }).isVisible(), 'ask sign: reuses the VoiceField sign-language panel (video + cards)');
+  const privacyQ = 'Who can see my disability or support needs?';
+  await ask.locator(`[id$="-sign"]`).getByRole('button', { name: privacyQ }).click();
+  await page.waitForTimeout(300);
+  check((await ask.locator('[data-db-ask-answer]').textContent()).startsWith('Only you.'), 'ask sign: a picture card gives the written answer with no typing');
+  await sign.click();
+  await page.waitForTimeout(200);
+  check(await sign.getAttribute('aria-expanded') === 'false' && await ask.getByRole('heading', { name: en['sign.title'] }).count() === 0,
+    'ask sign: the panel closes cleanly');
+  await sign.click();
+  await ask.getByRole('button', { name: en['common.close'] }).first().click();
+  await page.waitForTimeout(200);
+  const focusBack = await page.evaluate(() => document.querySelector('db-ask').shadowRoot.activeElement?.getAttribute('data-db-action'));
+  check(focusBack === 'ask-sign', 'ask sign: Close returns focus to "Ask in sign language"');
+  check(page.__errors.length === 0, `no page errors in the db-ask checks ${page.__errors.join(' | ')}`);
+
+  // Language sync: the language button inside <db-signup> also switches <db-ask>.
+  await page.locator('db-signup').locator('[data-db-action="lang"]').first().click();
+  await page.waitForTimeout(400);
+  check(await ask.getAttribute('lang') === 'am' && await ask.getByRole('heading', { name: am['ask.heading'] }).isVisible(),
+    'ask lang: switching language inside db-signup switches db-ask to Amharic too');
+  await page.context().close();
+
+  // Amharic voice not available: a clear bilingual status, never silent, and an English voice option.
+  const pageAm = await newPage({ width: 1280, height: 800 }, () => {
+    class NoAmharic extends EventTarget {
+      start() { setTimeout(() => { this.onerror?.({ error: 'language-not-supported' }); this.onend?.(); }, 50); }
+      stop() { this.onend?.(); }
+      abort() {}
+    }
+    window.SpeechRecognition = NoAmharic;
+    window.webkitSpeechRecognition = NoAmharic;
+  });
+  await pageAm.goto(`${BASE}/pages/signup.html?lang=am`, { waitUntil: 'networkidle' });
+  const askAm = pageAm.locator('db-ask');
+  await askAm.locator('[data-db-action="ask-voice"]').click();
+  await pageAm.waitForTimeout(400);
+  check((await askAm.locator('[role="status"][data-db-ask-status]').textContent()).includes(am['ask.amUnavailable']),
+    'ask voice [am]: language-not-supported shows the Amharic explanation in role="status"');
+  check(await askAm.getByRole('button', { name: en['ask.voiceEnglish'] }).isVisible(), 'ask voice [am]: offers "Ask by voice in English"');
+  await pageAm.context().close();
+
+  for (const mode of ['terracotta', 'colorblind-safe', 'high-contrast', 'dark']) {
+    for (const width of [1280, 320]) {
+      const p = await newPage({ width, height: 800 });
+      await p.goto(`${BASE}/pages/signup.html?vision=${mode}`, { waitUntil: 'networkidle' });
+      const a = p.locator('db-ask');
+      await a.locator('[data-db-action="ask-sign"]').click();
+      await a.getByRole('heading', { name: en['sign.title'] }).waitFor();
+      const applied = await p.evaluate(() => document.querySelector('db-ask').shadowRoot.querySelector('[data-vision-mode]')?.getAttribute('data-vision-mode'));
+      check(applied === mode, `ask ${mode} @${width}: db-ask follows the colour mode (${applied})`);
+      const small = await p.evaluate(() => [...document.querySelector('db-ask').shadowRoot.querySelectorAll('button')]
+        .filter((b) => b.offsetParent && b.getBoundingClientRect().height < 44).length);
+      check(small === 0, `ask ${mode} @${width}: every visible button is at least 44 px tall (${small} smaller)`);
+      await axe(p, `db-ask sign panel open, ${mode} @${width}`);
+      await p.context().close();
+    }
+  }
+}
+
 // 3) Profile edit mode opens on the summary.
 {
   const page = await newPage();
