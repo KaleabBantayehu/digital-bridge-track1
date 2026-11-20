@@ -49,7 +49,7 @@
     const buttons = document.querySelectorAll('[data-db-lang]');
     if (!buttons.length) return;
     const widgets = () =>
-      document.querySelectorAll('db-signup, db-onboarding-wizard, db-career-gateway, db-employer-accommodations');
+      document.querySelectorAll('db-signup, db-onboarding-wizard, db-career-gateway, db-employer-accommodations, db-ask');
     const apply = (lang) => {
       widgets().forEach((widget) => widget.setAttribute('lang', lang));
       buttons.forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.dbLang === lang)));
@@ -80,7 +80,7 @@
     if (!select) return;
     const modes = ['terracotta', 'colorblind-safe', 'high-contrast', 'dark'];
     const widgets = () =>
-      document.querySelectorAll('db-signup, db-onboarding-wizard, db-career-gateway, db-employer-accommodations');
+      document.querySelectorAll('db-signup, db-onboarding-wizard, db-career-gateway, db-employer-accommodations, db-ask');
     const apply = (mode, fromWidget) => {
       if (!modes.includes(mode)) return;
       select.value = mode;
