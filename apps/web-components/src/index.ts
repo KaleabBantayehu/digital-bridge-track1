@@ -1,3 +1,4 @@
+import { DbAskElement } from './elements/DbAskElement';
 import { DbCareerGatewayElement } from './elements/DbCareerGatewayElement';
 import { DbEmployerAccommodationsElement } from './elements/DbEmployerAccommodationsElement';
 import { DbOnboardingWizardElement } from './elements/DbOnboardingWizardElement';
@@ -17,6 +18,10 @@ if (!customElements.get('db-career-gateway')) {
 
 if (!customElements.get('db-employer-accommodations')) {
   customElements.define('db-employer-accommodations', DbEmployerAccommodationsElement);
+}
+
+if (!customElements.get('db-ask')) {
+  customElements.define('db-ask', DbAskElement);
 }
 
 function autoMountWidgets(): void {
@@ -55,4 +60,4 @@ if (document.readyState === 'loading') {
   autoMountWidgets();
 }
 
-export { DbCareerGatewayElement, DbEmployerAccommodationsElement, DbOnboardingWizardElement };
+export { DbAskElement, DbCareerGatewayElement, DbEmployerAccommodationsElement, DbOnboardingWizardElement };

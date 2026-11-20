@@ -38,6 +38,91 @@ export class LtiController {
     this.startLogin(request.body, response);
   }
 
+  @Get("install")
+  @ApiOperation({ summary: "One page of copy-ready values to install the tool in Moodle, Canvas or any LTI 1.3 platform" })
+  getInstallGuide(@Req() request: Request): Record<string, unknown> {
+    const urls = this.toolUrls(request);
+    return {
+      tool: "Digital Bridge Accessible Onboarding",
+      canvas: {
+        steps: "Admin > Developer Keys > + LTI Key > Method: Enter URL > paste configUrl > Save, then turn the key ON and add the app by Client ID.",
+        configUrl: urls.canvasConfig,
+      },
+      moodle: {
+        steps: "Site administration > Plugins > Activity modules > External tool > Manage tools > configure a tool manually. Set LTI version to LTI 1.3 and Public key type to Keyset URL, then paste the fields below.",
+        fields: {
+          "Tool URL": urls.targetLink,
+          "LTI version": "LTI 1.3",
+          "Public key type": "Keyset URL",
+          "Public keyset": urls.jwks,
+          "Initiate login URL": urls.login,
+          "Redirection URI(s)": [urls.launch, urls.deepLink].join("\n"),
+          "Supports Deep Linking (Content-Item Message)": "Yes",
+        },
+      },
+      afterInstall: "Send the platform issuer, client ID, deployment ID and its keyset URL to the Digital Bridge team. They are added to LTI_PLATFORMS_JSON so launches are verified with RS256.",
+    };
+  }
+
+  @Get("install/canvas.json")
+  @ApiOperation({ summary: "Canvas LTI 1.3 developer key configuration (paste this URL into Canvas)" })
+  getCanvasConfig(@Req() request: Request): Record<string, unknown> {
+    const urls = this.toolUrls(request);
+    const host = new URL(urls.base).hostname;
+    return {
+      title: "Digital Bridge Accessible Onboarding",
+      description: "Bilingual (English and Amharic), keyboard and screen reader friendly onboarding and an accessible career gateway.",
+      oidc_initiation_url: urls.login,
+      target_link_uri: urls.targetLink,
+      public_jwk_url: urls.jwks,
+      scopes: [
+        "https://purl.imsglobal.org/spec/lti-ags/scope/score",
+        "https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly",
+      ],
+      extensions: [
+        {
+          domain: host,
+          platform: "canvas.instructure.com",
+          privacy_level: "name_only",
+          settings: {
+            placements: [
+              { placement: "course_navigation", message_type: "LtiResourceLinkRequest", target_link_uri: urls.targetLink, text: "Accessible onboarding" },
+              { placement: "link_selection", message_type: "LtiDeepLinkingRequest", target_link_uri: urls.deepLink, text: "Digital Bridge" },
+            ],
+          },
+        },
+      ],
+      custom_fields: { partner_id: "canvas" },
+    };
+  }
+
+  private toolUrls(request: Request) {
+    // Prefer the configured public origin; otherwise use the origin this request reached (trust proxy is on).
+    let base = `${request.protocol}://${request.get("host")}`;
+    try {
+      if (process.env.LTI_TOOL_BASE_URL) base = new URL(process.env.LTI_TOOL_BASE_URL).origin;
+    } catch {
+      /* keep the request origin */
+    }
+    let targetLink = new URL("/api/v1/lti/launch", base).toString();
+    try {
+      const configured = JSON.parse(process.env.LTI_TOOL_TARGET_LINK_URIS || "[]");
+      if (Array.isArray(configured) && typeof configured[0] === "string") targetLink = configured[0];
+    } catch {
+      /* keep the launch URL */
+    }
+    const at = (path: string) => new URL(path, base).toString();
+    return {
+      base,
+      targetLink,
+      login: at("/api/v1/lti/login"),
+      launch: at("/api/v1/lti/launch"),
+      deepLink: at("/api/v1/lti/deep-link"),
+      jwks: at("/api/v1/lti/jwks"),
+      canvasConfig: at("/api/v1/lti/install/canvas.json"),
+    };
+  }
+
   @Get("mock-platform/jwks")
   getMockPlatformJwks(): JsonWebKeySet {
     return this.mockPlatformService.getPublicJwks();

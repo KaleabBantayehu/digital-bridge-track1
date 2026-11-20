@@ -58,6 +58,15 @@ Live hosted API: [Health](https://digital-bridge-track1.onrender.com/api/v1/heal
 `https://digital-bridge-track1.onrender.com/api/v1`; localhost and `127.0.0.1` keep the local/mock behavior unless an
 explicit `api` or `api-url` attribute is provided.
 
+Ask a question (English or Amharic): `<db-ask>` sits on the signup, profile and jobs pages. Type or say a question and
+the answer comes back in the language you used, offline, from the same bilingual help core that serves
+`POST /api/v1/help/ask` (`{"question":"ለመመዝገብ መታወቂያ ያስፈልገኛል?"}`) and `GET /api/v1/help/faq?lang=am`. Questions are not
+stored or logged.
+
+Install in an LMS: `GET /api/v1/lti/install` lists copy-ready values for Moodle (Tool URL, Public keyset, Initiate login
+URL, Redirection URIs). Canvas admins paste one URL, `/api/v1/lti/install/canvas.json`, into Developer Keys > LTI Key >
+Enter URL. Launches are then verified with RS256 once the platform is added to `LTI_PLATFORMS_JSON`.
+
 For widget development with hot reload: `pnpm dev` (standalone dev page on http://localhost:5173, API on 3000).
 
 ## Install, Level 1
