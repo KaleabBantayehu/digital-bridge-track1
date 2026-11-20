@@ -9,6 +9,7 @@ import { AuthModule } from "./auth/auth.module";
 import { ApplicationEntity } from "./career/entities/application.entity";
 import { JobEntity } from "./career/entities/job.entity";
 import { CareerModule } from "./career/career.module";
+import { HelpModule } from "./help/help.module";
 import { OnboardingSessionEntity } from "./onboarding/entities/onboarding-session.entity";
 import { SupportPreferenceEntity } from "./onboarding/entities/support-preference.entity";
 import { OnboardingModule } from "./onboarding/onboarding.module";
@@ -54,6 +55,7 @@ class HealthController {
     CareerModule,
     PrivacyModule,
     SeedModule,
+    HelpModule,
   ],
   controllers: [HealthController],
   providers: [
